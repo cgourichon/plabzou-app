@@ -1,7 +1,9 @@
-import './assets/main.css'
+import '@nordhealth/components'
+import '@nordhealth/css'
+import './assets/styles/theme.scss'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
 
 import App from './App.vue'
 import router from './router'
