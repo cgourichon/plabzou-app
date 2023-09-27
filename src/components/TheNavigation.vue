@@ -1,5 +1,11 @@
 <script setup>
-import {RouterLink} from "vue-router"
+import {RouterLink} from "vue-router";
+import {useAuthStore} from "@/stores/auth.store";
+import {computed} from "vue";
+
+const authStore = useAuthStore()
+
+const authenticatedUser = computed(() => authStore.authenticatedUser)
 </script>
 
 <template>
@@ -33,10 +39,18 @@ import {RouterLink} from "vue-router"
       </RouterLink>
     </nord-nav-group>
 
-    <nord-dropdown slot="footer" expand>
+    <nord-nav-group heading="Authentification" slot="footer" v-if="authenticatedUser === null">
+    <RouterLink to="/connexion">
+      <nord-nav-item :active="$route.path === '/connexion'" icon="interface-login">
+        Connexion
+      </nord-nav-item>
+    </RouterLink>
+    </nord-nav-group>
+
+    <nord-dropdown slot="footer" v-else expand>
       <nord-button slot="toggle" expand>
         <nord-avatar slot="start" aria-hidden="true" name="Prénom NOM"></nord-avatar>
-        Prénom NOM
+        {{ authenticatedUser?.first_name }} {{ authenticatedUser?.last_name }}
       </nord-button>
 
       <nord-dropdown-group>
