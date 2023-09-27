@@ -1,6 +1,6 @@
-import '@nordhealth/components'
-import '@nordhealth/css'
-import './assets/styles/theme.scss'
+import "@nordhealth/components"
+import "@nordhealth/css"
+import "./assets/styles/theme.scss"
 
 import {createApp} from 'vue'
 import {createPinia} from 'pinia'
