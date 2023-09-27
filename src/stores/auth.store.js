@@ -9,13 +9,7 @@ export const useAuthStore = defineStore('auth', {
     }),
     getters: {
         isAuthenticated() {
-            const now = Math.floor(Date.now() / 1000)
-
-            if (now > this.tokenExpiration) {
-                this.clearToken()
-
-                return false
-            }
+            this.checkTokenExpiration()
 
             return this.token !== null
         }
@@ -30,6 +24,8 @@ export const useAuthStore = defineStore('auth', {
             this.authenticatedUser = response.data.data
         },
         setToken(token, tokenExpiration) {
+            this.clearToken()
+
             this.token = token
             this.tokenExpiration = tokenExpiration
 
@@ -43,6 +39,13 @@ export const useAuthStore = defineStore('auth', {
 
             localStorage.removeItem('token')
             localStorage.removeItem('tokenExpiration')
+        },
+        checkTokenExpiration() {
+            const now = Math.floor(Date.now() / 1000)
+
+            if (now > this.tokenExpiration) {
+                this.clearToken()
+            }
         }
     }
 })

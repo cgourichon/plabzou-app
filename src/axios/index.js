@@ -8,7 +8,7 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(config => {
     const authStore = useAuthStore()
 
-    if (authStore.isAuthenticated) {
+    if (authStore.token) {
         config.headers['Authorization'] = authStore.token
     }
 
