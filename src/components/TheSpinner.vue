@@ -1,9 +1,9 @@
 <script setup>
-import pbzLogo from "@/assets/images/pbz-bee-loading.png";
+import pbzLogo from "@/assets/images/pbz-logo.png";
 </script>
 
 <template>
-  <nord-stack align-items="center" justify-content="center">
+  <nord-stack align-items="center" justify-content="center" gap="s">
     <img :src="pbzLogo" alt="PBZ Abeille" class="bee"/>
     <div class="loading-text">
       <p class="n-margin-ie-s">Chargement</p>
@@ -23,10 +23,10 @@ import pbzLogo from "@/assets/images/pbz-bee-loading.png";
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   100% {
-    transform: translateY(10px);
+    transform: translateY(5px);
   }
 }
 
