@@ -26,7 +26,7 @@ router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
     authStore.checkTokenExpiration()
     const isAuthenticated = authStore.isAuthenticated
-    
+
     if (to.name !== 'login' && !isAuthenticated) {
         next({name: 'login'})
     } else {
