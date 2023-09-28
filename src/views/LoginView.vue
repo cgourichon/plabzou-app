@@ -23,10 +23,6 @@ const login = async () => {
   <nord-card class="login-card">
     <h2 slot="header">Connexion</h2>
     <nord-stack v-if="authenticatedUser === null">
-      <nord-banner v-if="applicationStore.error" variant="danger">
-        {{ applicationStore.error }}
-      </nord-banner>
-
       <form @submit.prevent="login">
         <nord-stack>
           <nord-input
