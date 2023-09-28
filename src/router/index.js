@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
+import {useApplicationStore} from "@/stores/application.store";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,7 +25,11 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
+    const applicationStore = useApplicationStore()
+
     authStore.checkTokenExpiration()
+    applicationStore.loading = true
+
     const isAuthenticated = authStore.isAuthenticated
 
     if (to.name !== 'login' && !isAuthenticated) {
@@ -36,6 +41,12 @@ router.beforeEach(async (to, from, next) => {
 
         next()
     }
+})
+
+router.afterEach(() => {
+    const applicationStore = useApplicationStore()
+
+    applicationStore.loading = false
 })
 
 export default router

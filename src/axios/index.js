@@ -8,6 +8,9 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(config => {
     const authStore = useAuthStore()
+    const applicationStore = useApplicationStore()
+
+    applicationStore.loading = true
 
     if (authStore.token) {
         config.headers['Authorization'] = authStore.token
@@ -17,9 +20,16 @@ axiosClient.interceptors.request.use(config => {
 })
 
 axiosClient.interceptors.response.use(response => {
+    const applicationStore = useApplicationStore()
+
+    applicationStore.loading = false
+    applicationStore.clearErrors()
+
     return response
 }, error => {
     const applicationStore = useApplicationStore()
+
+    applicationStore.loading = false
 
     applicationStore.error = error.response.data.message
     applicationStore.errors = error.response.data.errors
