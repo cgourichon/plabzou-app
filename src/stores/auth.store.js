@@ -10,14 +10,13 @@ export const useAuthStore = defineStore('auth', {
     getters: {
         isAuthenticated() {
             this.checkTokenExpiration()
-
             return this.token !== null
         }
     },
     actions: {
         async login(credentials) {
             const response = await axiosClient.post('/auth/login', credentials)
-            this.setToken(response.data.data.token, response.data.data.expires_at)
+            if (response) this.setToken(response.data.data.token, response.data.data.expires_at)
         },
         async logout() {
             await axiosClient.post('/auth/logout')
@@ -25,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async fetchAuthenticatedUser() {
             const response = await axiosClient.get('/auth/me')
-            this.authenticatedUser = response.data.data
+            if (response) this.authenticatedUser = response.data.data
         },
         setToken(token, tokenExpiration) {
             this.clearToken()

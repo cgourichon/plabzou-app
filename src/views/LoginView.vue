@@ -2,28 +2,20 @@
 import {computed, ref} from "vue";
 import {useAuthStore} from "@/stores/auth.store";
 import router from "@/router";
+import {useApplicationStore} from "@/stores/application.store";
 
 const form = ref({
   email: '',
   password: '',
 })
-const validationErrors = ref({})
-const errorMessage = ref('')
 const authStore = useAuthStore()
+const applicationStore = useApplicationStore()
+
 const authenticatedUser = computed(() => authStore.authenticatedUser)
 
 const login = async () => {
-  try {
-    await authStore.login(form.value)
-
-    validationErrors.value = {}
-    errorMessage.value = ''
-
-    await router.push({name: 'home'})
-  } catch (e) {
-    validationErrors.value = e.response.data.errors
-    errorMessage.value = e.response.data.message
-  }
+  await authStore.login(form.value)
+  await router.push({name: 'home'})
 }
 </script>
 
@@ -31,27 +23,30 @@ const login = async () => {
   <nord-card class="login-card">
     <h2 slot="header">Connexion</h2>
     <nord-stack v-if="authenticatedUser === null">
-      <nord-banner v-if="errorMessage" variant="danger">
-        {{ errorMessage }}
+      <nord-banner v-if="applicationStore.error" variant="danger">
+        {{ applicationStore.error }}
       </nord-banner>
+
       <form @submit.prevent="login">
         <nord-stack>
           <nord-input
               v-model="form.email"
-              :error="validationErrors?.email"
+              :error="applicationStore.errors?.email"
               expand
               label="Adresse mail"
               placeholder="Entrez votre adresse mail"
               type="email"
           />
+
           <nord-input
               v-model="form.password"
-              :error="validationErrors?.password"
+              :error="applicationStore.errors?.password"
               expand
               label="Mot de passe"
               placeholder="Entrez votre mot de passe"
               type="password"
           />
+
           <nord-button expand type="submit" variant="primary">
             Connexion
           </nord-button>
