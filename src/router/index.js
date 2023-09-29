@@ -1,6 +1,12 @@
 import {createRouter, createWebHistory} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
 import {useApplicationStore} from "@/stores/application.store";
+import HomeView from "@/views/HomeView.vue";
+import AboutView from "@/views/AboutView.vue";
+import LoginView from "@/views/LoginView.vue";
+import UserListView from "@/views/Management/User/UserListView.vue";
+import UserCreateView from "@/views/Management/User/UserCreateView.vue";
+import UserEditView from "@/views/Management/User/UserEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,17 +14,32 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: () => import('../views/HomeView.vue')
+            component: HomeView
         },
         {
             path: '/about',
             name: 'about',
-            component: () => import('../views/AboutView.vue')
+            component: AboutView
         },
         {
             path: '/connexion',
             name: 'login',
-            component: () => import('../views/LoginView.vue')
+            component: LoginView
+        },
+        {
+            path: '/gestion/utilisateurs',
+            name: 'user_list',
+            component: UserListView
+        },
+        {
+            path: '/gestion/utilisateurs/ajouter',
+            name: 'user_create',
+            component: UserCreateView
+        },
+        {
+            path: '/gestion/utilisateurs/:id/modifier',
+            name: 'user_edit',
+            component: UserEditView
         }
     ]
 })
@@ -43,7 +64,7 @@ router.beforeEach(async (to, from, next) => {
     }
 })
 
-router.afterEach(() => {
+router.afterEach(async () => {
     const applicationStore = useApplicationStore()
 
     applicationStore.loading = false
