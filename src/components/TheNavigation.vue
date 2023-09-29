@@ -1,5 +1,17 @@
 <script setup>
-import {RouterLink} from "vue-router"
+import {RouterLink} from "vue-router";
+import {useAuthStore} from "@/stores/auth.store";
+import {computed} from "vue";
+import router from "@/router";
+
+const authStore = useAuthStore()
+
+const authenticatedUser = computed(() => authStore.authenticatedUser)
+
+const logout = async () => {
+  await authStore.logout()
+  await router.push('/connexion')
+}
 </script>
 
 <template>
@@ -33,10 +45,18 @@ import {RouterLink} from "vue-router"
       </RouterLink>
     </nord-nav-group>
 
-    <nord-dropdown slot="footer" expand>
+    <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
+      <RouterLink to="/connexion">
+        <nord-nav-item :active="$route.path === '/connexion'" icon="interface-login">
+          Connexion
+        </nord-nav-item>
+      </RouterLink>
+    </nord-nav-group>
+
+    <nord-dropdown v-else slot="footer" expand>
       <nord-button slot="toggle" expand>
         <nord-avatar slot="start" aria-hidden="true" name="Prénom NOM"></nord-avatar>
-        Prénom NOM
+        {{ authenticatedUser?.first_name }} {{ authenticatedUser?.last_name }}
       </nord-button>
 
       <nord-dropdown-group>
@@ -47,7 +67,7 @@ import {RouterLink} from "vue-router"
         <nord-dropdown-item>Aide & Support</nord-dropdown-item>
       </nord-dropdown-group>
 
-      <nord-dropdown-item>
+      <nord-dropdown-item @click.prevent="logout">
         Déconnexion
         <nord-icon slot="end" name="interface-logout"></nord-icon>
       </nord-dropdown-item>
