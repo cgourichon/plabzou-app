@@ -53,6 +53,14 @@ const logout = async () => {
       </RouterLink>
     </nord-nav-group>
 
+    <nord-nav-group heading="Gestion">
+      <RouterLink to="/gestion/utilisateurs">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
+          Utilisateurs
+        </nord-nav-item>
+      </RouterLink>
+    </nord-nav-group>
+
     <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
       <RouterLink to="/connexion">
         <nord-nav-item :active="$route.path === '/connexion'" icon="interface-login">
