@@ -6,6 +6,11 @@ export const useApplicationStore = defineStore('application', {
         error: null,
         errors: null
     }),
+    getters: {
+        hasErrors() {
+            return this.error !== null || this.errors !== null
+        }
+    },
     actions: {
         clearErrors() {
             this.error = null
