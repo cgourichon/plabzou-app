@@ -52,7 +52,12 @@ onMounted(async () => {
             {{ user.email }}
           </td>
           <td class="n-table-align-right">
-            Modifier
+            <RouterLink :to="`/gestion/utilisateurs/${user.id}/modifier`">
+              <nord-button size="s" variant="primary">
+                <nord-icon slot="start" name="interface-edit"/>
+                Modifier
+              </nord-button>
+            </RouterLink>
           </td>
         </tr>
         </tbody>

@@ -14,6 +14,18 @@ export const useUserStore = defineStore('user', {
         async fetchUser(id) {
             const response = await axiosClient.get(`/users/${id}`)
             if (response) this.user = response.data.data
+        },
+        async createUser(user) {
+            await axiosClient.post('/users', user)
+        },
+        async updateUser(id, user) {
+            await axiosClient.put(`/users/${id}`, user)
+        },
+        async deleteUser(id) {
+            await axiosClient.delete(`/users/${id}`)
+        },
+        resetUser() {
+            this.user = null
         }
     }
 })
