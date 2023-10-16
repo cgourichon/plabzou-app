@@ -48,7 +48,7 @@ const logout = async () => {
     <nord-nav-group heading="Gestion">
       <RouterLink to="/gestion/utilisateurs">
         <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
-          Gestion des utilisateurs
+          Utilisateurs
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>

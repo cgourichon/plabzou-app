@@ -28,17 +28,17 @@ const router = createRouter({
         },
         {
             path: '/gestion/utilisateurs',
-            name: 'user-list',
+            name: 'users-list',
             component: UserListView
         },
         {
             path: '/gestion/utilisateurs/ajouter',
-            name: 'user-create',
+            name: 'users-create',
             component: UserCreateView
         },
         {
             path: '/gestion/utilisateurs/:id/modifier',
-            name: 'user-edit',
+            name: 'users-edit',
             component: UserEditView
         }
     ]

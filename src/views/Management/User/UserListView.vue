@@ -3,6 +3,7 @@ import {useUserStore} from "@/stores/user.store";
 import {onMounted} from "vue";
 
 const userStore = useUserStore()
+userStore.resetUsers()
 
 onMounted(async () => {
   await userStore.fetchUsers()
@@ -31,6 +32,10 @@ onMounted(async () => {
           <th>Nom</th>
           <th>Téléphone</th>
           <th>Mail</th>
+          <th>Administrateur</th>
+          <th>Employé</th>
+          <th>Formateur</th>
+          <th>Apprenant</th>
           <th class="n-table-align-right">Modifier</th>
         </tr>
         </thead>
@@ -50,6 +55,18 @@ onMounted(async () => {
           </td>
           <td>
             {{ user.email }}
+          </td>
+          <td>
+            {{ user.administrative_employee && user.administrative_employee.is_super_admin ? 'Oui' : 'Non' }}
+          </td>
+          <td>
+            {{ user.administrative_employee ? 'Oui' : 'Non' }}
+          </td>
+          <td>
+            {{ !!user.teacher ? 'Oui' : 'Non' }}
+          </td>
+          <td>
+            {{ user.learner ? 'Oui' : 'Non' }}
           </td>
           <td class="n-table-align-right">
             <RouterLink :to="`/gestion/utilisateurs/${user.id}/modifier`">

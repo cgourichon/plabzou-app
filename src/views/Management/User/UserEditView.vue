@@ -14,13 +14,13 @@ onMounted(async () => {
 
 <template>
   <nord-card>
-    <h2 slot="header">Modifier un utilisateur</h2>
+    <h2 slot="header">Modifier un employé administratif</h2>
 
     <div slot="header-end">
       <RouterLink to="/gestion/utilisateurs">
         <nord-button size="s" variant="primary">
           <nord-icon slot="start" name="text-list"/>
-          Liste des utilisateurs
+          Liste des employés administratifs
         </nord-button>
       </RouterLink>
     </div>
