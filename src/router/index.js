@@ -7,6 +7,7 @@ import LoginView from "@/views/LoginView.vue";
 import UserListView from "@/views/Management/User/UserListView.vue";
 import UserCreateView from "@/views/Management/User/UserCreateView.vue";
 import UserEditView from "@/views/Management/User/UserEditView.vue";
+import MessagesView from "@/views/MessagesView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,11 @@ const router = createRouter({
             path: '/connexion',
             name: 'login',
             component: LoginView
+        },
+        {
+          path: '/messagerie',
+          name: '/messagerie',
+          component: MessagesView
         },
         {
             path: '/gestion/utilisateurs',
