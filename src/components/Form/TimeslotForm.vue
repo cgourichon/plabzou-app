@@ -4,6 +4,7 @@ import {useTimeslotStore} from "@/stores/timeslot.store";
 import {useRoomStore} from "@/stores/room.store";
 import router from "@/router";
 import {computed, onMounted} from "vue";
+import {useTrainingStore} from "@/stores/training.store";
 
 const props = defineProps({
   timeslot: {
@@ -14,6 +15,7 @@ const props = defineProps({
 
 const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
+const trainingStore = useTrainingStore()
 const applicationStore = useApplicationStore()
 
 const form = computed(() => {
@@ -50,6 +52,7 @@ const redirect = async () => {
 
 onMounted(async () => {
   await roomStore.fetchRooms()
+  await trainingStore.fetchTrainings()
 })
 </script>
 
@@ -63,6 +66,7 @@ onMounted(async () => {
           label="Formation"
       >
         <option :value="null" selected>Choisir une formation</option>
+        <option v-for="training in trainingStore.trainings" :value="training.id">{{ training.name }}</option>
       </nord-select>
 
       <nord-select
