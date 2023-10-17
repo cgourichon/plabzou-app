@@ -2,6 +2,7 @@ import "@nordhealth/components"
 import "@nordhealth/css"
 import "./assets/styles/theme.scss"
 import "vue-multiselect/dist/vue-multiselect.css"
+import "./assets/styles/multiselect.css"
 
 import {createApp} from "vue"
 import {createPinia} from "pinia"

@@ -2,6 +2,7 @@
 import {useApplicationStore} from "@/stores/application.store";
 import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
+import {useCourseStore} from "@/stores/course.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
 
@@ -16,16 +17,21 @@ const props = defineProps({
 
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
+const courseStore = useCourseStore()
 const applicationStore = useApplicationStore()
 
 const selectedCategories = ref(null)
+const selectedCourses = ref(null)
+const selectedTeachers = ref(null)
 
 const form = computed(() => {
   selectedCategories.value = props.training?.categories ?? []
+  selectedCourses.value = props.training?.courses ?? []
+  selectedTeachers.value = props.training?.teachers ?? []
 
   return {
-    name: props.training?.name ?? '',
-    duration: props.training?.duration ?? 0,
+    name: props.training?.name ?? null,
+    duration: props.training?.duration ?? null,
     categories: props.training?.categories ?? [],
     teachers: props.training?.teachers ?? [],
     courses: props.training?.courses ?? [],
@@ -34,6 +40,8 @@ const form = computed(() => {
 
 const store = async () => {
   form.value.categories = selectedCategories.value
+  form.value.courses = selectedCourses.value
+  form.value.teachers = selectedTeachers.value
 
   applicationStore.clearErrors()
   await trainingStore.createTraining(form.value)
@@ -42,6 +50,8 @@ const store = async () => {
 
 const update = async () => {
   form.value.categories = selectedCategories.value
+  form.value.courses = selectedCourses.value
+  form.value.teachers = selectedTeachers.value
 
   applicationStore.clearErrors()
   await trainingStore.updateTraining(props.training.id, form.value)
@@ -60,6 +70,7 @@ const redirect = async () => {
 
 onMounted(async () => {
   await categoryStore.fetchCategories()
+  await courseStore.fetchCourses()
 })
 </script>
 
@@ -84,7 +95,7 @@ onMounted(async () => {
           type="number"
       />
 
-      <label>Catégories</label>
+      <label class="n-label">Catégories</label>
       <multi-select
           v-model="selectedCategories"
           :allow-empty="true"
@@ -94,6 +105,7 @@ onMounted(async () => {
           :multiple="true"
           :options="categoryStore.categories"
           :show-no-results="true"
+          :select-label="null"
           label="name"
           placeholder="Associer cette formation a des catégories"
           track-by="id"
@@ -102,6 +114,24 @@ onMounted(async () => {
         <template #noOptions>Pas de catégories...</template>
       </multi-select>
 
+      <label class="n-label">Cursus</label>
+      <multi-select
+          v-model="selectedCourses"
+          :allow-empty="true"
+          :clear-on-select="true"
+          :close-on-select="false"
+          :hide-selected="true"
+          :multiple="true"
+          :options="courseStore.courses"
+          :show-no-results="true"
+          :select-label="null"
+          label="name"
+          placeholder="Associer des cursus à cette formation"
+          track-by="id"
+      >
+        <template #noResult>Aucun cursus correspondant</template>
+        <template #noOptions>Pas de cursus...</template>
+      </multi-select>
 
       <nord-stack direction="horizontal">
         <nord-button expand type="submit" variant="primary">
