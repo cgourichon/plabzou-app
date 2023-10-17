@@ -7,6 +7,12 @@ import LoginView from "@/views/LoginView.vue";
 import UserListView from "@/views/Management/User/UserListView.vue";
 import UserCreateView from "@/views/Management/User/UserCreateView.vue";
 import UserEditView from "@/views/Management/User/UserEditView.vue";
+import CategoryListView from "@/views/Management/Category/CategoryListView.vue";
+import CategoryCreateView from "@/views/Management/Category/CategoryCreateView.vue";
+import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
+import CourseListView from "@/views/Management/Course/CourseListView.vue";
+import CourseEditView from "@/views/Management/Course/CourseEditView.vue";
+import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
 import MessagesView from "@/views/MessagesView.vue";
 
 const router = createRouter({
@@ -46,6 +52,36 @@ const router = createRouter({
             path: '/gestion/utilisateurs/:id/modifier',
             name: 'users-edit',
             component: UserEditView
+        },
+        {
+            path: '/gestion/categories',
+            name: 'categories-list',
+            component: CategoryListView
+        },
+        {
+            path: '/gestion/categories/ajouter',
+            name: 'categories-create',
+            component: CategoryCreateView
+        },
+        {
+            path: '/gestion/categories/:id/modifier',
+            name: 'categories-edit',
+            component: CategoryEditView
+        },
+        {
+            path: '/gestion/cursus',
+            name: 'courses-list',
+            component: CourseListView
+        },
+        {
+            path: '/gestion/cursus/ajouter',
+            name: 'courses-create',
+            component: CourseCreateView
+        },
+        {
+            path: '/gestion/cursus/:id/modifier',
+            name: 'courses-edit',
+            component: CourseEditView
         }
     ]
 })
