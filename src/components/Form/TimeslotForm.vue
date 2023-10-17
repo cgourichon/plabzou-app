@@ -22,13 +22,19 @@ const userStore = useUserStore()
 const applicationStore = useApplicationStore()
 
 const selectedLearners = ref(null)
+const selectedTeachers = ref(null)
 
 const learnersLabel = (option) => {
   return `${option.first_name} ${option.last_name}`
-};
+}
+
+const teachersLabel = (option) => {
+  return `${option.first_name} ${option.last_name}`
+}
 
 const form = computed(() => {
   selectedLearners.value = props.timeslot?.learners ?? []
+  selectedTeachers.value = props.timeslot?.teachers ?? []
 
   return {
     training: props.timeslot?.training_id ?? '',
@@ -65,6 +71,7 @@ onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
   await userStore.fetchLearners()
+  await userStore.fetchTeachers()
 })
 </script>
 
@@ -124,6 +131,25 @@ onMounted(async () => {
       >
         <template #noResult>Pas d'apprenants correspondants</template>
         <template #noOptions>Pas d'apprenants...</template>
+      </multi-select>
+
+      <label class="n-label">Formateurs</label>
+      <multi-select
+          v-model="selectedTeachers"
+          :allow-empty="true"
+          :clear-on-select="true"
+          :close-on-select="false"
+          :custom-label="teachersLabel"
+          :hide-selected="true"
+          :multiple="true"
+          :options="userStore.teachers"
+          :select-label="null"
+          :show-no-results="true"
+          placeholder="Ajouter des formateurs"
+          track-by="id"
+      >
+        <template #noResult>Pas de formateurs correspondants</template>
+        <template #noOptions>Pas de formateurs...</template>
       </multi-select>
 
       <nord-checkbox
