@@ -24,14 +24,6 @@ const applicationStore = useApplicationStore()
 const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 
-const learnersLabel = (option) => {
-  return `${option.first_name} ${option.last_name}`
-}
-
-const teachersLabel = (option) => {
-  return `${option.first_name} ${option.last_name}`
-}
-
 const form = computed(() => {
   selectedLearners.value = props.timeslot?.learners ?? []
   selectedTeachers.value = props.timeslot?.teachers ?? []
@@ -42,6 +34,8 @@ const form = computed(() => {
     starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
     ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
     is_validated: props.timeslot?.is_validated ?? '',
+    learners: props.timeslot?.learners ?? [],
+    teachers: props.timeslot?.teachers ?? [],
   }
 })
 
@@ -127,14 +121,14 @@ onMounted(async () => {
             :allow-empty="true"
             :clear-on-select="true"
             :close-on-select="false"
-            :custom-label="learnersLabel"
             :hide-selected="true"
             :multiple="true"
             :options="userStore.learners"
             :select-label="null"
             :show-no-results="true"
+            label="full_name"
             placeholder="Ajouter des apprenants"
-            track-by="id"
+            track-by="user_id"
         >
           <template #noResult>Pas d'apprenants correspondants</template>
           <template #noOptions>Pas d'apprenants...</template>
@@ -155,14 +149,14 @@ onMounted(async () => {
             :allow-empty="true"
             :clear-on-select="true"
             :close-on-select="false"
-            :custom-label="teachersLabel"
             :hide-selected="true"
             :multiple="true"
             :options="userStore.teachers"
             :select-label="null"
             :show-no-results="true"
+            label="full_name"
             placeholder="Ajouter des formateurs"
-            track-by="id"
+            track-by="user_id"
         >
           <template #noResult>Pas de formateurs correspondants</template>
           <template #noOptions>Pas de formateurs...</template>
