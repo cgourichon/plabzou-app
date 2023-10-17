@@ -3,7 +3,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
 import router from "@/router";
-import {computed, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 const props = defineProps({
   training: {
@@ -11,14 +11,18 @@ const props = defineProps({
     default: null,
   }
 })
- 
+
 // TODO : intégration des cursus et formateurs
 
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
 const applicationStore = useApplicationStore()
 
+const selectedCategories = ref(null)
+
 const form = computed(() => {
+  selectedCategories.value = props.training?.categories ?? []
+
   return {
     name: props.training?.name ?? '',
     duration: props.training?.duration ?? 0,
@@ -29,12 +33,16 @@ const form = computed(() => {
 })
 
 const store = async () => {
+  form.value.categories = selectedCategories.value
+
   applicationStore.clearErrors()
   await trainingStore.createTraining(form.value)
   await redirect()
 }
 
 const update = async () => {
+  form.value.categories = selectedCategories.value
+
   applicationStore.clearErrors()
   await trainingStore.updateTraining(props.training.id, form.value)
   await redirect()
@@ -47,7 +55,7 @@ const destroy = async () => {
 }
 
 const redirect = async () => {
-  if (!applicationStore.hasErrors) await router.push({name: 'formations-list'})
+  if (!applicationStore.hasErrors) await router.push({name: 'trainings-list'})
 }
 
 onMounted(async () => {
@@ -73,25 +81,27 @@ onMounted(async () => {
           expand
           label="Durée"
           placeholder="Entrez un nombre de minute"
-          type="nulmber"
+          type="number"
       />
-      
+
       <label>Catégories</label>
-      <multi-select v-model="form.categories"
-        track-by="id"
-        label="name"
-        placeholder="Associer cette formation a des catégories"
-        :options="categoryStore.categories"
-        :multiple="true"
-        :allow-empty="true"
-        :hide-selected="true"
-        :close-on-select="false"
-        :clear-on-select="true"
-        :show-no-results="true">
+      <multi-select
+          v-model="selectedCategories"
+          :allow-empty="true"
+          :clear-on-select="true"
+          :close-on-select="false"
+          :hide-selected="true"
+          :multiple="true"
+          :options="categoryStore.categories"
+          :show-no-results="true"
+          label="name"
+          placeholder="Associer cette formation a des catégories"
+          track-by="id"
+      >
         <template #noResult>Aucune catégorie correspondante</template>
         <template #noOptions>Pas de catégories...</template>
       </multi-select>
-  
+
 
       <nord-stack direction="horizontal">
         <nord-button expand type="submit" variant="primary">
