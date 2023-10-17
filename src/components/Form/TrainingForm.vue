@@ -4,7 +4,6 @@ import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
 import router from "@/router";
 import {computed, onMounted} from "vue";
-import Multiselect from "vue-multiselect";
 
 const props = defineProps({
   training: {
@@ -28,10 +27,6 @@ const form = computed(() => {
     courses: props.training?.courses ?? [],
   }
 })
-
-const options = [1,2,3]
-
-const value = computed(() => 1)
 
 const store = async () => {
   applicationStore.clearErrors()
@@ -82,7 +77,7 @@ onMounted(async () => {
       />
       
       <label>Catégories</label>
-      <Multiselect v-model="form.categories"
+      <multi-select v-model:model="form.categories"
         track-by="id"
         label="name"
         placeholder="Associer cette formation a des catégories"
@@ -90,10 +85,12 @@ onMounted(async () => {
         :multiple="true"
         :allow-empty="true"
         :hide-selected="true"
+        :close-on-select="false"
+        :clear-on-select="true"
         :show-no-results="true">
         <template #noResult>Aucune catégorie correspondante</template>
         <template #noOptions>Pas de catégories...</template>
-      </Multiselect>
+      </multi-select>
   
 
       <nord-stack direction="horizontal">
