@@ -7,9 +7,11 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
     plugins: [
         vue({
-            compilerOptions: {
-                isCustomElement: (tag) => tag.startsWith('nord-')
-            },
+            template: {
+                compilerOptions: {
+                    isCustomElement: (tag) => tag.startsWith('nord-')
+                }
+            }
         }),
     ],
     resolve: {
