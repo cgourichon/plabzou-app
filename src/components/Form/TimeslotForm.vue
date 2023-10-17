@@ -46,12 +46,18 @@ const form = computed(() => {
 })
 
 const store = async () => {
+  form.value.learners = selectedLearners.value
+  form.value.teachers = selectedTeachers.value
+
   applicationStore.clearErrors()
   await timeslotStore.createTimeslot(form.value)
   await redirect()
 }
 
 const update = async () => {
+  form.value.learners = selectedLearners.value
+  form.value.teachers = selectedTeachers.value
+
   applicationStore.clearErrors()
   await timeslotStore.updateTimeslot(props.timeslot.id, form.value)
   await redirect()
@@ -114,43 +120,61 @@ onMounted(async () => {
           type="datetime-local"
       />
 
-      <label class="n-label">Apprenants</label>
-      <multi-select
-          v-model="selectedLearners"
-          :allow-empty="true"
-          :clear-on-select="true"
-          :close-on-select="false"
-          :custom-label="learnersLabel"
-          :hide-selected="true"
-          :multiple="true"
-          :options="userStore.learners"
-          :select-label="null"
-          :show-no-results="true"
-          placeholder="Ajouter des apprenants"
-          track-by="id"
-      >
-        <template #noResult>Pas d'apprenants correspondants</template>
-        <template #noOptions>Pas d'apprenants...</template>
-      </multi-select>
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Apprenants</label>
+        <multi-select
+            v-model="selectedLearners"
+            :allow-empty="true"
+            :clear-on-select="true"
+            :close-on-select="false"
+            :custom-label="learnersLabel"
+            :hide-selected="true"
+            :multiple="true"
+            :options="userStore.learners"
+            :select-label="null"
+            :show-no-results="true"
+            placeholder="Ajouter des apprenants"
+            track-by="id"
+        >
+          <template #noResult>Pas d'apprenants correspondants</template>
+          <template #noOptions>Pas d'apprenants...</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.learners"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.learners[0] }}
+        </div>
+      </div>
 
-      <label class="n-label">Formateurs</label>
-      <multi-select
-          v-model="selectedTeachers"
-          :allow-empty="true"
-          :clear-on-select="true"
-          :close-on-select="false"
-          :custom-label="teachersLabel"
-          :hide-selected="true"
-          :multiple="true"
-          :options="userStore.teachers"
-          :select-label="null"
-          :show-no-results="true"
-          placeholder="Ajouter des formateurs"
-          track-by="id"
-      >
-        <template #noResult>Pas de formateurs correspondants</template>
-        <template #noOptions>Pas de formateurs...</template>
-      </multi-select>
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Formateurs</label>
+        <multi-select
+            v-model="selectedTeachers"
+            :allow-empty="true"
+            :clear-on-select="true"
+            :close-on-select="false"
+            :custom-label="teachersLabel"
+            :hide-selected="true"
+            :multiple="true"
+            :options="userStore.teachers"
+            :select-label="null"
+            :show-no-results="true"
+            placeholder="Ajouter des formateurs"
+            track-by="id"
+        >
+          <template #noResult>Pas de formateurs correspondants</template>
+          <template #noOptions>Pas de formateurs...</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.teachers"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.teachers[0] }}
+        </div>
+      </div>
 
       <nord-checkbox
           v-model="form.is_validated"
