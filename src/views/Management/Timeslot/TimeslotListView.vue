@@ -1,6 +1,7 @@
 <script setup>
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import {onMounted} from "vue";
+import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 const timeslotStore = useTimeslotStore()
 timeslotStore.resetTimeslots()
@@ -44,10 +45,10 @@ onMounted(async () => {
             {{ timeslot.id }}
           </td>
           <td>
-            {{ timeslot.starts_at }}
+            {{ getFrenchDateTimeWithoutTimeZone(timeslot.starts_at) }}
           </td>
           <td>
-            {{ timeslot.ends_at }}
+            {{ getFrenchDateTimeWithoutTimeZone(timeslot.ends_at) }}
           </td>
           <td>
             {{ timeslot.is_validated ? 'Oui' : 'Non' }}

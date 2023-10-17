@@ -5,6 +5,7 @@ import {useRoomStore} from "@/stores/room.store";
 import router from "@/router";
 import {computed, onMounted} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
+import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 const props = defineProps({
   timeslot: {
@@ -22,8 +23,8 @@ const form = computed(() => {
   return {
     training: props.timeslot?.training_id ?? '',
     room: props.timeslot?.room_id ?? '',
-    starts_at: props.timeslot?.starts_at ?? '',
-    ends_at: props.timeslot?.ends_at ?? '',
+    starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
+    ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
     is_validated: props.timeslot?.is_validated ?? '',
   }
 })
