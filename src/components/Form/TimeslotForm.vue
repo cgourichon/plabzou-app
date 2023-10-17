@@ -3,9 +3,10 @@ import {useApplicationStore} from "@/stores/application.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import {useRoomStore} from "@/stores/room.store";
 import router from "@/router";
-import {computed, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
+import {useUserStore} from "@/stores/user.store";
 
 const props = defineProps({
   timeslot: {
@@ -17,9 +18,18 @@ const props = defineProps({
 const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
+const userStore = useUserStore()
 const applicationStore = useApplicationStore()
 
+const selectedLearners = ref(null)
+
+const learnersLabel = (option) => {
+  return `${option.first_name} ${option.last_name}`
+};
+
 const form = computed(() => {
+  selectedLearners.value = props.timeslot?.learners ?? []
+
   return {
     training: props.timeslot?.training_id ?? '',
     room: props.timeslot?.room_id ?? '',
@@ -54,6 +64,7 @@ const redirect = async () => {
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
+  await userStore.fetchLearners()
 })
 </script>
 
@@ -95,6 +106,25 @@ onMounted(async () => {
           label="Date de fin"
           type="datetime-local"
       />
+
+      <label class="n-label">Apprenants</label>
+      <multi-select
+          v-model="selectedLearners"
+          :allow-empty="true"
+          :clear-on-select="true"
+          :close-on-select="false"
+          :custom-label="learnersLabel"
+          :hide-selected="true"
+          :multiple="true"
+          :options="userStore.learners"
+          :select-label="null"
+          :show-no-results="true"
+          placeholder="Ajouter des apprenants"
+          track-by="id"
+      >
+        <template #noResult>Pas d'apprenants correspondants</template>
+        <template #noOptions>Pas d'apprenants...</template>
+      </multi-select>
 
       <nord-checkbox
           v-model="form.is_validated"
