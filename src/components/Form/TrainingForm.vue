@@ -13,7 +13,7 @@ const props = defineProps({
   }
 })
 
-// TODO : intégration des cursus et formateurs
+// TODO : intégration des formateurs
 
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
