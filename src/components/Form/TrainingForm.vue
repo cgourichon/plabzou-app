@@ -3,7 +3,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
 import router from "@/router";
-import {computed, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 const props = defineProps({
   training: {
@@ -18,15 +18,13 @@ const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
 const applicationStore = useApplicationStore()
 
-const form = computed(() => {
-  return {
+const form = ref({
     name: props.training?.name ?? '',
     duration: props.training?.duration ?? 0,
     categories: props.training?.categories ?? [],
     teachers: props.training?.teachers ?? [],
     courses: props.training?.courses ?? [],
-  }
-})
+  })
 
 const store = async () => {
   applicationStore.clearErrors()
@@ -77,7 +75,7 @@ onMounted(async () => {
       />
       
       <label>Catégories</label>
-      <multi-select v-model:model="form.categories"
+      <multi-select v-model="form.categories"
         track-by="id"
         label="name"
         placeholder="Associer cette formation a des catégories"
