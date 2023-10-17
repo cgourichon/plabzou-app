@@ -3,7 +3,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted} from "vue";
 
 const props = defineProps({
   training: {
@@ -18,13 +18,15 @@ const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
 const applicationStore = useApplicationStore()
 
-const form = ref({
+const form = computed(() => {
+  return {
     name: props.training?.name ?? '',
     duration: props.training?.duration ?? 0,
     categories: props.training?.categories ?? [],
     teachers: props.training?.teachers ?? [],
     courses: props.training?.courses ?? [],
-  })
+  }
+})
 
 const store = async () => {
   applicationStore.clearErrors()
@@ -45,7 +47,7 @@ const destroy = async () => {
 }
 
 const redirect = async () => {
-  if (!applicationStore.hasErrors) await router.push({name: 'categories-list'})
+  if (!applicationStore.hasErrors) await router.push({name: 'formations-list'})
 }
 
 onMounted(async () => {
