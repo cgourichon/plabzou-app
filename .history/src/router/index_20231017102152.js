@@ -10,9 +10,6 @@ import UserEditView from "@/views/Management/User/UserEditView.vue";
 import CategoryListView from "@/views/Management/Category/CategoryListView.vue";
 import CategoryCreateView from "@/views/Management/Category/CategoryCreateView.vue";
 import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
-import TrainingListView from "@/views/Management/Training/TrainingListView.vue";
-import TrainingCreateView from "@/views/Management/Training/TrainingCreateView.vue";
-import TrainingEditView from "@/views/Management/Training/TrainingEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,21 +58,6 @@ const router = createRouter({
             path: '/gestion/categories/:id/modifier',
             name: 'categories-edit',
             component: CategoryEditView
-        },
-        {
-            path: '/gestion/formations',
-            name: 'trainings-list',
-            component: TrainingListView
-        },
-        {
-            path: '/gestion/formations/ajouter',
-            name: 'trainings-create',
-            component: TrainingCreateView
-        },
-        {
-            path: '/gestion/formations/:id/modifier',
-            name: 'trainings-edit',
-            component: TrainingEditView
         }
     ]
 })

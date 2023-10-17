@@ -57,12 +57,6 @@ const logout = async () => {
           Catégories
         </nord-nav-item>
       </RouterLink>
-
-      <RouterLink to="/gestion/formations">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/formations')" icon="interface-grid">
-          Formations
-        </nord-nav-item>
-      </RouterLink>
     </nord-nav-group>
 
     <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
