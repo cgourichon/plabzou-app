@@ -46,8 +46,8 @@ const logout = async () => {
     </nord-nav-group>
 
     <nord-nav-group>
-      <RouterLink to="/messages">
-        <nord-nav-item :active="$route.path === '/messages'">
+      <RouterLink to="/messagerie">
+        <nord-nav-item :active="$route.path === '/messagerie'">
           Messages
         </nord-nav-item>
       </RouterLink>
