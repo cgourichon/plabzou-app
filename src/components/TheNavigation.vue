@@ -63,6 +63,12 @@ const logout = async () => {
           Cursus
         </nord-nav-item>
       </RouterLink>
+
+      <RouterLink to="/gestion/creneaux">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/creneaux')" icon="interface-grid">
+          Créneaux
+        </nord-nav-item>
+      </RouterLink>
     </nord-nav-group>
 
     <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
