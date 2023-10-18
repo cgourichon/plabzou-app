@@ -40,9 +40,10 @@ const router = createRouter({
             component: LoginView
         },
         {
-          path: '/messagerie',
-          name: '/messagerie',
-          component: MessagesView
+            path: '/messagerie',
+            name: 'messagerie',
+            component: MessagesView
+            //TODO guards
         },
         {
             path: '/gestion/utilisateurs',

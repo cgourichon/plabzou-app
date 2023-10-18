@@ -7,13 +7,13 @@ export const useConversationStore = defineStore('conversation', {
         conversation: null,
     }),
     actions: {
-        /*
-        async fetchConversation(id) {
-            const response = await axiosClient.get(`/conversations/${id}`)
-            if (response) this.conversation = response.data.data
-        },*/
+
         async sendMessage(data) {
             const response = await axiosClient.post(`/messages`, data)
+            if (response) await useAuthStore().fetchAuthenticatedUser();
+        },
+        async createConversation(data) {
+            const response = await axiosClient.post(`/conversations`, data);
             if (response) await useAuthStore().fetchAuthenticatedUser();
         }
     }
