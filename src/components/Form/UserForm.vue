@@ -1,6 +1,8 @@
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
 import {useUserStore} from "@/stores/user.store";
+import {useLearnerStore} from "@/stores/learner.store";
+import {useTeacherStore} from "@/stores/teacher.store";
 import {useApplicationStore} from "@/stores/application.store";
 import router from "@/router";
 
@@ -12,14 +14,16 @@ const props = defineProps({
 })
 
 const userStore = useUserStore()
+const learnerStore = useLearnerStore()
+const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
 
-const statuses = computed(() => userStore.teacher_statuses)
-const modes = computed(() => userStore.learner_modes)
+const statuses = computed(() => teacherStore.teacher_statuses)
+const modes = computed(() => learnerStore.learner_modes)
 
 onMounted(async () => {
-  await userStore.fetchTeacherStatuses()
-  await userStore.fetchLearnerModes()
+  await teacherStore.fetchTeacherStatuses()
+  await learnerStore.fetchLearnerModes()
 })
 
 const isAdministrativeEmployee = ref(false)

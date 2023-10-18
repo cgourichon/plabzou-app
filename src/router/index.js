@@ -10,9 +10,15 @@ import UserEditView from "@/views/Management/User/UserEditView.vue";
 import CategoryListView from "@/views/Management/Category/CategoryListView.vue";
 import CategoryCreateView from "@/views/Management/Category/CategoryCreateView.vue";
 import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
+import TrainingListView from "@/views/Management/Training/TrainingListView.vue";
+import TrainingCreateView from "@/views/Management/Training/TrainingCreateView.vue";
+import TrainingEditView from "@/views/Management/Training/TrainingEditView.vue";
 import CourseListView from "@/views/Management/Course/CourseListView.vue";
 import CourseEditView from "@/views/Management/Course/CourseEditView.vue";
 import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
+import TimeslotListView from "@/views/Management/Timeslot/TimeslotListView.vue";
+import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.vue";
+import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
 import MessagesView from "@/views/MessagesView.vue";
 
 const router = createRouter({
@@ -69,6 +75,21 @@ const router = createRouter({
             component: CategoryEditView
         },
         {
+            path: '/gestion/formations',
+            name: 'trainings-list',
+            component: TrainingListView
+        },
+        {
+            path: '/gestion/formations/ajouter',
+            name: 'trainings-create',
+            component: TrainingCreateView
+        },
+        {
+            path: '/gestion/formations/:id/modifier',
+            name: 'trainings-edit',
+            component: TrainingEditView
+        },
+        {
             path: '/gestion/cursus',
             name: 'courses-list',
             component: CourseListView
@@ -82,7 +103,22 @@ const router = createRouter({
             path: '/gestion/cursus/:id/modifier',
             name: 'courses-edit',
             component: CourseEditView
-        }
+        },
+        {
+            path: '/gestion/creneaux',
+            name: 'timeslots-list',
+            component: TimeslotListView
+        },
+        {
+            path: '/gestion/creneaux/ajouter',
+            name: 'timeslots-create',
+            component: TimeslotCreateView
+        },
+        {
+            path: '/gestion/creneaux/:id/modifier',
+            name: 'timeslots-edit',
+            component: TimeslotEditView
+        },
     ]
 })
 
