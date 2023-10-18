@@ -11,11 +11,17 @@ onMounted(async () => {
   await promotionStore.fetchPromotions()
 })
 
-const drawer = ref(null)
-const selectedPromotion = ref({})
-function selectPromotion(promotion) {
+const showDrawer = ref(false)
+const selectedPromotion = ref(null)
+
+const openDrawer = (promotion) => {
   selectedPromotion.value = promotion
-  drawer.value.toggle()
+  showDrawer.value = true
+}
+
+const closeDraw = () => {
+  selectedPromotion.value = null
+  showDrawer.value = false
 }
 </script>
 
@@ -60,18 +66,18 @@ function selectPromotion(promotion) {
             {{ getFrenchDate(promotion.starts_at) }} - {{ getFrenchDate(promotion.ends_at) }}
           </td>
           <td class="n-table-align-left">
-            <nord-stack direction="horizontal" justify-content="space-around" align-items="center" gap="s">
+            <nord-stack align-items="center" direction="horizontal" gap="s" justify-content="space-around">
               {{ promotion.learners.length }}
             </nord-stack>
           </td>
           <td>
-            {{ promotion?.city?.name ?? '-'}}
+            {{ promotion?.city?.name ?? '-' }}
           </td>
           <td class="n-table-align-right">
             <nord-stack direction="horizontal" justify-content="end">
-              <nord-button @click="selectPromotion(promotion)" size="s" variant="primary">
+              <nord-button size="s" variant="primary" @click="openDrawer(promotion)">
                 <nord-icon slot="start" name="user-multiple"/>
-                Effectif
+                Voir l'effectif
               </nord-button>
 
               <RouterLink :to="`/gestion/promotions/${promotion.id}/modifier`">
@@ -87,7 +93,8 @@ function selectPromotion(promotion) {
       </table>
     </nord-table>
   </nord-card>
-  <PromotionLeanersDrawer ref="drawer" :promotion="selectedPromotion"/>
+
+  <PromotionLeanersDrawer v-if="showDrawer" :promotion="selectedPromotion" @click="closeDraw"/>
 </template>
 
 <style scoped>
