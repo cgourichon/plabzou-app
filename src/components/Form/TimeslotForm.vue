@@ -166,7 +166,7 @@ onMounted(async () => {
             track-by="user_id"
         >
           <template #noResult>Pas de formateurs correspondants</template>
-          <template #noOptions>Pas de formateurs...</template>
+          <template #noOptions>Choisissez une formation</template>
         </multi-select>
         <div
             v-if="applicationStore.errors?.teachers"
