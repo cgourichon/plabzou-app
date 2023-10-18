@@ -8,8 +8,8 @@ export const useTeacherStore = defineStore('teacher', {
         teacher_statuses: [],
     }),
     actions: {
-        async fetchTeachers() {
-            const response = await axiosClient.get('/teachers')
+        async fetchTeachers(parameters = null) {
+            const response = await axiosClient.get('/teachers', {params: parameters})
             if (response) this.teachers = response.data.data
         },
         async fetchTeacherStatuses() {
