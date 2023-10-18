@@ -77,18 +77,22 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'timeslots-list'})
 }
 
-const fetchTeachers = async () => {
+const fetchTeachersAndLearners = async () => {
   teacherStore.resetTeachers()
-  if (selectedTraining.value) await teacherStore.fetchTeachers({training: selectedTraining.value.id})
+  learnerStore.resetLearners()
+
+  if (selectedTraining.value) {
+    await teacherStore.fetchTeachers({training: selectedTraining.value.id})
+    await learnerStore.fetchLearners({training: selectedTraining.value.id})
+  }
 }
 
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
-  await learnerStore.fetchLearners()
 })
 
-watch(() => selectedTraining.value, fetchTeachers)
+watch(() => selectedTraining.value, fetchTeachersAndLearners)
 </script>
 
 <template>
@@ -173,7 +177,14 @@ watch(() => selectedTraining.value, fetchTeachers)
             track-by="user_id"
         >
           <template #noResult>Pas d'apprenants correspondants</template>
-          <template #noOptions>Pas d'apprenants...</template>
+          <template #noOptions>
+            <span v-if="selectedTraining">
+              Aucun apprenants trouvés
+            </span>
+            <span v-else>
+              Choisissez une formation
+            </span>
+          </template>
         </multi-select>
         <div
             v-if="applicationStore.errors?.learners"
