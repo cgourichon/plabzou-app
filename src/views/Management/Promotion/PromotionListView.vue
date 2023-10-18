@@ -26,6 +26,16 @@ const getLearnersLabel = (learners) => learners.length > 1 ? 'apprenants' : 'app
     {{ this.selectedPromotion }}
 
     <h2 slot="header">Liste des promotions</h2>
+
+    <div slot="header-end">
+      <RouterLink to="/gestion/promotions/ajouter">
+        <nord-button size="s" variant="primary">
+          <nord-icon slot="start" name="interface-add"/>
+          Ajouter une promotion
+        </nord-button>
+      </RouterLink>
+    </div>
+
     <nord-table striped>
       <table>
         <thead>
