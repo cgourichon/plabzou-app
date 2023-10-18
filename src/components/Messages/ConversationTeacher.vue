@@ -8,16 +8,16 @@ const authStore = useAuthStore();
 </script>
 <template>
     <nord-card padding="m">
-        <template v-for="(conversation, index) in authStore.authenticatedUser.conversations"
-                  :key="index">
-            <h2 slot="header" class="n-margin-be-s">
-                Echange avec le service planning
-            </h2>
-            <MessageList :conversation="conversation"/>
-            <div slot="footer">
-                <MessageForm :conversation="conversation"/>
-            </div>
+        <h2 slot="header" class="n-margin-be-s">
+            Echange avec le service planning
+        </h2>
+        <template v-if="authStore.authenticatedUser.conversations[0]">
+            <MessageList :conversation="authStore.authenticatedUser.conversations[0]"/>
         </template>
+        <div v-else>Pas encore de messages échangés avec l'administration, <br>Démarrez la conversation :-)</div>
+        <div slot="footer">
+            <MessageForm :conversation="authStore.authenticatedUser.conversations[0]"/>
+        </div>
     </nord-card>
 </template>
 
