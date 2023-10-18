@@ -21,7 +21,7 @@ const close = function() {
   <nord-layout>
     <nord-drawer slot="drawer" v-if="isOpen">
       <nord-header slot="header">
-        <h3 class="n-typescale-l n-truncate">Promotion {{ promotion?.name }} </h3>
+        <h3 class="n-typescale-l n-truncate">Promo. {{ promotion?.name }} </h3>
         <nord-button slot="end" @click="close" id="close" variant="plain" aria-describedby="close-sidebar" size="s">
           <nord-icon name="interface-close" size="s"></nord-icon>
         </nord-button>
@@ -33,7 +33,7 @@ const close = function() {
         <nord-stack direction="vertical">
           <nord-stack direction="horizontal" align-items="center" v-for="learner in promotion?.learners" :key="learner.id">
             <nord-avatar size="l"/>
-            <div>{{ learner?.user.first_name }} {{ learner?.user.last_name }} </div>
+            <div>{{ learner?.full_name }} </div>
           </nord-stack>
         </nord-stack>
       </div>

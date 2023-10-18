@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {usePromotionStore} from "@/stores/promotion.store";
-import {getFrenchDate} from "@/utils/date"
+import {getFrenchDate} from "@/utils/dayjs"
 import PromotionLeanersDrawer from "@/components/Drawer/PromotionLeanersDrawer.vue";
 
 const promotionStore = usePromotionStore()
@@ -17,14 +17,10 @@ function selectPromotion(promotion) {
   selectedPromotion.value = promotion
   drawer.value.toggle()
 }
-
-const getLearnersLabel = (learners) => learners.length > 1 ? 'apprenants' : 'apprenant'
 </script>
 
 <template>
   <nord-card>
-    {{ this.selectedPromotion }}
-
     <h2 slot="header">Liste des promotions</h2>
 
     <div slot="header-end">
@@ -44,7 +40,7 @@ const getLearnersLabel = (learners) => learners.length > 1 ? 'apprenants' : 'app
           <th>Nom</th>
           <th>Cursus suivi</th>
           <th>Période de formation</th>
-          <th>Effectif</th>
+          <th>Apprenants</th>
           <th>Ville de rattachement</th>
           <th class="n-table-align-right">Actions</th>
         </tr>
@@ -65,17 +61,26 @@ const getLearnersLabel = (learners) => learners.length > 1 ? 'apprenants' : 'app
           </td>
           <td class="n-table-align-left">
             <nord-stack direction="horizontal" justify-content="space-around" align-items="center" gap="s">
-              {{ promotion.learners.length }} {{ getLearnersLabel(promotion.learners)}}
-              <nord-button @click="selectPromotion(promotion)" size="s" variant="primary">
-                <nord-icon slot="start" name="user-multiple"/>
-              </nord-button>
+              {{ promotion.learners.length }}
             </nord-stack>
           </td>
           <td>
             {{ promotion?.city?.name ?? '-'}}
           </td>
           <td class="n-table-align-right">
+            <nord-stack direction="horizontal" justify-content="end">
+              <nord-button @click="selectPromotion(promotion)" size="s" variant="primary">
+                <nord-icon slot="start" name="user-multiple"/>
+                Effectif
+              </nord-button>
 
+              <RouterLink :to="`/gestion/promotions/${promotion.id}/modifier`">
+                <nord-button size="s" variant="primary">
+                  <nord-icon slot="start" name="interface-edit"/>
+                  Modifier
+                </nord-button>
+              </RouterLink>
+            </nord-stack>
           </td>
         </tr>
         </tbody>
