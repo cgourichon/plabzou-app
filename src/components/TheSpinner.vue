@@ -3,16 +3,33 @@ import pbzLogo from "@/assets/images/pbz-logo.png";
 </script>
 
 <template>
-  <nord-stack align-items="center" justify-content="center" gap="s">
-    <img :src="pbzLogo" alt="PBZ Abeille" class="bee"/>
-    <div class="loading-text">
-      <p class="n-margin-ie-s">Chargement</p>
-      <span>.</span><span>.</span><span>.</span>
-    </div>
-  </nord-stack>
+  <div class="overlay">
+    <nord-stack align-items="center" gap="s" justify-content="center">
+      <img :src="pbzLogo" alt="PBZ Abeille" class="bee"/>
+      <div class="loading-text">
+        <p class="n-margin-ie-s">Chargement</p>
+        <span>.</span><span>.</span><span>.</span>
+      </div>
+    </nord-stack>
+  </div>
 </template>
 
 <style scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(246, 248, 248, 0.5);
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
 .bee {
   max-width: 100px;
   animation: fly 1s infinite alternate;
