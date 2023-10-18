@@ -16,7 +16,7 @@ const applicationStore = useApplicationStore()
 
     <nord-stack>
       <TheSpinner v-if="applicationStore.loading"/>
-      <RouterView v-else/>
+      <RouterView/>
     </nord-stack>
 
     <TheToastGroup/>

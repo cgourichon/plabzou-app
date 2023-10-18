@@ -10,7 +10,7 @@ axiosClient.interceptors.request.use(config => {
     const authStore = useAuthStore()
     const applicationStore = useApplicationStore()
 
-    // applicationStore.loading = true // Bug: Infinite loop
+    applicationStore.loading = true
 
     if (authStore.token) {
         config.headers['Authorization'] = authStore.token

@@ -5,10 +5,9 @@ import {useRoomStore} from "@/stores/room.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
-import {useUserStore} from "@/stores/user.store";
 
 const props = defineProps({
   timeslot: {
@@ -20,30 +19,36 @@ const props = defineProps({
 const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
-const userStore = useUserStore()
 const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
 
+const selectedTraining = ref(null)
+const selectedRoom = ref(null)
 const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
+const filterLearnersByTraining = ref(true)
 
 const form = computed(() => {
+  selectedTraining.value = props.timeslot?.training ?? ''
+  selectedRoom.value = props.timeslot?.room ?? ''
   selectedLearners.value = props.timeslot?.learners ?? []
   selectedTeachers.value = props.timeslot?.teachers ?? []
 
   return {
-    training: props.timeslot?.training_id ?? '',
-    room: props.timeslot?.room_id ?? '',
+    training: '',
+    room: '',
     starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
     ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
     is_validated: props.timeslot?.is_validated ?? '',
-    learners: props.timeslot?.learners ?? [],
-    teachers: props.timeslot?.teachers ?? [],
+    learners: [],
+    teachers: [],
   }
 })
 
 const store = async () => {
+  form.value.training = selectedTraining.value.id
+  form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
 
@@ -53,6 +58,8 @@ const store = async () => {
 }
 
 const update = async () => {
+  form.value.training = selectedTraining.value.id
+  form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
 
@@ -71,108 +78,162 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'timeslots-list'})
 }
 
+const checkFilterLearnersByTraining = async () => {
+  await fetchTeachersAndLearners()
+}
+
+const fetchTeachersAndLearners = async () => {
+  teacherStore.resetTeachers()
+  learnerStore.resetLearners()
+
+  if (selectedTraining.value) {
+    await teacherStore.fetchTeachers({training: selectedTraining.value.id})
+    filterLearnersByTraining.value
+        ? await learnerStore.fetchLearners({training: selectedTraining.value.id})
+        : await learnerStore.fetchLearners()
+  }
+}
+
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
-  await learnerStore.fetchLearners()
-  await teacherStore.fetchTeachers()
 })
+
+watch(() => selectedTraining.value, fetchTeachersAndLearners)
 </script>
 
 <template>
   <form @submit.prevent="!!timeslot ? update() : store()">
     <nord-stack>
-      <nord-select
-          v-model="form.training"
-          :error="applicationStore.errors?.training"
-          expand
-          label="Formation"
-      >
-        <option :value="null" selected>Choisir une formation</option>
-        <option v-for="training in trainingStore.trainings" :value="training.id">{{ training.name }}</option>
-      </nord-select>
-
-      <nord-select
-          v-model="form.room"
-          :error="applicationStore.errors?.room"
-          expand
-          label="Salle"
-      >
-        <option :value="null" selected>Choisir une salle</option>
-        <option v-for="room in roomStore.rooms" :value="room.id">{{ room.name }}</option>
-      </nord-select>
-
-      <nord-input
-          v-model="form.starts_at"
-          :error="applicationStore.errors?.starts_at"
-          expand
-          label="Date de début"
-          type="datetime-local"
-      />
-
-      <nord-input
-          v-model="form.ends_at"
-          :error="applicationStore.errors?.ends_at"
-          expand
-          label="Date de fin"
-          type="datetime-local"
-      />
-
       <div class="n-stack n-gap-s">
-        <label class="n-label">Apprenants</label>
+        <label class="n-label">Formation</label>
         <multi-select
-            v-model="selectedLearners"
-            :allow-empty="true"
-            :clear-on-select="true"
-            :close-on-select="false"
-            :hide-selected="true"
-            :multiple="true"
-            :options="learnerStore.learners"
-            :select-label="null"
+            v-model="selectedTraining"
+            :options="trainingStore.trainings"
             :show-no-results="true"
-            label="full_name"
-            placeholder="Ajouter des apprenants"
-            track-by="user_id"
+            label="name"
+            placeholder="Sélectionner une formation"
+            track-by="id"
         >
-          <template #noResult>Pas d'apprenants correspondants</template>
-          <template #noOptions>Pas d'apprenants...</template>
+          <template #noResult>Pas de formations correspondantes</template>
+          <template #noOptions>Pas de formations...</template>
         </multi-select>
         <div
-            v-if="applicationStore.errors?.learners"
+            v-if="applicationStore.errors?.training"
             class="n-error"
             role="alert"
         >
-          {{ applicationStore.errors?.learners[0] }}
+          {{ applicationStore.errors?.training[0] }}
         </div>
       </div>
 
       <div class="n-stack n-gap-s">
-        <label class="n-label">Formateurs</label>
+        <label class="n-label">Salle</label>
         <multi-select
-            v-model="selectedTeachers"
-            :allow-empty="true"
-            :clear-on-select="true"
-            :close-on-select="false"
-            :hide-selected="true"
-            :multiple="true"
-            :options="teacherStore.teachers"
-            :select-label="null"
+            v-model="selectedRoom"
+            :options="roomStore.rooms"
             :show-no-results="true"
-            label="full_name"
-            placeholder="Ajouter des formateurs"
-            track-by="user_id"
+            label="name"
+            placeholder="Sélectionner une salle"
+            track-by="id"
         >
-          <template #noResult>Pas de formateurs correspondants</template>
-          <template #noOptions>Pas de formateurs...</template>
+          <template #noResult>Pas de salles correspondantes</template>
+          <template #noOptions>Pas de salles...</template>
         </multi-select>
         <div
-            v-if="applicationStore.errors?.teachers"
+            v-if="applicationStore.errors?.room"
             class="n-error"
             role="alert"
         >
-          {{ applicationStore.errors?.teachers[0] }}
+          {{ applicationStore.errors?.room[0] }}
         </div>
       </div>
+
+      <nord-stack direction="horizontal">
+        <nord-input
+            v-model="form.starts_at"
+            :error="applicationStore.errors?.starts_at"
+            expand
+            label="Date de début"
+            type="datetime-local"
+        />
+
+        <nord-input
+            v-model="form.ends_at"
+            :error="applicationStore.errors?.ends_at"
+            expand
+            label="Date de fin"
+            type="datetime-local"
+        />
+      </nord-stack>
+
+      <template v-if="selectedTraining">
+        <div class="n-stack n-gap-s">
+          <label class="n-label">Apprenants</label>
+          <multi-select
+              v-model="selectedLearners"
+              :allow-empty="true"
+              :clear-on-select="true"
+              :close-on-select="false"
+              :hide-selected="true"
+              :multiple="true"
+              :options="learnerStore.learners"
+              :select-label="null"
+              :show-no-results="true"
+              label="full_name"
+              placeholder="Ajouter des apprenants"
+              track-by="user_id"
+          >
+            <template #noResult>Pas d'apprenants correspondants</template>
+            <template #noOptions>Aucun apprenants trouvés</template>
+          </multi-select>
+          <div>
+            <nord-toggle
+                v-model="filterLearnersByTraining"
+                :checked="filterLearnersByTraining"
+                label="Filtrer les apprenants par formation"
+                size="s"
+                type="checkbox"
+                @change="checkFilterLearnersByTraining"
+            />
+          </div>
+          <div
+              v-if="applicationStore.errors?.learners"
+              class="n-error"
+              role="alert"
+          >
+            {{ applicationStore.errors?.learners[0] }}
+          </div>
+        </div>
+
+        <div class="n-stack n-gap-s">
+          <label class="n-label">Formateurs</label>
+          <multi-select
+              v-model="selectedTeachers"
+              :allow-empty="true"
+              :clear-on-select="true"
+              :close-on-select="false"
+              :hide-selected="true"
+              :multiple="true"
+              :options="teacherStore.teachers"
+              :select-label="null"
+              :show-no-results="true"
+              label="full_name"
+              placeholder="Ajouter des formateurs"
+              track-by="user_id"
+          >
+            <template #noResult>Pas de formateurs correspondants</template>
+            <template #noOptions>Aucun formateurs trouvés</template>
+          </multi-select>
+          <div
+              v-if="applicationStore.errors?.teachers"
+              class="n-error"
+              role="alert"
+          >
+            {{ applicationStore.errors?.teachers[0] }}
+          </div>
+        </div>
+      </template>
 
       <nord-checkbox
           v-model="form.is_validated"
