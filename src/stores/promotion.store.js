@@ -16,10 +16,13 @@ export const usePromotionStore = defineStore('promotion', {
             if (response) this.promotion = response.data.data
         },
         async createPromotion(promotion) {
-            await axiosClient.post('/promotions', promotion)
+            await axiosClient.post(`/promotions`, promotion)
         },
         async updatePromotion(id, promotion) {
             await axiosClient.put(`/promotions/${id}`, promotion)
+        },
+        async deletePromotion(id) {
+            await axiosClient.delete(`/promotions/${id}`)
         },
         resetPromotions() {
             this.promotions = []

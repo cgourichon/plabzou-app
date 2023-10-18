@@ -60,6 +60,12 @@ const update = async () => {
   await redirect()
 }
 
+const destroy = async () => {
+  applicationStore.clearErrors()
+  await promotionStore.deletePromotion(props.promotion.id)
+  await redirect()
+}
+
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'promotions-list'})
 }
