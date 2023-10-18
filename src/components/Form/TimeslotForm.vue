@@ -35,7 +35,7 @@ const form = computed(() => {
   selectedTeachers.value = props.timeslot?.teachers ?? []
 
   return {
-    training:  '',
+    training: '',
     room: '',
     starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
     ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
