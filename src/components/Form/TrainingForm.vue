@@ -3,6 +3,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import {useTrainingStore} from "@/stores/training.store";
 import {useCategoryStore} from "@/stores/category.store";
 import {useCourseStore} from "@/stores/course.store";
+import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
 
@@ -18,6 +19,7 @@ const props = defineProps({
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
 const courseStore = useCourseStore()
+const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
 
 const selectedCategories = ref(null)
@@ -71,6 +73,7 @@ const redirect = async () => {
 onMounted(async () => {
   await categoryStore.fetchCategories()
   await courseStore.fetchCourses()
+  await teacherStore.fetchTeachers()
 })
 </script>
 
@@ -131,6 +134,25 @@ onMounted(async () => {
       >
         <template #noResult>Aucun cursus correspondant</template>
         <template #noOptions>Pas de cursus...</template>
+      </multi-select>
+
+      <label class="n-label">Formateurs habilité</label>
+      <multi-select
+          v-model="selectedTeachers"
+          :allow-empty="true"
+          :clear-on-select="true"
+          :close-on-select="false"
+          :hide-selected="true"
+          :multiple="true"
+          :options="teacherStore.teachers"
+          :show-no-results="true"
+          :select-label="null"
+          label="full_name"
+          placeholder="Associer des formateurs à cette formation"
+          track-by="user_id"
+      >
+        <template #noResult>Aucun formateur correspondant</template>
+        <template #noOptions>Pas de formateur...</template>
       </multi-select>
 
       <nord-stack direction="horizontal">
