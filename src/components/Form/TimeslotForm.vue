@@ -5,10 +5,9 @@ import {useRoomStore} from "@/stores/room.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
-import {useUserStore} from "@/stores/user.store";
 
 const props = defineProps({
   timeslot: {
@@ -20,7 +19,6 @@ const props = defineProps({
 const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
-const userStore = useUserStore()
 const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
@@ -71,11 +69,15 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'timeslots-list'})
 }
 
+const fetchTeachers = async () => {
+  teacherStore.resetTeachers()
+  if (form.value.training) await teacherStore.fetchTeachers({training: form.value.training})
+}
+
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
   await learnerStore.fetchLearners()
-  await teacherStore.fetchTeachers()
 })
 </script>
 
@@ -87,6 +89,7 @@ onMounted(async () => {
           :error="applicationStore.errors?.training"
           expand
           label="Formation"
+          @change="fetchTeachers"
       >
         <option value="" selected>Choisir une formation</option>
         <option v-for="training in trainingStore.trainings" :value="training.id">{{ training.name }}</option>
@@ -163,7 +166,7 @@ onMounted(async () => {
             track-by="user_id"
         >
           <template #noResult>Pas de formateurs correspondants</template>
-          <template #noOptions>Pas de formateurs...</template>
+          <template #noOptions>Choisissez une formation</template>
         </multi-select>
         <div
             v-if="applicationStore.errors?.teachers"
