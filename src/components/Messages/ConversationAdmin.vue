@@ -4,15 +4,22 @@ import MessageList from "@/components/Messages/MessageList.vue";
 import {onBeforeUpdate,ref} from "vue";
 import MessageForm from "@/components/Messages/MessageForm.vue";
 import ConversationItem from "@/components/Messages/ConversationItem.vue";
+import ConversationModal from "@/components/Messages/ConversationModal.vue";
 
 const authStore = useAuthStore();
 const actualConversation = ref(null)
-
+const conversationsNumber = ref(authStore.authenticatedUser.conversations.length);
 const changeConversation = conversation => actualConversation.value = conversation;
+const findNewConversation = () => authStore.authenticatedUser?.conversations.find(conversation => conversation.id === actualConversation.value?.id);
 
 onBeforeUpdate(() => {
-    const newConv = authStore.authenticatedUser?.conversations.find(conversation => conversation.id === actualConversation.value?.id);
-    changeConversation(newConv);
+    changeConversation(findNewConversation());
+
+    //Une nouvelle conversation a été créée, on définit la conversation actuelle comme celle-ci
+    if (authStore.authenticatedUser.conversations.length === conversationsNumber.value + 1) {
+        actualConversation.value = authStore.authenticatedUser.conversations[0];
+        conversationsNumber.value++;
+    }
 })
 
 </script>
@@ -23,11 +30,9 @@ onBeforeUpdate(() => {
             <nord-card padding="m">
                 <h2 slot="header">Conversations</h2>
                 <div slot="header-end">
-                    <button type="button" class="n-padding-s">
-                        <nord-icon size="s" name="interface-edit-2"></nord-icon>
-                    </button>
+                    <ConversationModal/>
                 </div>
-                <section id="conversation-list">
+                <section id="conversation-list" class="">
                     <div v-for="conversation in authStore.authenticatedUser.conversations"
                          :key="conversation.id"
                          class="n-margin-be-s"
@@ -39,10 +44,19 @@ onBeforeUpdate(() => {
         </div>
         <nord-card>
             <section v-if="actualConversation"
-                     class="n-margin-bs-l"
                      :id="`conversation-details-${actualConversation.id}`">
+                <div class="n-padding-be-m n-font-weight-heading">
+                    {{actualConversation.teacher.full_name}}
+                </div>
+                <div class="n-padding-be-s">
+                    <nord-divider></nord-divider>
+                </div>
                 <MessageList :conversation="actualConversation"></MessageList>
                 <MessageForm :conversation="actualConversation"/>
+            </section>
+            <section v-else class="n-align-center n-margin-b-l">
+                <p>Cliquez sur un message de la liste pour l'afficher</p>
+                <p>ou démarrer une nouvelle conversation</p>
             </section>
         </nord-card>
     </nord-stack>
@@ -62,5 +76,11 @@ button {
 button:hover {
     background: #3559c7;
     color: white;
+}
+
+#conversation-list {
+    overflow-y: scroll;
+    //height: 40vh;
+    max-height: 60vh;
 }
 </style>

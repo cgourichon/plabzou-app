@@ -20,7 +20,7 @@ const latestMessage = conversation => {
 
 <template>
     <div :class="props.actualConversation?.id === props.conversation.id ? 'n-color-status-info-weak n-padding-s n-margin-be-s  item-list' : 'n-margin-be-s n-padding-s item-list'">
-        <div>{{props.conversation.name}}</div>
+        <div>{{props.conversation.teacher.full_name}}</div>
         <nord-stack direction="horizontal" justify-content="space-between" align-items="center">
             <div class="n-font-size-s n-color-text-weaker">{{latestMessage(props.conversation)?.message}}</div>
             <div class="n-font-size-xs n-color-text-weaker">{{dayjs(latestMessage(props.conversation)?.created_at).format('DD/MM')}}</div>
