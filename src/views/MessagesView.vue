@@ -2,8 +2,20 @@
 import {useAuthStore} from "@/stores/auth.store";
 import ConversationTeacher from "@/components/Messages/ConversationTeacher.vue";
 import ConversationAdmin from "@/components/Messages/ConversationAdmin.vue";
+import {onMounted, onUnmounted} from "vue";
 
 const authStore = useAuthStore();
+
+const startInterval = setInterval(() => {
+    authStore.fetchAuthenticatedUser();
+}, 10000)
+
+const stopInterval = startInterval => {
+    clearInterval(startInterval);
+}
+
+onMounted(() => startInterval);
+onUnmounted(() => stopInterval(startInterval));
 
 </script>
 
