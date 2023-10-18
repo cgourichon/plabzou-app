@@ -5,10 +5,9 @@ import {useRoomStore} from "@/stores/room.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
-import {useUserStore} from "@/stores/user.store";
 
 const props = defineProps({
   timeslot: {
@@ -20,7 +19,6 @@ const props = defineProps({
 const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
-const userStore = useUserStore()
 const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
@@ -42,6 +40,8 @@ const form = computed(() => {
     teachers: props.timeslot?.teachers ?? [],
   }
 })
+
+const isLoadingTeachers = ref(null)
 
 const store = async () => {
   form.value.learners = selectedLearners.value
@@ -71,11 +71,25 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'timeslots-list'})
 }
 
+const fetchTeachers = async () => {
+  isLoadingTeachers.value = true;
+  teacherStore.resetTeachers()
+  if (form.value.training) {
+    teacherStore.resetTeachers()
+    await teacherStore.fetchTeachers({training: form.value.training})
+  } else {
+    await teacherStore.fetchTeachers()
+  }
+  isLoadingTeachers.value = false;
+}
+
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
   await learnerStore.fetchLearners()
-  await teacherStore.fetchTeachers()
+
+  if (props.timeslot?.training_id) await teacherStore.fetchTeachers({training: props.timeslot.training_id})
+  else await teacherStore.fetchTeachers()
 })
 </script>
 
@@ -87,8 +101,9 @@ onMounted(async () => {
           :error="applicationStore.errors?.training"
           expand
           label="Formation"
+          @change="fetchTeachers"
       >
-        <option :value="null" selected>Choisir une formation</option>
+        <option value="" selected>Choisir une formation</option>
         <option v-for="training in trainingStore.trainings" :value="training.id">{{ training.name }}</option>
       </nord-select>
 
@@ -158,6 +173,7 @@ onMounted(async () => {
             :options="teacherStore.teachers"
             :select-label="null"
             :show-no-results="true"
+            :loading="isLoadingTeachers"
             label="full_name"
             placeholder="Ajouter des formateurs"
             track-by="user_id"
