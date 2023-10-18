@@ -7,6 +7,10 @@ import "./assets/styles/multiselect.css"
 import {createApp} from "vue"
 import {createPinia} from "pinia"
 import {Multiselect} from "vue-multiselect"
+//import {Calendar} from "@fullcalendar/core"
+//import frLocale from "@fullcalendar/core/locales/fr"
+
+//Calendar.locale = frLocale
 
 import App from './App.vue'
 import router from './router'
