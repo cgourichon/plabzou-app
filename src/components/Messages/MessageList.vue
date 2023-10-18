@@ -1,6 +1,6 @@
 <script setup>
 import MessageItem from "@/components/Messages/MessageItem.vue";
-import {onMounted, onUpdated, ref} from "vue";
+import {computed, onMounted, onUpdated, ref} from "vue";
 
 const props = defineProps({
     conversation: {
@@ -9,6 +9,7 @@ const props = defineProps({
     }
 })
 
+const conversation = computed(() => props.conversation);
 const divMessages = ref(null)
 
 const scrollDown = () => {
@@ -27,11 +28,16 @@ onUpdated(() => {
 </script>
 
 <template>
-    <div ref="divMessages" class="card-message-size n-padding-ie-s">
-        <div v-for="message in props.conversation.messages"
-             :key="message.id">
-            <MessageItem :name="props.conversation.name" :message="message"/>
-        </div>
+    <div v-if="conversation?.messages"
+         ref="divMessages"
+         class="card-message-size n-padding-ie-s">
+            <div v-for="message in conversation?.messages"
+                 :key="message.id">
+                <MessageItem :name="conversation.name" :message="message"/>
+            </div>
+    </div>
+    <div v-else>
+        Pas de message à afficher pour le moment :-)
     </div>
 </template>
 
