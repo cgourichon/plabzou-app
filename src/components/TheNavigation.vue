@@ -76,14 +76,9 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
-            <RouterLink to="/gestion/cursus">
-                <nord-nav-item :active="$route.path.startsWith('/gestion/cursus')" icon="interface-grid">
-                    Cursus
-                </nord-nav-item>
-            </RouterLink>
-        </nord-nav-group>
 
-        <nord-nav-group heading="Communication">
+
+        <nord-nav-group heading="Communication" v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee">
             <RouterLink to="/messagerie">
                 <nord-nav-item :active="$route.path === '/messagerie'" icon="generic-mail">
                     Messages
