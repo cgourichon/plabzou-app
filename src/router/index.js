@@ -16,6 +16,9 @@ import TrainingEditView from "@/views/Management/Training/TrainingEditView.vue";
 import CourseListView from "@/views/Management/Course/CourseListView.vue";
 import CourseEditView from "@/views/Management/Course/CourseEditView.vue";
 import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
+import TimeslotListView from "@/views/Management/Timeslot/TimeslotListView.vue";
+import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.vue";
+import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,7 +97,22 @@ const router = createRouter({
             path: '/gestion/cursus/:id/modifier',
             name: 'courses-edit',
             component: CourseEditView
-        }
+        },
+        {
+            path: '/gestion/creneaux',
+            name: 'timeslots-list',
+            component: TimeslotListView
+        },
+        {
+            path: '/gestion/creneaux/ajouter',
+            name: 'timeslots-create',
+            component: TimeslotCreateView
+        },
+        {
+            path: '/gestion/creneaux/:id/modifier',
+            name: 'timeslots-edit',
+            component: TimeslotEditView
+        },
     ]
 })
 

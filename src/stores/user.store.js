@@ -5,6 +5,8 @@ export const useUserStore = defineStore('user', {
     state: () => ({
         users: [],
         user: null,
+        learners: [],
+        teachers: [],
         teacher_statuses: [],
         learner_modes: []
     }),
@@ -16,6 +18,14 @@ export const useUserStore = defineStore('user', {
         async fetchUser(id) {
             const response = await axiosClient.get(`/users/${id}`)
             if (response) this.user = response.data.data
+        },
+        async fetchLearners() {
+            const response = await axiosClient.get('/learners')
+            if (response) this.learners = response.data.data
+        },
+        async fetchTeachers() {
+            const response = await axiosClient.get('/teachers')
+            if (response) this.teachers = response.data.data
         },
         async fetchTeacherStatuses() {
             const response = await axiosClient.get('/statuses')
