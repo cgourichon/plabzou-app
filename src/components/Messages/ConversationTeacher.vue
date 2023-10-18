@@ -2,7 +2,6 @@
 import {useAuthStore} from "@/stores/auth.store";
 import MessageList from "@/components/Messages/MessageList.vue";
 import MessageForm from "@/components/Messages/MessageForm.vue";
-import ConversationTitle from "@/components/Messages/ConversationTitle.vue";
 
 const authStore = useAuthStore();
 
@@ -16,7 +15,7 @@ const authStore = useAuthStore();
             </h2>
             <MessageList :conversation="conversation"/>
             <div slot="footer">
-                <MessageForm :conversation-id="conversation.id"/>
+                <MessageForm :conversation="conversation"/>
             </div>
         </template>
     </nord-card>
