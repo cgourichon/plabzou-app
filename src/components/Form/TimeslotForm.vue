@@ -2,6 +2,8 @@
 import {useApplicationStore} from "@/stores/application.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import {useRoomStore} from "@/stores/room.store";
+import {useLearnerStore} from "@/stores/learner.store";
+import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
@@ -19,6 +21,8 @@ const timeslotStore = useTimeslotStore()
 const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
 const userStore = useUserStore()
+const learnerStore = useLearnerStore()
+const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
 
 const selectedLearners = ref(null)
@@ -70,8 +74,8 @@ const redirect = async () => {
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
-  await userStore.fetchLearners()
-  await userStore.fetchTeachers()
+  await learnerStore.fetchLearners()
+  await teacherStore.fetchTeachers()
 })
 </script>
 
@@ -123,7 +127,7 @@ onMounted(async () => {
             :close-on-select="false"
             :hide-selected="true"
             :multiple="true"
-            :options="userStore.learners"
+            :options="learnerStore.learners"
             :select-label="null"
             :show-no-results="true"
             label="full_name"
@@ -151,7 +155,7 @@ onMounted(async () => {
             :close-on-select="false"
             :hide-selected="true"
             :multiple="true"
-            :options="userStore.teachers"
+            :options="teacherStore.teachers"
             :select-label="null"
             :show-no-results="true"
             label="full_name"
