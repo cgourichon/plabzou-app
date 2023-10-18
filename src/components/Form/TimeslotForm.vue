@@ -4,6 +4,7 @@ import {useTimeslotStore} from "@/stores/timeslot.store";
 import {useRoomStore} from "@/stores/room.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useTeacherStore} from "@/stores/teacher.store";
+import {usePromotionStore} from "@/stores/promotion.store";
 import router from "@/router";
 import {computed, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
@@ -21,6 +22,7 @@ const roomStore = useRoomStore()
 const trainingStore = useTrainingStore()
 const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
+const promotionStore = usePromotionStore()
 const applicationStore = useApplicationStore()
 
 const selectedTraining = ref(null)
@@ -28,6 +30,8 @@ const selectedRoom = ref(null)
 const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 const filterLearnersByTraining = ref(true)
+
+const selectedPromotions = ref(null)
 
 const form = computed(() => {
   selectedTraining.value = props.timeslot?.training ?? ''
@@ -79,27 +83,64 @@ const redirect = async () => {
 }
 
 const checkFilterLearnersByTraining = async () => {
-  await fetchTeachersAndLearners()
+  await fetchDependencies()
 }
 
-const fetchTeachersAndLearners = async () => {
+const fetchDependencies = async () => {
   teacherStore.resetTeachers()
   learnerStore.resetLearners()
-
+  promotionStore.resetPromotions()
   if (selectedTraining.value) {
     await teacherStore.fetchTeachers({training: selectedTraining.value.id})
     filterLearnersByTraining.value
         ? await learnerStore.fetchLearners({training: selectedTraining.value.id})
         : await learnerStore.fetchLearners()
+    await promotionStore.fetchPromotions({training: selectedTraining.value.id})
   }
 }
+
+watch(
+    () => selectedPromotions.value,
+    (newValue, oldValue) => {
+
+      // première promotion de sélectionné
+      if (!oldValue && newValue) {
+
+        const newLearners = newValue.map(promotion => promotion.learners).flat() // apprenants dans la promo qui vient d'être ajouté
+        const diffWithSelected = newLearners.filter(learner => !selectedLearners.value.find(e => e.user_id == learner.user_id)) // si certains ont déjà été manuellement, évite les doublons
+
+        selectedLearners.value = selectedLearners.value.concat(diffWithSelected) // ajout dans la sélection d'apprenants
+
+      } else {
+
+        const oldLearners = oldValue.map(promotion => promotion.learners).flat()
+        const newLearners = newValue.map(promotion => promotion.learners).flat()
+
+        // une promotion a été ajouté
+        if (newValue.length > oldValue.length) {
+          const diff = newLearners.filter(learner => !oldLearners.find(e => e.user_id == learner.user_id)) // différenciation entre les apprenants dans la promo qui vient d'être ajouté et ceux des promo qui était déjà là
+          const diffWithSelected = diff.filter(learner => !selectedLearners.value.find(e => e.user_id == learner.user_id)) // si certains ont déjà été manuellement, évite les doublons
+          selectedLearners.value = selectedLearners.value.concat(diffWithSelected) // ajout dans la sélection d'apprenants
+        }
+
+        // une promotion a été supprimé
+        if (newValue.length < oldValue.length) {
+          const diff = oldLearners.filter(learner => !newLearners.find(e => e.user_id == learner.user_id)) // apprenants dans la promo qui vient d'être enlevé
+          selectedLearners.value = selectedLearners.value.filter(learner => !diff.find(e => e.user_id == learner.user_id)) // suppression de la sélection d'apprenants
+        }
+
+      }
+
+    },
+    {deep: true}
+)
 
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
 })
 
-watch(() => selectedTraining.value, fetchTeachersAndLearners)
+watch(() => selectedTraining.value, fetchDependencies)
 </script>
 
 <template>
@@ -124,6 +165,41 @@ watch(() => selectedTraining.value, fetchTeachersAndLearners)
             role="alert"
         >
           {{ applicationStore.errors?.training[0] }}
+        </div>
+      </div>
+
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Ajouté des promotions</label>
+        <multi-select
+            v-model="selectedPromotions"
+            :allow-empty="true"
+            :clear-on-select="true"
+            :close-on-select="false"
+            :hide-selected="true"
+            :multiple="true"
+            :options="promotionStore.promotions"
+            :select-label="null"
+            :show-no-results="true"
+            label="name"
+            placeholder="Ajouter des promotions"
+            track-by="id"
+        >
+          <template #noResult>Pas de promotions correspondantes</template>
+          <template #noOptions>
+            <span v-if="selectedTraining">
+              Aucune promotions trouvées
+            </span>
+            <span v-else>
+              Choisissez une formation
+            </span>
+          </template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.learners"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.learners[0] }}
         </div>
       </div>
 

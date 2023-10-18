@@ -7,8 +7,8 @@ export const usePromotionStore = defineStore('promotion', {
         promotion: null,
     }),
     actions: {
-        async fetchPromotions() {
-            const response = await axiosClient.get('/promotions')
+        async fetchPromotions(parameters = null) {
+            const response = await axiosClient.get('/promotions', {params: parameters})
             if (response)  this.promotions = response.data.data
         },
         async fetchPromotion(id) {
