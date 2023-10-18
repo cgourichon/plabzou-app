@@ -23,25 +23,31 @@ const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
 const applicationStore = useApplicationStore()
 
+const selectedTraining = ref(null)
+const selectedRoom = ref(null)
 const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 
 const form = computed(() => {
+  selectedTraining.value = props.timeslot?.training ?? ''
+  selectedRoom.value = props.timeslot?.room ?? ''
   selectedLearners.value = props.timeslot?.learners ?? []
   selectedTeachers.value = props.timeslot?.teachers ?? []
 
   return {
-    training: props.timeslot?.training_id ?? '',
-    room: props.timeslot?.room_id ?? '',
+    training: '',
+    room: '',
     starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
     ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
     is_validated: props.timeslot?.is_validated ?? '',
-    learners: props.timeslot?.learners ?? [],
-    teachers: props.timeslot?.teachers ?? [],
+    learners: [],
+    teachers: [],
   }
 })
 
 const store = async () => {
+  form.value.training = selectedTraining.value.id
+  form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
 
@@ -51,6 +57,8 @@ const store = async () => {
 }
 
 const update = async () => {
+  form.value.training = selectedTraining.value.id
+  form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
 
@@ -71,7 +79,7 @@ const redirect = async () => {
 
 const fetchTeachers = async () => {
   teacherStore.resetTeachers()
-  if (form.value.training) await teacherStore.fetchTeachers({training: form.value.training})
+  if (selectedTraining.value) await teacherStore.fetchTeachers({training: selectedTraining.value.id})
 }
 
 onMounted(async () => {
@@ -79,47 +87,74 @@ onMounted(async () => {
   await trainingStore.fetchTrainings()
   await learnerStore.fetchLearners()
 })
+
+watch(() => selectedTraining.value, fetchTeachers)
 </script>
 
 <template>
   <form @submit.prevent="!!timeslot ? update() : store()">
     <nord-stack>
-      <nord-select
-          v-model="form.training"
-          :error="applicationStore.errors?.training"
-          expand
-          label="Formation"
-          @change="fetchTeachers"
-      >
-        <option value="" selected>Choisir une formation</option>
-        <option v-for="training in trainingStore.trainings" :value="training.id">{{ training.name }}</option>
-      </nord-select>
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Formation</label>
+        <multi-select
+            v-model="selectedTraining"
+            :options="trainingStore.trainings"
+            :show-no-results="true"
+            label="name"
+            placeholder="Sélectionner une formation"
+            track-by="id"
+        >
+          <template #noResult>Pas de formations correspondantes</template>
+          <template #noOptions>Pas de formations...</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.training"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.training[0] }}
+        </div>
+      </div>
 
-      <nord-select
-          v-model="form.room"
-          :error="applicationStore.errors?.room"
-          expand
-          label="Salle"
-      >
-        <option value="" selected>Choisir une salle</option>
-        <option v-for="room in roomStore.rooms" :value="room.id">{{ room.name }}</option>
-      </nord-select>
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Salle</label>
+        <multi-select
+            v-model="selectedRoom"
+            :options="roomStore.rooms"
+            :show-no-results="true"
+            label="name"
+            placeholder="Sélectionner une salle"
+            track-by="id"
+        >
+          <template #noResult>Pas de salles correspondantes</template>
+          <template #noOptions>Pas de salles...</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.room"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.room[0] }}
+        </div>
+      </div>
 
-      <nord-input
-          v-model="form.starts_at"
-          :error="applicationStore.errors?.starts_at"
-          expand
-          label="Date de début"
-          type="datetime-local"
-      />
+      <nord-stack direction="horizontal">
+        <nord-input
+            v-model="form.starts_at"
+            :error="applicationStore.errors?.starts_at"
+            expand
+            label="Date de début"
+            type="datetime-local"
+        />
 
-      <nord-input
-          v-model="form.ends_at"
-          :error="applicationStore.errors?.ends_at"
-          expand
-          label="Date de fin"
-          type="datetime-local"
-      />
+        <nord-input
+            v-model="form.ends_at"
+            :error="applicationStore.errors?.ends_at"
+            expand
+            label="Date de fin"
+            type="datetime-local"
+        />
+      </nord-stack>
 
       <div class="n-stack n-gap-s">
         <label class="n-label">Apprenants</label>
@@ -166,7 +201,14 @@ onMounted(async () => {
             track-by="user_id"
         >
           <template #noResult>Pas de formateurs correspondants</template>
-          <template #noOptions>Choisissez une formation</template>
+          <template #noOptions>
+            <span v-if="selectedTraining">
+              Aucun formateurs trouvés
+            </span>
+            <span v-else>
+              Choisissez une formation
+            </span>
+          </template>
         </multi-select>
         <div
             v-if="applicationStore.errors?.teachers"
