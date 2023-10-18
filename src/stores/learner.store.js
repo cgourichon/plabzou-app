@@ -8,8 +8,8 @@ export const useLearnerStore = defineStore('learner', {
         learner_modes: []
     }),
     actions: {
-        async fetchLearners() {
-            const response = await axiosClient.get('/learners')
+        async fetchLearners(parameters = null) {
+            const response = await axiosClient.get('/learners', {params: parameters})
             if (response) this.learners = response.data.data
         },
         async fetchLearnerModes() {
