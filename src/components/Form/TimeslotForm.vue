@@ -98,7 +98,7 @@ onMounted(async () => {
           expand
           label="Salle"
       >
-        <option value="null" selected>Choisir une salle</option>
+        <option value="" selected>Choisir une salle</option>
         <option v-for="room in roomStore.rooms" :value="room.id">{{ room.name }}</option>
       </nord-select>
 
