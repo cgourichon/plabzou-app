@@ -1,0 +1,50 @@
+.multiselect__option--highlight {
+    background: #3559c7;
+    outline: none;
+    color: white;
+}
+
+.multiselect__option--highlight::after {
+    background: #3559c7;
+    color: white;
+}
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.multiselect__option {
+    padding: 8px;
+    min-height: auto;
+}
+
+.multiselect__tags {
+    display: block;
+    background: #fff;
+    padding: 4px 40px 0 4px;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.multiselect__input {
+    padding: 4px 6px;
+}
+
+.multiselect__tag {
+    position: relative;
+    display: inline-block;
+    color: #fff;
+    line-height: 1;
+    background: #3559c7;;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+
+.multiselect__tag-icon::after {
+    color: white;
+}
