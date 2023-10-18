@@ -6,6 +6,7 @@ import {usePromotionStore} from "@/stores/promotion.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useCityStore} from "@/stores/city.store";
+import {getDateWithoutTimeZone} from "@/utils/dayjs";
 
 const props = defineProps({
   promotion: {
@@ -20,15 +21,19 @@ const learnerStore = useLearnerStore()
 const cityStore = useCityStore()
 const applicationStore = useApplicationStore()
 
+const selectedCourse = ref(null)
+const selectedCity = ref(null)
 const selectedLearners = ref(null)
 
 const form = computed(() => {
+  selectedCourse.value = props.promotion?.course_id ?? ''
+  selectedCity.value = props.promotion?.city_id ?? ''
   selectedLearners.value = props.promotion?.learners ?? []
 
   return {
     name: props.promotion?.name ?? null,
-    starts_at: props.promotion?.starts_at ?? null,
-    ends_at: props.promotion?.ends_at ?? null,
+    starts_at: props.promotion?.starts_at ? getDateWithoutTimeZone(props.promotion?.starts_at) : '',
+    ends_at: props.promotion?.ends_at ? getDateWithoutTimeZone(props.promotion?.ends_at) : '',
     course: props.promotion?.course_id ?? '',
     city: props.promotion?.city_id ?? '',
     learners: props.promotion?.learners ?? [],
@@ -36,10 +41,22 @@ const form = computed(() => {
 })
 
 const store = async () => {
+  form.value.course = selectedCourse.value
+  form.value.city = selectedCity.value
   form.value.learners = selectedLearners.value
 
   applicationStore.clearErrors()
   await promotionStore.createPromotion(form.value)
+  await redirect()
+}
+
+const update = async () => {
+  form.value.course = selectedCourse.value
+  form.value.city = selectedCity.value
+  form.value.learners = selectedLearners.value
+
+  applicationStore.clearErrors()
+  await promotionStore.updatePromotion(props.promotion.id, form.value)
   await redirect()
 }
 
@@ -84,22 +101,22 @@ onMounted(async () => {
       </nord-stack>
 
       <nord-select
-          v-model="form.course"
+          v-model="selectedCourse"
           :error="applicationStore.errors?.course"
           expand
           label="Cursus suivi"
       >
-        <option selected>Choisir un cursus</option>
+        <option selected value="">Choisir un cursus</option>
         <option v-for="course in courseStore.courses" :value="course.id">{{ course.name }}</option>
       </nord-select>
 
       <nord-select
-          v-model="form.city"
+          v-model="selectedCity"
           :error="applicationStore.errors?.city"
           expand
           label="Ville de rattachement"
       >
-        <option>Choisir une ville</option>
+        <option selected value="">Choisir une ville</option>
         <option v-for="city in cityStore.cities" :key="city.id" :value="city.id">{{ city.postcode }} - {{ city.name }}</option>
       </nord-select>
 

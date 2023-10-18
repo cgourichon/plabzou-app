@@ -21,6 +21,7 @@ import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.v
 import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
 import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
+import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -124,6 +125,11 @@ const router = createRouter({
             path: '/gestion/promotions/ajouter',
             name: 'promotions-create',
             component: PromotionCreateView
+        },
+        {
+            path: '/gestion/promotions/:id/modifier',
+            name: 'promotions-edit',
+            component: PromotionEditView
         },
 
     ]
