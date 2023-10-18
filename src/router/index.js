@@ -13,6 +13,7 @@ import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
 import CourseListView from "@/views/Management/Course/CourseListView.vue";
 import CourseEditView from "@/views/Management/Course/CourseEditView.vue";
 import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
+import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,7 +77,13 @@ const router = createRouter({
             path: '/gestion/cursus/:id/modifier',
             name: 'courses-edit',
             component: CourseEditView
-        }
+        },
+        {
+            path: '/gestion/promotions',
+            name: 'promotions-list',
+            component: PromotionListView
+        },
+
     ]
 })
 
