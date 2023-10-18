@@ -41,8 +41,6 @@ const form = computed(() => {
   }
 })
 
-const isLoadingTeachers = ref(null)
-
 const store = async () => {
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
@@ -72,24 +70,14 @@ const redirect = async () => {
 }
 
 const fetchTeachers = async () => {
-  isLoadingTeachers.value = true;
   teacherStore.resetTeachers()
-  if (form.value.training) {
-    teacherStore.resetTeachers()
-    await teacherStore.fetchTeachers({training: form.value.training})
-  } else {
-    await teacherStore.fetchTeachers()
-  }
-  isLoadingTeachers.value = false;
+  if (form.value.training) await teacherStore.fetchTeachers({training: form.value.training})
 }
 
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
   await learnerStore.fetchLearners()
-
-  if (props.timeslot?.training_id) await teacherStore.fetchTeachers({training: props.timeslot.training_id})
-  else await teacherStore.fetchTeachers()
 })
 </script>
 
@@ -173,7 +161,6 @@ onMounted(async () => {
             :options="teacherStore.teachers"
             :select-label="null"
             :show-no-results="true"
-            :loading="isLoadingTeachers"
             label="full_name"
             placeholder="Ajouter des formateurs"
             track-by="user_id"
