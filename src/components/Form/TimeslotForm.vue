@@ -27,6 +27,7 @@ const selectedTraining = ref(null)
 const selectedRoom = ref(null)
 const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
+const filterLearnersByTraining = ref(true)
 
 const form = computed(() => {
   selectedTraining.value = props.timeslot?.training ?? ''
@@ -77,13 +78,19 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'timeslots-list'})
 }
 
+const checkFilterLearnersByTraining = async () => {
+  await fetchTeachersAndLearners()
+}
+
 const fetchTeachersAndLearners = async () => {
   teacherStore.resetTeachers()
   learnerStore.resetLearners()
 
   if (selectedTraining.value) {
     await teacherStore.fetchTeachers({training: selectedTraining.value.id})
-    await learnerStore.fetchLearners({training: selectedTraining.value.id})
+    filterLearnersByTraining.value
+        ? await learnerStore.fetchLearners({training: selectedTraining.value.id})
+        : await learnerStore.fetchLearners()
   }
 }
 
@@ -160,75 +167,73 @@ watch(() => selectedTraining.value, fetchTeachersAndLearners)
         />
       </nord-stack>
 
-      <div class="n-stack n-gap-s">
-        <label class="n-label">Apprenants</label>
-        <multi-select
-            v-model="selectedLearners"
-            :allow-empty="true"
-            :clear-on-select="true"
-            :close-on-select="false"
-            :hide-selected="true"
-            :multiple="true"
-            :options="learnerStore.learners"
-            :select-label="null"
-            :show-no-results="true"
-            label="full_name"
-            placeholder="Ajouter des apprenants"
-            track-by="user_id"
-        >
-          <template #noResult>Pas d'apprenants correspondants</template>
-          <template #noOptions>
-            <span v-if="selectedTraining">
-              Aucun apprenants trouvés
-            </span>
-            <span v-else>
-              Choisissez une formation
-            </span>
-          </template>
-        </multi-select>
-        <div
-            v-if="applicationStore.errors?.learners"
-            class="n-error"
-            role="alert"
-        >
-          {{ applicationStore.errors?.learners[0] }}
+      <template v-if="selectedTraining">
+        <div class="n-stack n-gap-s">
+          <label class="n-label">Apprenants</label>
+          <multi-select
+              v-model="selectedLearners"
+              :allow-empty="true"
+              :clear-on-select="true"
+              :close-on-select="false"
+              :hide-selected="true"
+              :multiple="true"
+              :options="learnerStore.learners"
+              :select-label="null"
+              :show-no-results="true"
+              label="full_name"
+              placeholder="Ajouter des apprenants"
+              track-by="user_id"
+          >
+            <template #noResult>Pas d'apprenants correspondants</template>
+            <template #noOptions>Aucun apprenants trouvés</template>
+          </multi-select>
+          <div>
+            <nord-toggle
+                v-model="filterLearnersByTraining"
+                :checked="filterLearnersByTraining"
+                label="Filtrer les apprenants par formation"
+                size="s"
+                type="checkbox"
+                @change="checkFilterLearnersByTraining"
+            />
+          </div>
+          <div
+              v-if="applicationStore.errors?.learners"
+              class="n-error"
+              role="alert"
+          >
+            {{ applicationStore.errors?.learners[0] }}
+          </div>
         </div>
-      </div>
 
-      <div class="n-stack n-gap-s">
-        <label class="n-label">Formateurs</label>
-        <multi-select
-            v-model="selectedTeachers"
-            :allow-empty="true"
-            :clear-on-select="true"
-            :close-on-select="false"
-            :hide-selected="true"
-            :multiple="true"
-            :options="teacherStore.teachers"
-            :select-label="null"
-            :show-no-results="true"
-            label="full_name"
-            placeholder="Ajouter des formateurs"
-            track-by="user_id"
-        >
-          <template #noResult>Pas de formateurs correspondants</template>
-          <template #noOptions>
-            <span v-if="selectedTraining">
-              Aucun formateurs trouvés
-            </span>
-            <span v-else>
-              Choisissez une formation
-            </span>
-          </template>
-        </multi-select>
-        <div
-            v-if="applicationStore.errors?.teachers"
-            class="n-error"
-            role="alert"
-        >
-          {{ applicationStore.errors?.teachers[0] }}
+        <div class="n-stack n-gap-s">
+          <label class="n-label">Formateurs</label>
+          <multi-select
+              v-model="selectedTeachers"
+              :allow-empty="true"
+              :clear-on-select="true"
+              :close-on-select="false"
+              :hide-selected="true"
+              :multiple="true"
+              :options="teacherStore.teachers"
+              :select-label="null"
+              :show-no-results="true"
+              label="full_name"
+              placeholder="Ajouter des formateurs"
+              track-by="user_id"
+          >
+            <template #noResult>Pas de formateurs correspondants</template>
+            <template #noOptions>Aucun formateurs trouvés</template>
+          </multi-select>
+          <div
+              v-if="applicationStore.errors?.teachers"
+              class="n-error"
+              role="alert"
+          >
+            {{ applicationStore.errors?.teachers[0] }}
+          </div>
         </div>
-      </div>
+      </template>
 
       <nord-checkbox
           v-model="form.is_validated"
