@@ -1,14 +1,30 @@
 <script setup>
+import {useRoute} from "vue-router";
+
 const props = defineProps({
   params: {
     type: Object,
     required: true
   }
 })
+
+const route = useRoute()
+
+const editRoute = () => {
+  const match = route.path.match(/\/(\d+)\/modifier/)
+
+  if (match && match[1]) {
+    return route.path
+  } else if (props.params.data.id) {
+    return `${route.path}/${props.params.data.id}/modifier`
+  } else {
+    return route.path
+  }
+}
 </script>
 
 <template>
-  <RouterLink :to="`/gestion/utilisateurs/${params.data.id}/modifier`">
+  <RouterLink :to="editRoute()">
     <nord-button size="s" variant="primary">
       <nord-icon slot="start" name="interface-edit"/>
       Modifier
