@@ -37,6 +37,7 @@ const form = computed(() => {
   selectedRoom.value = props.timeslot?.room ?? ''
   selectedLearners.value = props.timeslot?.learners ?? []
   selectedTeachers.value = props.timeslot?.teachers ?? []
+  selectedPromotions.value = props.timeslot?.promotions ?? []
 
   return {
     training: '',
@@ -46,6 +47,7 @@ const form = computed(() => {
     is_validated: props.timeslot?.is_validated ?? '',
     learners: [],
     teachers: [],
+    promotions: [],
   }
 })
 
@@ -54,6 +56,7 @@ const store = async () => {
   form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
+  form.value.promotions = selectedPromotions.value
 
   applicationStore.clearErrors()
   await timeslotStore.createTimeslot(form.value)
@@ -65,6 +68,7 @@ const update = async () => {
   form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
+  form.value.promotions = selectedPromotions.value
 
   applicationStore.clearErrors()
   await timeslotStore.updateTimeslot(props.timeslot.id, form.value)
@@ -106,7 +110,7 @@ watch(
       if (!oldValue && newValue) {
         // apprenants dans la promo qui vient d'être ajoutée
         const newLearners = newValue.map(promotion => promotion.learners).flat()
-        // si certains ont déjà été manuellement, évite les doublons
+        // si certains ont déjà été ajoutés manuellement, évite les doublons
         const diffWithSelected = newLearners.filter(learner => !selectedLearners.value.find(e => e.user_id === learner.user_id))
         // ajout dans la sélection d'apprenants
         selectedLearners.value = selectedLearners.value.concat(diffWithSelected)
