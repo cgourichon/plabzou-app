@@ -4,7 +4,8 @@ export const useApplicationStore = defineStore('application', {
     state: () => ({
         loading: false,
         error: null,
-        errors: null
+        errors: null,
+        success: null
     }),
     getters: {
         hasErrors() {
@@ -15,6 +16,9 @@ export const useApplicationStore = defineStore('application', {
         clearErrors() {
             this.error = null
             this.errors = null
+        },
+        clearSuccess() {
+            this.success = null
         }
     }
 })
