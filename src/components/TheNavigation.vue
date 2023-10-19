@@ -83,6 +83,16 @@ const logout = async () => {
       </RouterLink>
     </nord-nav-group>
 
+
+    <nord-nav-group v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
+                    heading="Communication">
+      <RouterLink to="/messagerie">
+        <nord-nav-item :active="$route.path === '/messagerie'" icon="generic-mail">
+          Messages
+        </nord-nav-item>
+      </RouterLink>
+    </nord-nav-group>
+
     <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
       <RouterLink to="/connexion">
         <nord-nav-item :active="$route.path === '/connexion'" icon="interface-login">
