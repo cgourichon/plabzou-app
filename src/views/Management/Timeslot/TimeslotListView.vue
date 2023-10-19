@@ -2,9 +2,61 @@
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import {onMounted} from "vue";
 import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
+import DataTable from "@/components/Table/DataTable.vue";
+import EditAction from "@/components/Action/EditAction.vue";
 
 const timeslotStore = useTimeslotStore()
 timeslotStore.resetTimeslots()
+
+const components = {
+  actionsCellRender: EditAction
+}
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    type: "rightAligned",
+  },
+  {
+    field: "starts_at",
+    headerName: "Date de début",
+    valueFormatter: ({value}) => getFrenchDateTimeWithoutTimeZone(value)
+  },
+  {
+    field: "ends_at",
+    headerName: "Date de fin",
+    valueFormatter: ({value}) => getFrenchDateTimeWithoutTimeZone(value)
+  },
+  {
+    field: "is_validated",
+    headerName: "Créneau validé",
+    valueFormatter: ({value}) => value ? 'Oui' : 'Non'
+  },
+  {
+    field: "room.name",
+    headerName: "Salle",
+  },
+  {
+    field: "training.name",
+    headerName: "Formation",
+  },
+  {
+    field: "teachers",
+    headerName: "Formateur(s)",
+    valueFormatter: ({value}) => Object.keys(value).length
+  },
+  {
+    field: "learners",
+    headerName: "Apprenant(s)",
+    valueFormatter: ({value}) => Object.keys(value).length
+  },
+  {
+    field: "actions",
+    headerName: "Modifier",
+    cellRenderer: "actionsCellRender",
+  }
+]
 
 onMounted(async () => {
   await timeslotStore.fetchTimeslots()
@@ -24,59 +76,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <nord-table striped>
-      <table>
-        <thead>
-        <tr>
-          <th class="n-table-align-right">Id</th>
-          <th>Date de début</th>
-          <th>Date de fin</th>
-          <th>Créneau validé</th>
-          <th>Salle</th>
-          <th>Formation</th>
-          <th>Formateur(s)</th>
-          <th>Apprenant(s)</th>
-          <th class="n-table-align-right">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="timeslot in timeslotStore.timeslots" :key="timeslot.id">
-          <td class="n-table-align-right">
-            {{ timeslot.id }}
-          </td>
-          <td>
-            {{ getFrenchDateTimeWithoutTimeZone(timeslot.starts_at) }}
-          </td>
-          <td>
-            {{ getFrenchDateTimeWithoutTimeZone(timeslot.ends_at) }}
-          </td>
-          <td>
-            {{ timeslot.is_validated ? 'Oui' : 'Non' }}
-          </td>
-          <td>
-            {{ timeslot.room.name }}
-          </td>
-          <td>
-            {{ timeslot.training.name }}
-          </td>
-          <td>
-            {{ Object.keys(timeslot.teachers).length }}
-          </td>
-          <td>
-            {{ Object.keys(timeslot.learners).length }}
-          </td>
-          <td class="n-table-align-right">
-            <RouterLink :to="`/gestion/creneaux/${timeslot.id}/modifier`">
-              <nord-button size="s" variant="primary">
-                <nord-icon slot="start" name="interface-edit"/>
-                Modifier
-              </nord-button>
-            </RouterLink>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </nord-table>
+    <DataTable :columns="columns" :data="timeslotStore.timeslots" :components="components"/>
   </nord-card>
 </template>
 

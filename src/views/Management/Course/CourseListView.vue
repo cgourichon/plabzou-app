@@ -1,9 +1,32 @@
 <script setup>
 import {onMounted} from "vue";
 import {useCourseStore} from "@/stores/course.store";
+import DataTable from "@/components/Table/DataTable.vue";
+import EditAction from "@/components/Action/EditAction.vue";
 
 const courseStore = useCourseStore()
 courseStore.resetCourses()
+
+const components = {
+  actionsCellRender: EditAction
+}
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    type: "rightAligned",
+  },
+  {
+    field: "name",
+    headerName: "Nom",
+  },
+  {
+    field: "actions",
+    headerName: "Modifier",
+    cellRenderer: "actionsCellRender",
+  }
+]
 
 onMounted(async () => {
   await courseStore.fetchCourses()
@@ -23,35 +46,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <nord-table striped>
-      <table>
-        <thead>
-        <tr>
-          <th class="n-table-align-right">Id</th>
-          <th>Nom</th>
-          <th class="n-table-align-right">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="course in courseStore.courses" :key="course.id">
-          <td class="n-table-align-right">
-            {{ course.id }}
-          </td>
-          <td>
-            {{ course.name }}
-          </td>
-          <td class="n-table-align-right">
-            <RouterLink :to="`/gestion/cursus/${course.id}/modifier`">
-              <nord-button size="s" variant="primary">
-                <nord-icon slot="start" name="interface-edit"/>
-                Modifier
-              </nord-button>
-            </RouterLink>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </nord-table>
+    <DataTable :columns="columns" :data="courseStore.courses" :components="components"/>
   </nord-card>
 </template>
 
