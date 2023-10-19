@@ -2,13 +2,13 @@
 import {useUserStore} from "@/stores/user.store";
 import {onMounted} from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
-import UserAction from "@/components/Action/UserAction.vue";
+import EditAction from "@/components/Action/EditAction.vue";
 
 const userStore = useUserStore()
 userStore.resetUsers()
 
 const components = {
-  actionsCellRender: UserAction
+  actionsCellRender: EditAction
 }
 
 const columns = [
