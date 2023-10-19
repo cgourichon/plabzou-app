@@ -1,9 +1,63 @@
 <script setup>
 import {useUserStore} from "@/stores/user.store";
 import {onMounted} from "vue";
+import DataTable from "@/components/Table/DataTable.vue";
+import UserAction from "@/components/Action/UserAction.vue";
 
 const userStore = useUserStore()
 userStore.resetUsers()
+
+const components = {
+  actionsCellRender: UserAction
+}
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    type: "rightAligned",
+  },
+  {
+    field: "first_name",
+    headerName: "Prénom",
+  },
+  {
+    field: "last_name",
+    headerName: "Nom",
+  },
+  {
+    field: "phone_number",
+    headerName: "Téléphone",
+  },
+  {
+    field: "email",
+    headerName: "Mail",
+  },
+  {
+    field: "administrative_employee.is_super_admin",
+    headerName: "Administrateur",
+  },
+  {
+    field: "administrative_employee",
+    headerName: "Employé",
+    valueFormatter: ({value}) => value ? 'Oui' : 'Non'
+  },
+  {
+    field: "teacher",
+    headerName: "Formateur",
+    valueFormatter: ({value}) => value ? 'Oui' : 'Non'
+  },
+  {
+    field: "learner",
+    headerName: "Apprenant",
+    valueFormatter: ({value}) => value ? 'Oui' : 'Non'
+  },
+  {
+    field: "actions",
+    headerName: "Modifier",
+    cellRenderer: "actionsCellRender",
+  }
+]
 
 onMounted(async () => {
   await userStore.fetchUsers()
@@ -23,63 +77,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <nord-table striped>
-      <table>
-        <thead>
-        <tr>
-          <th class="n-table-align-right">Id</th>
-          <th>Prénom</th>
-          <th>Nom</th>
-          <th>Téléphone</th>
-          <th>Mail</th>
-          <th>Administrateur</th>
-          <th>Employé</th>
-          <th>Formateur</th>
-          <th>Apprenant</th>
-          <th class="n-table-align-right">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="user in userStore.users" :key="user.id">
-          <td class="n-table-align-right">
-            {{ user.id }}
-          </td>
-          <td>
-            {{ user.first_name }}
-          </td>
-          <td>
-            {{ user.last_name }}
-          </td>
-          <td>
-            {{ user.phone_number }}
-          </td>
-          <td>
-            {{ user.email }}
-          </td>
-          <td>
-            {{ user.administrative_employee && user.administrative_employee.is_super_admin ? 'Oui' : 'Non' }}
-          </td>
-          <td>
-            {{ user.administrative_employee ? 'Oui' : 'Non' }}
-          </td>
-          <td>
-            {{ !!user.teacher ? 'Oui' : 'Non' }}
-          </td>
-          <td>
-            {{ user.learner ? 'Oui' : 'Non' }}
-          </td>
-          <td class="n-table-align-right">
-            <RouterLink :to="`/gestion/utilisateurs/${user.id}/modifier`">
-              <nord-button size="s" variant="primary">
-                <nord-icon slot="start" name="interface-edit"/>
-                Modifier
-              </nord-button>
-            </RouterLink>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </nord-table>
+    <DataTable :columns="columns" :data="userStore.users" :components="components"/>
   </nord-card>
 </template>
 
