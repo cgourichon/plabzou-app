@@ -1,9 +1,37 @@
 <script setup>
 import {useTrainingStore} from "@/stores/training.store";
 import {onMounted} from "vue";
+import DataTable from "@/components/Table/DataTable.vue";
+import EditAction from "@/components/Action/EditAction.vue";
 
 const trainingStore = useTrainingStore()
 trainingStore.resetTrainings()
+
+const components = {
+  actionsCellRender: EditAction
+}
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    type: "rightAligned",
+  },
+  {
+    field: "name",
+    headerName: "Nom",
+  },
+  {
+    field: "categories",
+    headerName: "Catégories",
+    valueFormatter: ({value}) => value.map(e => e.name).join(' - ')
+  },
+  {
+    field: "actions",
+    headerName: "Modifier",
+    cellRenderer: "actionsCellRender",
+  }
+]
 
 onMounted(async () => {
   await trainingStore.fetchTrainings()
@@ -23,39 +51,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <nord-table striped>
-      <table>
-        <thead>
-        <tr>
-          <th class="n-table-align-right">Id</th>
-          <th>Nom</th>
-          <th>Catégories</th>
-          <th class="n-table-align-right">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="training in trainingStore.trainings" :key="training.id">
-          <td class="n-table-align-right">
-            {{ training.id }}
-          </td>
-          <td>
-            {{ training.name }}
-          </td>
-          <td>
-            {{ training.categories.map(e => e.name).join(' - ') }}
-          </td>
-          <td class="n-table-align-right">
-            <RouterLink :to="`/gestion/formations/${training.id}/modifier`">
-              <nord-button size="s" variant="primary">
-                <nord-icon slot="start" name="interface-edit"/>
-                Modifier
-              </nord-button>
-            </RouterLink>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </nord-table>
+    <DataTable :columns="columns" :data="trainingStore.trainings" :components="components"/>
   </nord-card>
 </template>
 
