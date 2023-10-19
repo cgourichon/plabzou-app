@@ -33,7 +33,8 @@ const columnDefs = reactive({
 const defaultColDef = {
   sortable: true,
   filter: true,
-  flex: 1
+  flex: 1,
+  resizable: true,
 }
 
 const quickSearch = ref('')
