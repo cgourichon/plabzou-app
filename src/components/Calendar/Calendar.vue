@@ -58,6 +58,7 @@ const calendarOptions = {
     end: timeslot.ends_at,
     color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
     is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
+    is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
     timeslot: timeslot,
   })),
   eventClick: function (info) {
@@ -86,6 +87,9 @@ const closeSelecteEvent = () => {
       <nord-stack>
         <nord-banner v-if="selectedEvent?.extendedProps?.is_teacher" variant="info">
           Vous êtes le formateur ou faites partie des formateurs
+        </nord-banner>
+        <nord-banner v-if="selectedEvent?.extendedProps?.is_learner" variant="info">
+          Vous faites partie des apprenants
         </nord-banner>
       </nord-stack>
 
