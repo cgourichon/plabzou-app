@@ -29,12 +29,24 @@ dependencies:
   '@fullcalendar/vue3':
     specifier: ^6.1.9
     version: 6.1.9(@fullcalendar/core@6.1.9)(vue@3.3.4)
+  '@nordhealth/ag-theme-nord':
+    specifier: ^2.0.2
+    version: 2.0.2
   '@nordhealth/components':
     specifier: ^3.2.0
     version: 3.2.0
   '@nordhealth/css':
     specifier: ^3.1.0
     version: 3.1.0
+  '@nordhealth/icons':
+    specifier: ^3.2.0
+    version: 3.2.0
+  ag-grid-community:
+    specifier: ^30.2.0
+    version: 30.2.0
+  ag-grid-vue3:
+    specifier: ^30.2.0
+    version: 30.2.0(ag-grid-community@30.2.0)(vue@3.3.4)
   axios:
     specifier: ^1.5.1
     version: 1.5.1
@@ -499,11 +511,17 @@ packages:
       fastq: 1.15.0
     dev: true
 
+  /@nordhealth/ag-theme-nord@2.0.2:
+    resolution: {integrity: sha512-BqEiViDCcVrFn6Wp1tvkZov2iZV2QHb8abOY03oAHjtYFKLRNJ+Yjk3vyRbZr2lktn6QhH2S1hGZgjfygcxjZQ==}
+    dependencies:
+      '@nordhealth/css': 3.1.1
+    dev: false
+
   /@nordhealth/components@3.2.0:
     resolution: {integrity: sha512-qluqxIwcNgkXgV7OrfF5gDXlsGbNHYrE+NwnrWnb0AxzIEFXEKLHrDmmb+pL4330BSsPVrMyCjhVbp2F4y7C9w==}
     dependencies:
       '@floating-ui/dom': 1.2.7
-      '@nordhealth/icons': 3.1.0
+      '@nordhealth/icons': 3.2.0
       lit: 2.7.4
       qr-creator: 1.0.0
       tinykeys: 1.4.0
@@ -515,8 +533,14 @@ packages:
       '@types/clean-css': 4.2.6
     dev: false
 
-  /@nordhealth/icons@3.1.0:
-    resolution: {integrity: sha512-LhJcigKCAKbPZPO/0tOGXqpJLnalfAzjCmPLRmPLSNIPlhO0WPtQGScTIEhsJQM4rzoNV35iJmPu7wUz0xboyg==}
+  /@nordhealth/css@3.1.1:
+    resolution: {integrity: sha512-ZxO9Z5yV1K2l7Z8bf9fbiNi5KaA1rs2gTd1uKdD60Fv+Ged+/C1RQu9rglWdAlBlKPrrh4ZUU5AaNP3aIsri3A==}
+    dependencies:
+      '@types/clean-css': 4.2.6
+    dev: false
+
+  /@nordhealth/icons@3.2.0:
+    resolution: {integrity: sha512-Ioy8UtdapPjtyLTEqgCvcRBn3U9errUmYwkyppkc3fbYCo6uC8mpmEhrt5qS2lBZLY5pCjE2/CIEGiMwQoVrhQ==}
     dev: false
 
   /@rushstack/eslint-patch@1.2.0:
@@ -729,6 +753,20 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
+
+  /ag-grid-community@30.2.0:
+    resolution: {integrity: sha512-Gd6GXmtzEQSCDloBdRxxCDqnjTBRAOf/zzlaxxyyVBJgc+cePuNgGdplRUhT/rwIiDwvyuoynvxelVE/iYdXsA==}
+    dev: false
+
+  /ag-grid-vue3@30.2.0(ag-grid-community@30.2.0)(vue@3.3.4):
+    resolution: {integrity: sha512-tckZTjYAmjV0bnvGshpLmvWZO17sxsSSslJy8Rh8HMlRYJqTt8yuZKePi+uyZxHNeQYjDdOpF+OkISuyJlvGzA==}
+    peerDependencies:
+      ag-grid-community: ~30.2.0
+      vue: ^3.0.0
+    dependencies:
+      ag-grid-community: 30.2.0
+      vue: 3.3.4
+    dev: false
 
   /agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
