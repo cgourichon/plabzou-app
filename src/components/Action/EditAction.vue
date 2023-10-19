@@ -17,14 +17,12 @@ const editRoute = () => {
     return route.path
   } else if (props.params.data.id) {
     return `${route.path}/${props.params.data.id}/modifier`
-  } else {
-    return route.path
   }
 }
 </script>
 
 <template>
-  <RouterLink :to="editRoute()">
+  <RouterLink v-if="editRoute" :to="editRoute()">
     <nord-button size="s" variant="primary">
       <nord-icon slot="start" name="interface-edit"/>
       Modifier

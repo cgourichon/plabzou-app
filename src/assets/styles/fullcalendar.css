@@ -1,0 +1,35 @@
+.fc-toolbar {
+    background: #ffffff;
+    padding: 8px;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+}
+
+.fc-view-harness, .fc-view, .fc-scrollgrid {
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+.fc-toolbar-title {
+    font-size: 1rem !important;
+}
+
+.fc-col-header-cell-cushion {
+    color: #3559c7;
+    text-decoration: none;
+}
+
+.fc-button:focus, .fc-button-primary:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.fc-button-active, .fc-button-active:focus {
+    background: #4774fd !important;
+    border-color: #4774fd !important;
+}
+
+.fc-button-primary {
+    background: #3559c7 !important;
+    border-color: #3559c7 !important;
+}

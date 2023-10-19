@@ -10,7 +10,7 @@ const applicationStore = useApplicationStore()
 </script>
 
 <template>
-  <nord-layout>
+  <nord-layout sticky>
     <TheNavigation/>
     <TheHeader/>
 
