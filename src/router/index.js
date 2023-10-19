@@ -4,6 +4,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import HomeView from "@/views/HomeView.vue";
 import AboutView from "@/views/AboutView.vue";
 import LoginView from "@/views/LoginView.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import UserListView from "@/views/Management/User/UserListView.vue";
 import UserCreateView from "@/views/Management/User/UserCreateView.vue";
 import UserEditView from "@/views/Management/User/UserEditView.vue";
@@ -47,6 +48,11 @@ const router = createRouter({
             name: 'messagerie',
             component: MessagesView
             //TODO guards
+        },
+        {
+            path: '/profil',
+            name: 'profil',
+            component: ProfileView
         },
         {
             path: '/gestion/utilisateurs',
