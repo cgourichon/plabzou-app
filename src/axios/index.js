@@ -23,6 +23,10 @@ axiosClient.interceptors.response.use(response => {
     const applicationStore = useApplicationStore()
 
     applicationStore.loading = false
+
+    applicationStore.clearSuccess()
+    if(response.config.method !== 'get') applicationStore.success = response.data.message
+
     applicationStore.clearErrors()
 
     return response

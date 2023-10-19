@@ -24,6 +24,9 @@ export const useUserStore = defineStore('user', {
         async deleteUser(id) {
             await axiosClient.delete(`/users/${id}`)
         },
+        async updateCurrent(user) {
+            await axiosClient.patch('/users/me', user)
+        },
         resetUser() {
             this.user = null
         },
