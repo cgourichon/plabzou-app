@@ -1,9 +1,32 @@
 <script setup>
 import {useCategoryStore} from "@/stores/category.store";
 import {onMounted} from "vue";
+import DataTable from "@/components/Table/DataTable.vue";
+import EditAction from "@/components/Action/EditAction.vue";
 
 const categoryStore = useCategoryStore()
 categoryStore.resetCategories()
+
+const components = {
+  actionsCellRender: EditAction
+}
+
+const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    type: "rightAligned",
+  },
+  {
+    field: "name",
+    headerName: "Nom",
+  },
+  {
+    field: "actions",
+    headerName: "Modifier",
+    cellRenderer: "actionsCellRender",
+  }
+]
 
 onMounted(async () => {
   await categoryStore.fetchCategories()
@@ -23,35 +46,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <nord-table striped>
-      <table>
-        <thead>
-        <tr>
-          <th class="n-table-align-right">Id</th>
-          <th>Nom</th>
-          <th class="n-table-align-right">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="category in categoryStore.categories" :key="category.id">
-          <td class="n-table-align-right">
-            {{ category.id }}
-          </td>
-          <td>
-            {{ category.name }}
-          </td>
-          <td class="n-table-align-right">
-            <RouterLink :to="`/gestion/categories/${category.id}/modifier`">
-              <nord-button size="s" variant="primary">
-                <nord-icon slot="start" name="interface-edit"/>
-                Modifier
-              </nord-button>
-            </RouterLink>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </nord-table>
+    <DataTable :columns="columns" :data="categoryStore.categories" :components="components"/>
   </nord-card>
 </template>
 
