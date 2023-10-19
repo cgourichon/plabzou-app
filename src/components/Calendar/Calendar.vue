@@ -108,7 +108,7 @@ const closeSelecteEvent = () => {
       <nord-input
           :value="selectedEvent?.extendedProps?.timeslot?.training?.courses.map(
               course => course?.promotions?.map(promotion => promotion?.name).join(' - ')
-              ).join(' ')"
+              ).join('')"
           expand
           label="Promotion / Groupe"
           readonly
