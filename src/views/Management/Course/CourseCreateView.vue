@@ -10,7 +10,7 @@ import CourseForm from "@/components/Form/CourseForm.vue";
       <RouterLink to="/gestion/cursus">
         <nord-button size="s" variant="primary">
           <nord-icon slot="start" name="text-list"/>
-          Liste des catégories
+          Liste des cursus
         </nord-button>
       </RouterLink>
     </div>
