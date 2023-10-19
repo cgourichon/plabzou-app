@@ -108,7 +108,7 @@ const logout = async () => {
       </nord-button>
 
       <nord-dropdown-group>
-        <nord-dropdown-item href="#">Voir mon profil</nord-dropdown-item>
+        <nord-dropdown-item href="/profil">Voir mon profil</nord-dropdown-item>
       </nord-dropdown-group>
 
       <nord-dropdown-group>
