@@ -19,6 +19,7 @@ import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
 import TimeslotListView from "@/views/Management/Timeslot/TimeslotListView.vue";
 import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.vue";
 import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
+import MessagesView from "@/views/MessagesView.vue";
 import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
 import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
@@ -40,6 +41,12 @@ const router = createRouter({
             path: '/connexion',
             name: 'login',
             component: LoginView
+        },
+        {
+            path: '/messagerie',
+            name: 'messagerie',
+            component: MessagesView
+            //TODO guards
         },
         {
             path: '/gestion/utilisateurs',

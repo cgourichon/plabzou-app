@@ -21,6 +21,7 @@
     "@fullcalendar/vue3": "^6.1.9",
     "@nordhealth/components": "^3.2.0",
     "@nordhealth/css": "^3.1.0",
+    "@nordhealth/icons": "^3.2.0",
     "axios": "^1.5.1",
     "dayjs": "^1.11.10",
     "pinia": "^2.1.3",

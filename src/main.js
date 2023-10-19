@@ -1,5 +1,7 @@
 import "@nordhealth/components"
 import "@nordhealth/css"
+import "@nordhealth/icons"
+
 import "./assets/styles/theme.scss"
 import "vue-multiselect/dist/vue-multiselect.css"
 import "./assets/styles/multiselect.css"
