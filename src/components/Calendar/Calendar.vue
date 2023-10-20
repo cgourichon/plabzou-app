@@ -21,7 +21,7 @@ const props = defineProps({
     required: false,
   },
   events: {
-    type: Object,
+    type: Array,
     required: true,
   },
   promotion: {
