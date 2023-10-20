@@ -20,7 +20,11 @@ export const getDateTimeWithoutTimeZone = (datetime) => {
 }
 
 export const getDatetimeShortFormat = datetime => {
-    return dayjs(datetime).format('DD.MM.YY à HH:mm');
+    return dayjs(datetime).format('DD/MM/YY à HH:mm');
+}
+
+export const getDatetimeShortFormatWithoutTime = datetime => {
+    return dayjs(datetime).format('DD/MM/YY');
 }
 
 export const getTimeFromNow = datetime => {
