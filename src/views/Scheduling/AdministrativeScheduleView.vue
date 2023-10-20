@@ -1,12 +1,22 @@
 <script setup>
+import {useAuthStore} from "@/stores/auth.store";
+import {useTeacherStore} from "@/stores/teacher.store";
 import {usePromotionStore} from "@/stores/promotion.store";
+import {useTrainingStore} from "@/stores/training.store";
+import {useRoomStore} from "@/stores/room.store";
+import {useLearnerStore} from "@/stores/learner.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
 import Calendar from "@/components/Calendar/Calendar.vue";
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 
+const authStore = useAuthStore()
+const teacherStore = useTeacherStore()
+const learnerStore = useLearnerStore()
 const promotionStore = usePromotionStore()
+const trainingStore = useTrainingStore()
+const roomStore = useRoomStore()
 const timeslotStore = useTimeslotStore()
 
 timeslotStore.resetTimeslots()
@@ -19,16 +29,31 @@ const loadingPromotion = ref(false)
 
 const selectPromotion = async () => {
   if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
+  else {
+    loadingPromotion.value = true;
+    setTimeout(() =>loadingPromotion.value = false, 500);
+  }
 }
 
 const showAdvancement = () => {
   modalAdvancement.value.showModal()
 }
 
-const fetchPromotion = async (id) => {
+const fetchCurrent = async () => {
+  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
+  else await fetchTimeslots()
+}
+
+const fetchPromotion = async(id) => {
   loadingPromotion.value = true;
   await promotionStore.fetchPromotion(id, {advancement: 1})
   selectedPromotion.value = promotionStore.promotion
+  loadingPromotion.value = false;
+}
+
+const fetchTimeslots = async () => {
+  loadingPromotion.value = true;
+  await timeslotStore.fetchTimeslots()
   loadingPromotion.value = false;
 }
 
@@ -46,8 +71,11 @@ onMounted(async () => {
   if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
 
   await promotionStore.fetchPromotions()
-
   await timeslotStore.fetchTimeslots()
+  await trainingStore.fetchTrainings()
+  await roomStore.fetchRooms()
+  await learnerStore.fetchLearners()
+  await teacherStore.fetchTeachers()
 
   initialLoading.value = false
 })
@@ -81,7 +109,11 @@ onMounted(async () => {
         </multi-select>
       </nord-stack>
     </nord-card>
-    <Calendar v-if="hasTimeslots" :events="filteredTimeslots" :promotion=selectedPromotion view="dayGridMonth"/>
+    <Calendar v-if="hasTimeslots && !loadingPromotion"
+              :events="filteredTimeslots"
+              :promotion=selectedPromotion
+              view="dayGridMonth"
+              @resetEvents="fetchCurrent" />
 
     <nord-modal v-if="selectedPromotion && !loadingPromotion" :open="false" ref="modalAdvancement" size="l" aria-labelledby="title">
       <h2 slot="header" id="title">Promotion : {{ selectedPromotion.name }}</h2>

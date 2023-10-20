@@ -3,7 +3,6 @@ import {onMounted, computed, ref, watch} from "vue";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 import {useApplicationStore} from "@/stores/application.store";
-import {useAuthStore} from "@/stores/auth.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import {usePromotionStore} from "@/stores/promotion.store";
 import {useTrainingStore} from "@/stores/training.store";
@@ -11,7 +10,6 @@ import {useRoomStore} from "@/stores/room.store";
 import {useLearnerStore} from "@/stores/learner.store";
 
 const applicationStore = useApplicationStore()
-const authStore = useAuthStore()
 const teacherStore = useTeacherStore()
 const learnerStore = useLearnerStore()
 const promotionStore = usePromotionStore()
@@ -41,6 +39,8 @@ const validatedLearners = ref(null)
 const isEditingTimeslot = ref(false)
 const isValidated = ref(false)
 
+const emit = defineEmits(['close'])
+
 const toggleEditing = () => {
   initForm()
   if(props.previousEvent && isEditingTimeslot.value) {
@@ -50,7 +50,6 @@ const toggleEditing = () => {
   }
 }
 
-const emit = defineEmits(['close'])
 const resetModal = () => {
   isEditingTimeslot.value = false
   initForm()
@@ -96,11 +95,6 @@ const filteredOthersLearners = computed(() => validatedLearners?.value?.filter(
 )
 
 onMounted(async () => {
-  await trainingStore.fetchTrainings()
-  await roomStore.fetchRooms()
-
-  await authStore.fetchAuthenticatedUser()
-
   validatedLearners.value = props.currentEvent?.extendedProps?.timeslot?.learners
 })
 

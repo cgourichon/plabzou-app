@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -22,7 +22,7 @@ const props = defineProps({
     required: false,
   },
   events: {
-    type: Array,
+    type: Object,
     required: true,
   },
   promotion: {
@@ -38,7 +38,9 @@ const previousEvent = ref(null)
 const isAdministrativeEmployee = ref(null)
 
 onMounted(async () => {
-  isAdministrativeEmployee.value = !!authStore.authenticatedUser.administrative_employee
+  await authStore.fetchAuthenticatedUser()
+
+  isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
 })
 
 const handleEventClick = (event) => {
@@ -49,17 +51,6 @@ const handleEventClick = (event) => {
 const closeSelectedEvent = () => {
   emit('resetEvents')
 }
-
-const shownEvents = computed(() => props.events?.map(timeslot => ({
-  id: timeslot.id,
-  title: timeslot.training.name,
-  start: timeslot.starts_at,
-  end: timeslot.ends_at,
-  color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
-  is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
-  is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
-  timeslot: timeslot,
-})))
 
 const calendarOptions = {
   plugins: [
@@ -94,14 +85,23 @@ const calendarOptions = {
   nowIndicator: true,
   dayMaxEvents: true,
   height: (window.innerHeight - 120),
-  events: shownEvents,
+  events: props.events?.map(timeslot => ({
+    id: timeslot.id,
+    title: timeslot.training.name,
+    start: timeslot.starts_at,
+    end: timeslot.ends_at,
+    color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
+    is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
+    is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
+    timeslot: timeslot,
+  })),
   eventClick: function (info) {
     handleEventClick(info)
   },
   eventDrop(info) {
     handleEventClick(info)
   },
-  eventResizeStop({event}) {
+  eventResizeStop({ event }) {
     const start = getDateTimeWithoutTimeZone(event.start.toString())
     const end = getDateTimeWithoutTimeZone(event.end.toString())
     console.log(event.end);
