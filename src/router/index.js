@@ -20,13 +20,14 @@ import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
 import TimeslotListView from "@/views/Management/Timeslot/TimeslotListView.vue";
 import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.vue";
 import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
-import MessagesView from "@/views/MessagesView.vue";
+import MessagesView from "@/views/Communication/MessagesView.vue";
 import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
 import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
 import RequestListView from "@/views/Management/Request/RequestListView.vue";
 import RequestCreateView from "@/views/Management/Request/RequestCreateView.vue";
 import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
+import RequestsView from "@/views/Communication/RequestsView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
             name: 'messagerie',
             component: MessagesView
             //TODO guards
+        },
+        {
+            path: '/mes-demandes',
+            name: 'demandes-teacher',
+            component: RequestsView
         },
         {
             path: '/profil',

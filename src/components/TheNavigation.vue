@@ -97,6 +97,11 @@ const logout = async () => {
           Messages
         </nord-nav-item>
       </RouterLink>
+      <RouterLink to="/mes-demandes">
+         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
+            Demandes
+         </nord-nav-item>
+      </RouterLink>
     </nord-nav-group>
 
     <nord-nav-group v-if="authenticatedUser === null" slot="footer" heading="Authentification">
