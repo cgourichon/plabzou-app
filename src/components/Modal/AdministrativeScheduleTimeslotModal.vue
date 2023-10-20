@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, computed, ref} from "vue";
+import {onMounted, computed, ref, watch} from "vue";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 import {useApplicationStore} from "@/stores/application.store";
@@ -19,9 +19,13 @@ const trainingStore = useTrainingStore()
 const roomStore = useRoomStore()
 
 const props = defineProps({
-  selectedEvent: {
+  currentEvent: {
     type: Object,
     default: null,
+  },
+  previousEvent: {
+    type: Object,
+    default: null
   },
   promotion: {
     type: Object,
@@ -51,20 +55,20 @@ const resetModal = () => {
 const form = computed(() => initForm())
 
 const initForm = () => {
-  selectedTraining.value = props.selectedEvent?.extendedProps?.timeslot?.training ?? ''
-  selectedRoom.value = props.selectedEvent?.extendedProps?.timeslot?.room ?? ''
-  selectedLearners.value = props.selectedEvent?.extendedProps?.timeslot?.learners ?? []
-  selectedTeachers.value = props.selectedEvent?.extendedProps?.timeslot?.teachers ?? []
-  isValidated.value = props.selectedEvent?.extendedProps?.timeslot?.is_validated ?? ''
+  selectedTraining.value = props.currentEvent?.extendedProps?.timeslot?.training ?? ''
+  selectedRoom.value = props.currentEvent?.extendedProps?.timeslot?.room ?? ''
+  selectedLearners.value = props.currentEvent?.extendedProps?.timeslot?.learners ?? []
+  selectedTeachers.value = props.currentEvent?.extendedProps?.timeslot?.teachers ?? []
+  isValidated.value = props.currentEvent?.extendedProps?.timeslot?.is_validated ?? ''
 
   return {
     training: '',
     room: '',
-    starts_at: props.selectedEvent?.extendedProps?.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.selectedEvent?.extendedProps?.timeslot?.starts_at) : '',
-    ends_at: props.selectedEvent?.extendedProps?.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.selectedEvent?.extendedProps?.timeslot?.ends_at) : '',
-    is_validated: props.selectedEvent?.extendedProps?.timeslot?.is_validated,
-    learners:  props.selectedEvent?.extendedProps?.timeslot?.learners,
-    teachers: props.selectedEvent?.extendedProps?.timeslot?.teachers,
+    starts_at: props.currentEvent?.extendedProps?.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.currentEvent?.extendedProps?.timeslot?.starts_at) : '',
+    ends_at: props.currentEvent?.extendedProps?.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.currentEvent?.extendedProps?.timeslot?.ends_at) : '',
+    is_validated: props.currentEvent?.extendedProps?.timeslot?.is_validated,
+    learners:  props.currentEvent?.extendedProps?.timeslot?.learners,
+    teachers: props.currentEvent?.extendedProps?.timeslot?.teachers,
   }
 }
 
@@ -92,13 +96,29 @@ onMounted(async () => {
 
   await authStore.fetchAuthenticatedUser()
 
-  validatedLearners.value = props.selectedEvent?.extendedProps?.timeslot?.learners
+  validatedLearners.value = props.currentEvent?.extendedProps?.timeslot?.learners
+})
+
+watch(() => props.previousEvent, (newPreviousEvent) => {
+  if (newPreviousEvent) {
+    let previousStartDate = getDateTimeWithoutTimeZone(newPreviousEvent.start.toString())
+    let previousEndDate = getDateTimeWithoutTimeZone(newPreviousEvent.end.toString())
+    let currentStartDate = getDateTimeWithoutTimeZone(props.currentEvent.start.toString())
+    let currentEndDate = getDateTimeWithoutTimeZone(props.currentEvent.end.toString())
+
+    if(previousStartDate !== currentStartDate || previousEndDate !== currentEndDate) {
+      isEditingTimeslot.value = true
+
+      form.value.starts_at = currentStartDate
+      form.value.ends_at = currentEndDate
+    }
+  }
 })
 </script>
 
 <template>
-  <nord-modal :open="props.selectedEvent" @close="resetModal" size="l">
-    <h2 slot="header">{{ props.selectedEvent?.title }}</h2>
+  <nord-modal :open="props.currentEvent" @close="resetModal" size="l">
+    <h2 slot="header">{{ props.currentEvent?.title }}</h2>
     <nord-stack direction="horizontal" align-items="start" justify-content="space-around">
       <nord-stack>
         <nord-input v-if="props.promotion"
