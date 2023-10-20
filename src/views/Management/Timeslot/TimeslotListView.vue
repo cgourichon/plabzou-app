@@ -47,6 +47,11 @@ const columns = [
     valueFormatter: ({value}) => Object.keys(value).length
   },
   {
+    field: "promotions",
+    headerName: "Promotion(s)",
+    valueFormatter: ({value}) => value ? value.length > 2 ? Object.keys(value).length : value.map(e => e.name).join(' - ') : null
+  },
+  {
     field: "learners",
     headerName: "Apprenant(s)",
     valueFormatter: ({value}) => Object.keys(value).length
