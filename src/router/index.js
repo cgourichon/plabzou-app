@@ -24,6 +24,9 @@ import MessagesView from "@/views/MessagesView.vue";
 import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
 import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
+import RequestListView from "@/views/Management/Request/RequestListView.vue";
+import RequestCreateView from "@/views/Management/Request/RequestCreateView.vue";
+import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -144,7 +147,21 @@ const router = createRouter({
             name: 'promotions-edit',
             component: PromotionEditView
         },
-
+        {
+            path: '/gestion/demandes',
+            name: 'requests-list',
+            component: RequestListView
+        },
+        {
+            path: '/gestion/demandes/ajouter',
+            name: 'requests-create',
+            component: RequestCreateView
+        },
+        {
+            path: '/gestion/demandes/:id/modifier',
+            name: 'requests-edit',
+            component: RequestEditView
+        },
     ]
 })
 
