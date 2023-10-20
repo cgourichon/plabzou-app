@@ -26,37 +26,33 @@ const promotionStore = usePromotionStore()
 const applicationStore = useApplicationStore()
 
 const selectedTraining = ref(null)
-const selectedPromotions = ref(null)
+const selectedPromotions = ref([])
 const selectedRoom = ref(null)
-const selectedLearners = ref(null)
-const selectedTeachers = ref(null)
+const selectedLearners = ref([])
+const selectedTeachers = ref([])
 const filterLearnersByTraining = ref(true)
 
-const form = computed(() => {
-  selectedTraining.value = props.timeslot?.training ?? ''
-  selectedRoom.value = props.timeslot?.room ?? ''
-  selectedLearners.value = props.timeslot?.learners ?? []
-  selectedTeachers.value = props.timeslot?.teachers ?? []
-  selectedPromotions.value = props.timeslot?.promotions ?? []
+const form = computed(() => ({
+  training: props.timeslot?.training ?? '',
+  room: props.timeslot?.room ?? '',
+  starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
+  ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
+  is_validated: props.timeslot?.is_validated ?? '',
+  learners: props.timeslot?.learners ?? [],
+  teachers: props.timeslot?.teachers ?? [],
+  promotions: props.timeslot?.promotions ?? [],
+}))
 
-  return {
-    training: '',
-    room: '',
-    starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
-    ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
-    is_validated: props.timeslot?.is_validated ?? '',
-    learners: [],
-    teachers: [],
-    promotions: [],
-  }
-})
-
-const store = async () => {
+const setMultiselectValuesToForm = () => {
   form.value.training = selectedTraining.value.id
   form.value.room = selectedRoom.value.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
   form.value.promotions = selectedPromotions.value
+}
+
+const store = async () => {
+  setMultiselectValuesToForm()
 
   applicationStore.clearErrors()
   await timeslotStore.createTimeslot(form.value)
@@ -64,11 +60,7 @@ const store = async () => {
 }
 
 const update = async () => {
-  form.value.training = selectedTraining.value.id
-  form.value.room = selectedRoom.value.id
-  form.value.learners = selectedLearners.value
-  form.value.teachers = selectedTeachers.value
-  form.value.promotions = selectedPromotions.value
+  setMultiselectValuesToForm()
 
   applicationStore.clearErrors()
   await timeslotStore.updateTimeslot(props.timeslot.id, form.value)
@@ -103,49 +95,36 @@ const fetchDependencies = async () => {
   }
 }
 
-watch(
-    () => selectedPromotions.value,
-    (newValue, oldValue) => {
-      // première promotion de sélectionnée
-      if (!oldValue && newValue) {
-        // apprenants dans la promo qui vient d'être ajoutée
-        const newLearners = newValue.map(promotion => promotion.learners).flat()
-        // si certains ont déjà été ajoutés manuellement, évite les doublons
-        const diffWithSelected = newLearners.filter(learner => !selectedLearners.value.find(e => e.user_id === learner.user_id))
-        // ajout dans la sélection d'apprenants
-        selectedLearners.value = selectedLearners.value.concat(diffWithSelected)
-      } else {
-        const oldLearners = oldValue.map(promotion => promotion.learners).flat()
-        const newLearners = newValue.map(promotion => promotion.learners).flat()
+watch(() => selectedTraining.value, async () => {
+  selectedPromotions.value = []
+  selectedLearners.value = []
+  selectedTeachers.value = []
 
-        // une promotion a été ajoutée
-        if (newValue.length > oldValue.length) {
-          // différenciation entre les apprenants dans la promo qui vient d'être ajoutée et ceux des promos qui était déjà là
-          const diff = newLearners.filter(learner => !oldLearners.find(e => e.user_id === learner.user_id))
-          // si certains ont déjà été ajoutés manuellement, évite les doublons
-          const diffWithSelected = diff.filter(learner => !selectedLearners.value.find(e => e.user_id === learner.user_id))
-          // ajout dans la sélection d'apprenants
-          selectedLearners.value = selectedLearners.value.concat(diffWithSelected)
-        }
+  await fetchDependencies()
+})
 
-        // une promotion a été supprimée
-        if (newValue.length < oldValue.length) {
-          // apprenants dans la promo qui vient d'être enlevée
-          const diff = oldLearners.filter(learner => !newLearners.find(e => e.user_id === learner.user_id))
-          // suppression de la sélection d'apprenants
-          selectedLearners.value = selectedLearners.value.filter(learner => !diff.find(e => e.user_id === learner.user_id))
-        }
-      }
-    },
-    {deep: true}
-)
+watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
+  // Ajouter les apprenants lors de l'ajout d'une promotion
+  if (!oldPromotion || (newPromotion.length > oldPromotion.length)) {
+    const learners = newPromotion.flatMap(promotion => promotion.learners)
+    selectedLearners.value = [...selectedLearners.value, ...learners]
+  }
+
+  // Supprimer les apprenants lors de la suppression d'une promotion
+  if (oldPromotion && (newPromotion.length < oldPromotion.length)) {
+    const learners = oldPromotion.flatMap(promotion => promotion.learners)
+    selectedLearners.value = selectedLearners.value.filter(learner => !learners.includes(learner))
+  }
+
+  // Supprimer les apprenants en double
+  const learners = selectedLearners.value.map(learner => learner.user_id)
+  selectedLearners.value = selectedLearners.value.filter((learner, index) => !learners.includes(learner.user_id, index + 1))
+})
 
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
 })
-
-watch(() => selectedTraining.value, fetchDependencies)
 </script>
 
 <template>
@@ -201,49 +180,46 @@ watch(() => selectedTraining.value, fetchDependencies)
             {{ applicationStore.errors?.promotions[0] }}
           </div>
         </div>
-      </template>
 
-      <div class="n-stack n-gap-s">
-        <label class="n-label">Salle</label>
-        <multi-select
-            v-model="selectedRoom"
-            :options="roomStore.rooms"
-            :show-no-results="true"
-            label="name"
-            placeholder="Sélectionner une salle"
-            track-by="id"
-        >
-          <template #noResult>Pas de salles correspondantes</template>
-          <template #noOptions>Pas de salles trouvées</template>
-        </multi-select>
-        <div
-            v-if="applicationStore.errors?.room"
-            class="n-error"
-            role="alert"
-        >
-          {{ applicationStore.errors?.room[0] }}
+        <div class="n-stack n-gap-s">
+          <label class="n-label">Salle</label>
+          <multi-select
+              v-model="selectedRoom"
+              :options="roomStore.rooms"
+              :show-no-results="true"
+              label="name"
+              placeholder="Sélectionner une salle"
+              track-by="id"
+          >
+            <template #noResult>Pas de salles correspondantes</template>
+            <template #noOptions>Pas de salles trouvées</template>
+          </multi-select>
+          <div
+              v-if="applicationStore.errors?.room"
+              class="n-error"
+              role="alert"
+          >
+            {{ applicationStore.errors?.room[0] }}
+          </div>
         </div>
-      </div>
 
-      <nord-stack direction="horizontal">
-        <nord-input
-            v-model="form.starts_at"
-            :error="applicationStore.errors?.starts_at"
-            expand
-            label="Date de début"
-            type="datetime-local"
-        />
+        <nord-stack direction="horizontal">
+          <nord-input
+              v-model="form.starts_at"
+              :error="applicationStore.errors?.starts_at"
+              expand
+              label="Date de début"
+              type="datetime-local"
+          />
 
-        <nord-input
-            v-model="form.ends_at"
-            :error="applicationStore.errors?.ends_at"
-            expand
-            label="Date de fin"
-            type="datetime-local"
-        />
-      </nord-stack>
-
-      <template v-if="selectedTraining">
+          <nord-input
+              v-model="form.ends_at"
+              :error="applicationStore.errors?.ends_at"
+              expand
+              label="Date de fin"
+              type="datetime-local"
+          />
+        </nord-stack>
         <div class="n-stack n-gap-s">
           <label class="n-label">Apprenants</label>
           <multi-select
@@ -309,24 +285,24 @@ watch(() => selectedTraining.value, fetchDependencies)
             {{ applicationStore.errors?.teachers[0] }}
           </div>
         </div>
+
+        <nord-checkbox
+            v-model="form.is_validated"
+            :error="applicationStore.errors?.is_validated"
+            label="Créneau validé"
+            type="checkbox"
+        />
+
+        <nord-stack direction="horizontal">
+          <nord-button expand type="submit" variant="primary">
+            {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
+          </nord-button>
+
+          <nord-button v-if="!!timeslot" expand type="button" variant="danger" @click="destroy">
+            Supprimer
+          </nord-button>
+        </nord-stack>
       </template>
-
-      <nord-checkbox
-          v-model="form.is_validated"
-          :error="applicationStore.errors?.is_validated"
-          label="Créneau validé"
-          type="checkbox"
-      />
-
-      <nord-stack direction="horizontal">
-        <nord-button expand type="submit" variant="primary">
-          {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
-        </nord-button>
-
-        <nord-button v-if="!!timeslot" expand type="button" variant="danger" @click="destroy">
-          Supprimer
-        </nord-button>
-      </nord-stack>
     </nord-stack>
   </form>
 </template>
