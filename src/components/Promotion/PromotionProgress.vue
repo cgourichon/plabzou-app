@@ -14,7 +14,7 @@ const props = defineProps({
       <single-progress
           name="Global"
           :percentage="promotion.percentage"
-          :remaining="promotion.remaining"
+          :remaining="promotion.remaining ?? null"
           :total="promotion.duration"
       />
   </div>
@@ -29,7 +29,7 @@ const props = defineProps({
         <single-progress
             :name="training.name"
             :percentage="training.percentage"
-            :remaining="training.remaining"
+            :remaining="training.remaining ?? null"
             :total="training.duration"
         />
       </li>
