@@ -87,11 +87,13 @@ onMounted(async () => {
       <nord-stack slot="header" class="n-stack-horizontal">
         <h2 v-if="!selectedPromotion">Planning des promotions</h2>
 
-        <h2 v-else>Planning de la promotion : {{ selectedPromotion.name }}</h2>
-        <nord-button size="s" variant="primary" @click="showAdvancement">
-          <nord-icon slot="start" name="interface-edit-on"/>
-          Avancement
-        </nord-button>
+        <template v-else>
+          <h2>Planning de la promotion : {{ selectedPromotion.name }}</h2>
+          <nord-button size="s" variant="primary" @click="showAdvancement">
+            <nord-icon slot="start" name="interface-edit-on"/>
+            Avancement
+          </nord-button>
+        </template>
       </nord-stack>
 
       <nord-stack slot="header-end">
@@ -109,7 +111,7 @@ onMounted(async () => {
         </multi-select>
       </nord-stack>
     </nord-card>
-    <Calendar v-if="hasTimeslots && !loadingPromotion"
+    <Calendar v-if="!loadingPromotion"
               :events="filteredTimeslots"
               :promotion=selectedPromotion
               view="dayGridMonth"
