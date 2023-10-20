@@ -19,16 +19,22 @@ const props = defineProps({
       />
   </div>
 
-  <nord-stack>
-      <single-progress
-          v-for="training in promotion.trainings"
+  <template v-if="promotion.trainings">
+    <h4 class="n-margin-b-m">Formations :</h4>
+    <ul>
+      <li v-for="training in promotion.trainings"
           :key="training.id"
-          :name="training.name"
-          :percentage="training.percentage"
-          :remaining="training.remaining"
-          :total="training.duration"
-      />
-  </nord-stack>
+          class="n-margin-be-s n-margin-is-xl"
+      >
+        <single-progress
+            :name="training.name"
+            :percentage="training.percentage"
+            :remaining="training.remaining"
+            :total="training.duration"
+        />
+      </li>
+    </ul>
+  </template>
 </template>
 
 <style scoped>
