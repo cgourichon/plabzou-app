@@ -1,5 +1,7 @@
-<script setup></script>
+<script setup>
+import MyPlanning from "@/components/Planning/MyPlanning.vue";
+</script>
 
 <template>
-  <h1>Accueil</h1>
+  <MyPlanning />
 </template>
