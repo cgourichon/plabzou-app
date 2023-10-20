@@ -6,6 +6,7 @@ import TheRadioInput from "@/components/TheRadioInput.vue";
 import {useAuthStore} from "@/stores/auth.store";
 import {useRequestStore} from "@/stores/request.store";
 import router from "@/router";
+import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 const props = defineProps({
     request: {
@@ -26,6 +27,7 @@ const isValidatedAdmin = ref('null')
 const isValidatedTeacher = ref('null')
 const comment = ref(null)
 const disabledTeachers = ref(true)
+const createdDate = ref(null);
 
 const changeTeachers = () => {
     teachers.value = selectedTimeslot.value.teachers;
@@ -82,8 +84,8 @@ const initValues = async () => {
     selectedTeacher.value = teachers.value.find(teacher => teacher.user_id === props.request.teacher_id);
     isValidatedAdmin.value = props.request.is_approved_by_admin ? 'true' : props.request.is_approved_by_admin === false ? 'false' : 'null';
     isValidatedTeacher.value = props.request.is_approved_by_teacher ? 'true' : props.request.is_approved_by_teacher === false ? 'false' : 'null';
-
     comment.value = props.request.comment
+    createdDate.value = getFrenchDateTimeWithoutTimeZone(props.request.created_at);
     disabledTeachers.value = true;
 }
 
@@ -109,9 +111,10 @@ watch(() => props.request, async () => {
 <template>
     <form @submit.prevent="!!request ? update() : store()">
         <nord-stack>
-            <div class="n-stack n-gap-s">
-                <label class="n-label">Créneau</label>
-                <multi-select
+            <nord-stack direction="horizontal" justify-content="space-between">
+                <div class="n-stack n-gap-s">
+                    <label class="n-label">Créneau</label>
+                    <multi-select
                         @select="changeTeachers"
                         v-model="selectedTimeslot"
                         :options="timeslotStore.timeslots"
@@ -120,18 +123,26 @@ watch(() => props.request, async () => {
                         placeholder="Sélectionner un créneau"
                         track-by="id"
                         :disabled="!!props.request"
-                >
-                    <template #noResult>Pas de créneaux correspondants</template>
-                    <template #noOptions>Pas de créneaux trouvés</template>
-                </multi-select>
-                <div
+                    >
+                        <template #noResult>Pas de créneaux correspondants</template>
+                        <template #noOptions>Pas de créneaux trouvés</template>
+                    </multi-select>
+                    <div
                         v-if="applicationStore.errors?.timeslot_id"
                         class="n-error"
                         role="alert"
-                >
-                    {{ applicationStore.errors?.timeslot_id[0] }}
+                    >
+                        {{ applicationStore.errors?.timeslot_id[0] }}
+                    </div>
                 </div>
-            </div>
+                <div v-if="!!props.request" class="n-stack n-gap-s">
+                    <nord-input label="Demande créé le :"
+                                disabled
+                                expand
+                                :value="createdDate">
+                    </nord-input>
+                </div>
+            </nord-stack>
             <div class="n-stack n-gap-s">
                 <label class="n-label">Formateur</label>
                 <multi-select
