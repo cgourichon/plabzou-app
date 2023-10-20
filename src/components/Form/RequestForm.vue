@@ -30,6 +30,7 @@ const disabledTeachers = ref(true)
 const createdDate = ref(null);
 
 const changeTeachers = () => {
+    selectedTeacher.value = null;
     teachers.value = selectedTimeslot.value.teachers;
 }
 
@@ -111,56 +112,47 @@ watch(() => props.request, async () => {
 <template>
     <form @submit.prevent="!!request ? update() : store()">
         <nord-stack>
-            <nord-stack direction="horizontal" justify-content="space-between">
-                <div class="n-stack n-gap-s">
-                    <label class="n-label">Créneau</label>
-                    <multi-select
-                        @select="changeTeachers"
-                        v-model="selectedTimeslot"
-                        :options="timeslotStore.timeslots"
-                        :show-no-results="true"
-                        label="name"
-                        placeholder="Sélectionner un créneau"
-                        track-by="id"
-                        :disabled="!!props.request"
-                    >
-                        <template #noResult>Pas de créneaux correspondants</template>
-                        <template #noOptions>Pas de créneaux trouvés</template>
-                    </multi-select>
-                    <div
-                        v-if="applicationStore.errors?.timeslot_id"
-                        class="n-error"
-                        role="alert"
-                    >
-                        {{ applicationStore.errors?.timeslot_id[0] }}
-                    </div>
+            <div class="n-stack n-gap-s">
+                <label class="n-label">Créneau</label>
+                <multi-select
+                    @select="changeTeachers"
+                    v-model="selectedTimeslot"
+                    :options="timeslotStore.timeslots"
+                    :show-no-results="true"
+                    label="name"
+                    placeholder="Sélectionner un créneau"
+                    track-by="id"
+                    :disabled="!!props.request"
+                >
+                    <template #noResult>Pas de créneaux correspondants</template>
+                    <template #noOptions>Pas de créneaux trouvés</template>
+                </multi-select>
+                <div
+                    v-if="applicationStore.errors?.timeslot_id"
+                    class="n-error"
+                    role="alert"
+                >
+                    {{ applicationStore.errors?.timeslot_id[0] }}
                 </div>
-                <div v-if="!!props.request" class="n-stack n-gap-s">
-                    <nord-input label="Demande créé le :"
-                                disabled
-                                expand
-                                :value="createdDate">
-                    </nord-input>
-                </div>
-            </nord-stack>
+            </div>
             <div class="n-stack n-gap-s">
                 <label class="n-label">Formateur</label>
                 <multi-select
-                        v-model="selectedTeacher"
-                        :options="teachers"
-                        :show-no-results="true"
-                        label="full_name"
-                        placeholder="Sélectionner un formateur"
-                        track-by="user_id"
-                        :disabled="!!props.request || disabledTeachers.value"
+                    v-model="selectedTeacher"
+                    :options="teachers"
+                    :show-no-results="true"
+                    label="full_name"
+                    placeholder="Sélectionner un formateur"
+                    track-by="user_id"
+                    :disabled="!!props.request || disabledTeachers.value"
                 >
                     <template #noResult>Pas de formateurs correspondants</template>
                     <template #noOptions>Pas de formateurs trouvés</template>
                 </multi-select>
                 <div
-                        v-if="applicationStore.errors?.teacher_id"
-                        class="n-error"
-                        role="alert"
+                    v-if="applicationStore.errors?.teacher_id"
+                    class="n-error"
+                    role="alert"
                 >
                     {{ applicationStore.errors?.teacher_id[0] }}
                 </div>
@@ -171,6 +163,13 @@ watch(() => props.request, async () => {
                             disabled
                             expand
                             :value="props.request?.administrative_employee.full_name">
+                </nord-input>
+            </div>
+            <div v-show="!!props.request" class="n-stack n-gap-s">
+                <nord-input label="Demande créé le :"
+                            disabled
+                            expand
+                            :value="createdDate">
                 </nord-input>
             </div>
 
@@ -188,11 +187,11 @@ watch(() => props.request, async () => {
             <nord-stack direction="horizontal" justify-content="">
                 <fieldset>
                     <legend class="n-label">Etat de la demande du formateur</legend>
-                        <nord-stack direction="vertical">
-                            <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-weaker\' name=\'interface-time\'></nord-icon>', disabled: true, value: 'null'}"/>
-                            <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-success\' name=\'interface-checked-small\'></nord-icon>', disabled: true, value: 'true'}"/>
-                            <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-error\' name=\'interface-close-small\'></nord-icon>', disabled: true, value: 'false'}"/>
-                        </nord-stack>
+                    <nord-stack direction="vertical">
+                        <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-weaker\' name=\'interface-time\'></nord-icon>', disabled: true, value: 'null'}"/>
+                        <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-success\' name=\'interface-checked-small\'></nord-icon>', disabled: true, value: 'true'}"/>
+                        <TheRadioInput v-model="isValidatedTeacher" :item="{label: '<nord-icon class=\'n-color-text-error\' name=\'interface-close-small\'></nord-icon>', disabled: true, value: 'false'}"/>
+                    </nord-stack>
                 </fieldset>
                 <fieldset>
                     <legend class="n-label">Etat de la demande au service administratif</legend>
@@ -210,7 +209,7 @@ watch(() => props.request, async () => {
                 </nord-button>
 
                 <nord-button v-if="request" expand type="button" variant="danger" @click="destroy">
-                   Annuler la demande
+                    Annuler la demande
                 </nord-button>
             </nord-stack>
 
