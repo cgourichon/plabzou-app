@@ -31,6 +31,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['resetEvents'])
+
 const selectedEvent = ref(null)
 const previousEvent = ref(null)
 const isAdministrativeEmployee = ref(null)
@@ -47,9 +49,7 @@ const handleEventClick = (event) => {
 }
 
 const closeSelectedEvent = () => {
-  selectedEvent.value = {...selectedEvent.value, start: previousEvent.value.start, end: previousEvent.value.end}
-  selectedEvent.value = null
-  previousEvent.value = null
+  emit('resetEvents')
 }
 
 const calendarOptions = {
@@ -100,7 +100,6 @@ const calendarOptions = {
   },
   eventDrop(info) {
     handleEventClick(info)
-
   },
   eventResizeStop({ event }) {
     const start = getDateTimeWithoutTimeZone(event.start.toString())
@@ -117,7 +116,7 @@ const calendarOptions = {
   <TimeslotAdminModal v-if="isAdministrativeEmployee"
                       :currentEvent="selectedEvent" :previous-event="previousEvent" :promotion="promotion" @close="closeSelectedEvent"/>
 
-  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="closeSelectedEvent"/>
+  <TimeslotModal v-else :currentEvent="selectedEvent" @close="closeSelectedEvent"/>
 </template>
 
 <style scoped>

@@ -65,7 +65,7 @@
       </multi-select>
     </nord-stack>
   </nord-card>
-  <Calendar v-if="hasTimeslots" :events="filteredTimeslots" :promotion=selectedPromotion view="dayGridMonth"/>
+  <Calendar v-if="hasTimeslots" :events="filteredTimeslots" :promotion=selectedPromotion view="dayGridMonth" @resetEvents="fetchTimeslots"/>
 
 </template>
 
