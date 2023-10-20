@@ -17,6 +17,10 @@
       disabledAction: {
           type: Boolean,
           default: false
+      },
+      showButton: {
+          type: Boolean,
+          default: true
       }
   })
 
@@ -50,7 +54,8 @@
                      :id="`cancelButton-${idModal}`">
             <slot name="cancelButton"></slot>
         </nord-button>
-        <nord-button @click="actionModal" slot="footer"
+        <nord-button v-show="showButton"
+                     @click="actionModal" slot="footer"
                      expand
                      :disabled="disabledAction"
                      :id="`confirmButton-${idModal}`"
