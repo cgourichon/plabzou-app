@@ -2,14 +2,10 @@
 import DataTable from "@/components/Table/DataTable.vue";
 import {useRequestStore} from "@/stores/request.store";
 import {getDatetimeShortFormat} from "@/utils/dayjs";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditActionCondition from "@/components/Action/EditActionCondition.vue";
 
 const requestStore = useRequestStore();
 requestStore.fetchRequests();
-
-const components = {
-    actionsCellRender: EditAction
-}
 
 const booleanResponse = value => {
     let icon;
@@ -78,7 +74,7 @@ const columns = [
     {
         field: "actions",
         headerName: "Modifier",
-        cellRenderer: "actionsCellRender",
+        cellRenderer: EditActionCondition,
     }
 ]
 </script>
