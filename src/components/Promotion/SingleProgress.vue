@@ -29,7 +29,7 @@ const props = defineProps({
   },
   remaining: {
     type: Number,
-    required: true
+    required: false
   },
   total: {
     type: Number,

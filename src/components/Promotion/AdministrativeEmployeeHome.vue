@@ -14,8 +14,7 @@ promotionStore.resetPromotions()
 const selectedPromotion = ref(null)
 const modal = ref(null)
 
-// j'ai essayé l'event rowSelected à la place, mais après la première sélection il y avait un décalage (toujours la sélection précédente d'affiché)
-const onSelectionChanged = () => {
+const rowClicked = () => {
   // la méthode est au pluriel et renvoit toujours un array, mais la sélection est en single
   const selectedRows = gridApi.value.getSelectedRows();
   selectedPromotion.value = selectedRows[0]
@@ -120,7 +119,7 @@ const onFilterTextBoxChanged = () => {
           style="height: 500px"
           rowSelection="single"
           @grid-ready="onGridReady"
-          @selection-changed="onSelectionChanged"
+          @row-clicked="rowClicked"
       />
     </nord-stack>
 
