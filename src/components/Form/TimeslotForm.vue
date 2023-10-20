@@ -43,9 +43,17 @@ const form = computed(() => ({
   promotions: props.timeslot?.promotions ?? [],
 }))
 
+const setMultiselectValuesFromTimeslot = async () => {
+  selectedTraining.value = props.timeslot.training
+  selectedPromotions.value = props.timeslot.promotions
+  selectedRoom.value = props.timeslot.room
+  selectedLearners.value = props.timeslot.learners
+  selectedTeachers.value = props.timeslot.teachers
+}
+
 const setMultiselectValuesToForm = () => {
   form.value.training = selectedTraining.value.id
-  form.value.room = selectedRoom.value.id
+  form.value.room = selectedRoom.value?.id
   form.value.learners = selectedLearners.value
   form.value.teachers = selectedTeachers.value
   form.value.promotions = selectedPromotions.value
@@ -101,6 +109,12 @@ watch(() => selectedTraining.value, async () => {
   selectedTeachers.value = []
 
   await fetchDependencies()
+
+  if (props.timeslot) {
+    selectedPromotions.value = props.timeslot.promotions
+    selectedLearners.value = props.timeslot.learners
+    selectedTeachers.value = props.timeslot.teachers
+  }
 })
 
 watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
@@ -124,6 +138,7 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
+  if (props.timeslot) await setMultiselectValuesFromTimeslot()
 })
 </script>
 
