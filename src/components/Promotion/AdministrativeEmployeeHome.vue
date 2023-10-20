@@ -3,7 +3,7 @@ import {usePromotionStore} from "@/stores/promotion.store";
 import {onMounted} from "vue";
 import ProgressBar from "@/components/Promotion/ProgressBar.vue";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditPromotionPlanningAction from "@/components/Action/EditPromotionPlanningAction.vue";
 import {getFrenchDate} from "../../utils/dayjs";
 import {AgGridVue} from "ag-grid-vue3";
 import {reactive, ref} from "vue";
@@ -29,7 +29,7 @@ onMounted(async () => {
 // copier coller de DataTable.vue pour le reste
 const components = {
   progressCellRender: ProgressBar,
-  actionCellRender: EditAction
+  actionCellRender: EditPromotionPlanningAction
 }
 
 const gridApi = ref(null) // Optional - for accessing Grid's API
@@ -75,7 +75,7 @@ const columnDefs = reactive({
       valueFormatter: ({value}) => getFrenchDate(value)
     },
     {
-      field: "id",
+      field: "action",
       headerName: "Modifier",
       cellRenderer: "actionCellRender",
     },
