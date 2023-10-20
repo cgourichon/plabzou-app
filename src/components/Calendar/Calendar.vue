@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -36,9 +36,7 @@ const previousEvent = ref(null)
 const isAdministrativeEmployee = ref(null)
 
 onMounted(async () => {
-  await authStore.fetchAuthenticatedUser()
-
-  isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
+  isAdministrativeEmployee.value = !!authStore.authenticatedUser.administrative_employee
 })
 
 const handleEvent = (info) => {
@@ -50,6 +48,17 @@ const resetselectedEvent = () => {
   selectedEvent.value = null
   previousEvent.value = null
 }
+
+const shownEvents = computed(() => props.events?.map(timeslot => ({
+  id: timeslot.id,
+  title: timeslot.training.name,
+  start: timeslot.starts_at,
+  end: timeslot.ends_at,
+  color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
+  is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
+  is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
+  timeslot: timeslot,
+})))
 
 const calendarOptions = {
   plugins: [
@@ -84,23 +93,14 @@ const calendarOptions = {
   nowIndicator: true,
   dayMaxEvents: true,
   height: (window.innerHeight - 120),
-  events: props.events?.map(timeslot => ({
-    id: timeslot.id,
-    title: timeslot.training.name,
-    start: timeslot.starts_at,
-    end: timeslot.ends_at,
-    color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
-    is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
-    is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
-    timeslot: timeslot,
-  })),
+  events: shownEvents,
   eventClick: function (info) {
     handleEvent(info.event)
   },
   eventDrop(info) {
     handleEvent(info)
   },
-  eventResizeStop({ event }) {
+  eventResizeStop({event}) {
     const start = getDateTimeWithoutTimeZone(event.start.toString())
     const end = getDateTimeWithoutTimeZone(event.end.toString())
     console.log(event.end);
@@ -113,7 +113,8 @@ const calendarOptions = {
   <FullCalendar :options="calendarOptions"/>
 
   <TimeslotAdminModal v-if="isAdministrativeEmployee"
-                      :selectedEvent="selectedEvent" :previousEvent="previousEvent" :promotion="promotion" @close="resetselectedEvent"/>
+                      :selectedEvent="selectedEvent" :previousEvent="previousEvent" :promotion="promotion"
+                      @close="resetselectedEvent"/>
 
   <TimeslotModal v-else :selectedEvent="selectedEvent" @close="resetselectedEvent"/>
 </template>

@@ -15,6 +15,7 @@ promotionStore.resetPromotions()
 const selectedPromotion = ref(null)
 const modalAdvancement = ref(null)
 const initialLoading = ref(true)
+const loadingPromotion = ref(false)
 
 const selectPromotion = async () => {
   if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
@@ -25,8 +26,10 @@ const showAdvancement = () => {
 }
 
 const fetchPromotion = async (id) => {
+  loadingPromotion.value = true;
   await promotionStore.fetchPromotion(id, {advancement: 1})
   selectedPromotion.value = promotionStore.promotion
+  loadingPromotion.value = false;
 }
 
 const filteredTimeslots = computed(() => {
@@ -43,10 +46,8 @@ onMounted(async () => {
   if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
 
   await promotionStore.fetchPromotions()
-  console.log('pluriel', promotionStore.promotions)
 
   await timeslotStore.fetchTimeslots()
-  console.log('slots', timeslotStore.timeslots)
 
   initialLoading.value = false
 })
@@ -82,7 +83,7 @@ onMounted(async () => {
     </nord-card>
     <Calendar v-if="hasTimeslots" :events="filteredTimeslots" :promotion=selectedPromotion view="dayGridMonth"/>
 
-    <nord-modal v-if="selectedPromotion" :open="false" ref="modalAdvancement" size="l" aria-labelledby="title">
+    <nord-modal v-if="selectedPromotion && !loadingPromotion" :open="false" ref="modalAdvancement" size="l" aria-labelledby="title">
       <h2 slot="header" id="title">Promotion : {{ selectedPromotion.name }}</h2>
       <promotion-progress :promotion="selectedPromotion"/>
     </nord-modal>
