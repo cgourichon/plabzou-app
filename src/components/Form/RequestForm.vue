@@ -82,8 +82,6 @@ const initValues = async () => {
     selectedTeacher.value = teachers.value.find(teacher => teacher.user_id === props.request.teacher_id);
     isValidatedAdmin.value = props.request.is_approved_by_admin ? 'true' : props.request.is_approved_by_admin === false ? 'false' : 'null';
     isValidatedTeacher.value = props.request.is_approved_by_teacher ? 'true' : props.request.is_approved_by_teacher === false ? 'false' : 'null';
-    console.log(props.request.is_approved_by_admin, isValidatedAdmin.value);
-    console.log(props.request.is_approved_by_teacher, isValidatedTeacher.value);
 
     comment.value = props.request.comment
     disabledTeachers.value = true;
