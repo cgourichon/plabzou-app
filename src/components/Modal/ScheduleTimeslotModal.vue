@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, defineEmits} from "vue";
+import {defineEmits} from "vue";
 import {useAuthStore} from "@/stores/auth.store";
 import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
@@ -13,8 +13,6 @@ const props = defineProps({
 })
 
 defineEmits(["close"])
-
-onMounted(async () => await authStore.fetchAuthenticatedUser())
 </script>
 
 <template>
