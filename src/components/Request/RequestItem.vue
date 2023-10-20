@@ -76,6 +76,7 @@ const sendResponse = async () => {
                         <template #confirmButton>Envoyer la réponse</template>
                     </TheModal>
                     <TheModal color-button="secondary"
+                              :show-button="false"
                               :id-modal="`details-${request.id}`"
                     >
                         <template #openButton>Voir le détail</template>
