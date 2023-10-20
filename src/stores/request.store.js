@@ -18,8 +18,8 @@ export const useRequestStore = defineStore('request', {
         async createRequest(request) {
             await axiosClient.post('/requests', request);
         },
-        async updateRequest(id, timeslot) {
-            await axiosClient.put(`requests/${id}`, timeslot)
+        async updateRequest(id, data) {
+            await axiosClient.patch(`requests/${id}`, data)
         },
         async deleteRequest(id) {
             await axiosClient.delete(`requests/${id}`)
