@@ -42,14 +42,19 @@ const isEditingTimeslot = ref(false)
 const isValidated = ref(false)
 
 const toggleEditing = () => {
-  isEditingTimeslot.value = !isEditingTimeslot.value
   initForm()
+  if(props.previousEvent && isEditingTimeslot.value) {
+    emit('close')
+  } else {
+    isEditingTimeslot.value = !isEditingTimeslot.value
+  }
 }
 
+const emit = defineEmits(['close'])
 const resetModal = () => {
   isEditingTimeslot.value = false
   initForm()
-  this.$emit('close')
+  emit('close')
 }
 
 const form = computed(() => initForm())
@@ -108,7 +113,7 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
 
     if(previousStartDate !== currentStartDate || previousEndDate !== currentEndDate) {
       isEditingTimeslot.value = true
-
+      console.log(props.currentEvent.start, props.previousEvent.start)
       form.value.starts_at = currentStartDate
       form.value.ends_at = currentEndDate
     }

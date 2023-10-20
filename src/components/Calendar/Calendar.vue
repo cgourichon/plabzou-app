@@ -41,12 +41,13 @@ onMounted(async () => {
   isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
 })
 
-const handleEvent = (info) => {
-  selectedEvent.value = info.event
-  previousEvent.value = info.oldEvent
+const handleEventClick = (event) => {
+  selectedEvent.value = event.event
+  previousEvent.value = event.oldEvent
 }
 
-const resetselectedEvent = () => {
+const closeSelectedEvent = () => {
+  selectedEvent.value = {...selectedEvent.value, start: previousEvent.value.start, end: previousEvent.value.end}
   selectedEvent.value = null
   previousEvent.value = null
 }
@@ -95,10 +96,11 @@ const calendarOptions = {
     timeslot: timeslot,
   })),
   eventClick: function (info) {
-    handleEvent(info.event)
+    handleEventClick(info)
   },
   eventDrop(info) {
-    handleEvent(info)
+    handleEventClick(info)
+
   },
   eventResizeStop({ event }) {
     const start = getDateTimeWithoutTimeZone(event.start.toString())
@@ -113,9 +115,9 @@ const calendarOptions = {
   <FullCalendar :options="calendarOptions"/>
 
   <TimeslotAdminModal v-if="isAdministrativeEmployee"
-                      :selectedEvent="selectedEvent" :previousEvent="previousEvent" :promotion="promotion" @close="resetselectedEvent"/>
+                      :currentEvent="selectedEvent" :previous-event="previousEvent" :promotion="promotion" @close="closeSelectedEvent"/>
 
-  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="resetselectedEvent"/>
+  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="closeSelectedEvent"/>
 </template>
 
 <style scoped>
