@@ -62,6 +62,7 @@ const columnDefs = reactive({
       field: "percentage",
       headerName: "Progression",
       cellRenderer: "progressCellRender",
+      cellClass: "ag-align-vertical-center",
     },
     {
       field: "starts_at",
