@@ -19,6 +19,10 @@ export const getDateTimeWithoutTimeZone = (datetime) => {
     return dayjs(datetime).format('YYYY-MM-DD HH:mm:ss')
 }
 
+export const getDatetimeShortFormat = datetime => {
+    return dayjs(datetime).format('DD.MM.YY à HH:mm');
+}
+
 export const getTimeFromNow = datetime => {
     return dayjs(datetime).from(dayjs())
 }
