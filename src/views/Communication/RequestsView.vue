@@ -1,8 +1,18 @@
 <script setup>
 import {useAuthStore} from "@/stores/auth.store";
 import RequestItem from "@/components/Request/RequestItem.vue";
-
+import {onBeforeUpdate, onMounted, ref} from "vue";
 const authStore = useAuthStore();
+
+const requests = ref(null);
+
+onMounted(() => {
+    requests.value = authStore.authenticatedUser.teacher.requests;
+})
+
+onBeforeUpdate(() => {
+    requests.value = authStore.authenticatedUser.teacher.requests;
+})
 </script>
 
 <template>
