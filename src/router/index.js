@@ -2,7 +2,6 @@ import {createRouter, createWebHistory} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
 import {useApplicationStore} from "@/stores/application.store";
 import HomeView from "@/views/HomeView.vue";
-import AboutView from "@/views/AboutView.vue";
 import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import UserListView from "@/views/Management/User/UserListView.vue";
@@ -28,6 +27,7 @@ import RequestListView from "@/views/Management/Request/RequestListView.vue";
 import RequestCreateView from "@/views/Management/Request/RequestCreateView.vue";
 import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
 import RequestsView from "@/views/Communication/RequestsView.vue";
+import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,9 +38,9 @@ const router = createRouter({
             component: HomeView
         },
         {
-            path: '/about',
-            name: 'about',
-            component: AboutView
+            path: '/planning/promotions/:id?',
+            name: 'schedule-promotions',
+            component: PromotionScheduleView
         },
         {
             path: '/connexion',
