@@ -1,4 +1,6 @@
 <script setup>
+import {computed, onMounted, ref} from "vue";
+
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -6,9 +8,12 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import frLocale from '@fullcalendar/core/locales/fr';
-import {ref} from "vue";
-import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
+
 import {useAuthStore} from "@/stores/auth.store";
+import TimeslotModal from "@/components/Modal/ScheduleTimeslotModal.vue";
+import TimeslotAdminModal from "@/components/Modal/AdministrativeScheduleTimeslotModal.vue";
+
+const authStore = useAuthStore()
 
 const props = defineProps({
   view: {
@@ -19,9 +24,28 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  promotion: {
+    type: Object,
+    required: false
+  }
 })
 
-const authStore = useAuthStore()
+const selectedEvent = ref(null)
+const isAdministrativeEmployee = ref(null)
+
+onMounted(async () => {
+  await authStore.fetchAuthenticatedUser()
+
+  isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
+})
+
+const handleEventClick = (info) => {
+  selectedEvent.value = info.event
+}
+
+const closeSelecteEvent = () => {
+  selectedEvent.value = null
+}
 
 const calendarOptions = {
   plugins: [
@@ -36,11 +60,13 @@ const calendarOptions = {
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
-    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    right: 'multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek'
   },
   buttonText: {
     list: 'Liste'
   },
+  weekNumbers: true,
+  weekText: 'S',
   allDayText: 'Journée',
   slotLabelFormat: {
     hour: 'numeric',
@@ -65,98 +91,15 @@ const calendarOptions = {
     handleEventClick(info)
   },
 }
-
-const selectedEvent = ref(null)
-
-const handleEventClick = (info) => {
-  selectedEvent.value = info.event
-}
-
-const closeSelecteEvent = () => {
-  selectedEvent.value = null
-}
 </script>
 
 <template>
   <FullCalendar :options="calendarOptions"/>
 
-  <nord-modal :open="selectedEvent" @close="closeSelecteEvent">
-    <h2 slot="header">{{ selectedEvent?.title }}</h2>
+  <TimeslotAdminModal v-if="isAdministrativeEmployee"
+                      :selectedEvent="selectedEvent" :promotion="promotion" @close="closeSelecteEvent"/>
 
-    <nord-stack>
-      <nord-stack>
-        <nord-banner v-if="selectedEvent?.extendedProps?.is_teacher" variant="info">
-          Vous êtes le formateur ou faites partie des formateurs
-        </nord-banner>
-        <nord-banner v-if="selectedEvent?.extendedProps?.is_learner" variant="info">
-          Vous faites partie des apprenants
-        </nord-banner>
-      </nord-stack>
-
-      <nord-input
-          :value="selectedEvent?.title"
-          expand
-          label="Formation"
-          readonly
-      />
-
-      <nord-input
-          :value="selectedEvent?.extendedProps?.timeslot?.training?.courses.map(
-              course => course?.name
-              ).join(' - ')"
-          expand
-          label="Cursus"
-          readonly
-      />
-
-      <nord-input
-          :value="selectedEvent?.extendedProps?.timeslot?.training?.courses.map(
-              course => course?.promotions?.map(promotion => promotion?.name).join(' - ')
-              ).join('')"
-          expand
-          label="Promotion / Groupe"
-          readonly
-      />
-
-      <nord-stack direction="horizontal">
-        <nord-input
-            :value="getFrenchDateTimeWithoutTimeZone(selectedEvent?.start)"
-            expand
-            label="Début"
-            readonly
-        />
-        <nord-input
-            :value="getFrenchDateTimeWithoutTimeZone(selectedEvent?.end)"
-            expand
-            label="Fin"
-            readonly
-        />
-      </nord-stack>
-
-      <nord-input
-          :value="selectedEvent?.extendedProps?.timeslot?.room?.building?.place?.full_address"
-          expand
-          label="Adresse"
-          readonly
-      />
-
-      <nord-input
-          :value="selectedEvent?.extendedProps?.timeslot?.room?.building?.name"
-          expand
-          label="Bâtiment"
-          readonly
-      />
-
-      <nord-input
-          :value="selectedEvent?.extendedProps?.timeslot?.room?.name"
-          expand
-          label="Salle"
-          readonly
-      />
-    </nord-stack>
-
-    <nord-button slot="footer" expand @click="closeSelecteEvent">Fermer</nord-button>
-  </nord-modal>
+  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="closeSelecteEvent"/>
 </template>
 
 <style scoped>

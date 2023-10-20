@@ -38,9 +38,9 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
-      <RouterLink to="/about">
-        <nord-nav-item :active="$route.path === '/about'" icon="interface-info">
-          A propos
+      <RouterLink to="/planning/promotions">
+        <nord-nav-item :active="$route.path.startsWith('/planning/promotions')" icon="interface-calendar">
+          Planning
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
