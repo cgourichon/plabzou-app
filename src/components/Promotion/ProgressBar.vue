@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   params: {
     type: Object,
     required: true
@@ -8,12 +8,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <div>
-    <nord-progress-bar
-        :value="props.params.value"
-        max="100"
-    />
-  </div>
+  <nord-progress-bar
+      :value="params.value"
+      max="100"
+  />
 </template>
 
 <style scoped>
