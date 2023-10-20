@@ -33,8 +33,8 @@ const changeTeachers = () => {
 
 const assignData = () => {
     return {
-        timeslot_id: selectedTimeslot.value.id,
-        teacher_id: selectedTeacher.value.user_id,
+        timeslot_id: selectedTimeslot.value?.id,
+        teacher_id: selectedTeacher.value?.user_id,
         comment: comment.value,
         is_approved_by_admin: getBooleanStatus(isValidatedAdmin.value),
         is_approved_by_teacher: props.request ? getBooleanStatus(isValidatedTeacher.value) : null,
@@ -125,11 +125,11 @@ watch(() => props.request, async () => {
                     <template #noOptions>Pas de créneaux trouvés</template>
                 </multi-select>
                 <div
-                        v-if="applicationStore.errors?.training"
+                        v-if="applicationStore.errors?.timeslot_id"
                         class="n-error"
                         role="alert"
                 >
-                    {{ applicationStore.errors?.training[0] }}
+                    {{ applicationStore.errors?.timeslot_id[0] }}
                 </div>
             </div>
             <div class="n-stack n-gap-s">
@@ -147,11 +147,11 @@ watch(() => props.request, async () => {
                     <template #noOptions>Pas de formateurs trouvés</template>
                 </multi-select>
                 <div
-                        v-if="applicationStore.errors?.teacher"
+                        v-if="applicationStore.errors?.teacher_id"
                         class="n-error"
                         role="alert"
                 >
-                    {{ applicationStore.errors?.teacher[0] }}
+                    {{ applicationStore.errors?.teacher_id[0] }}
                 </div>
             </div>
 
