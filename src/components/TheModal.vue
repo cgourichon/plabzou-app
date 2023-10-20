@@ -20,6 +20,9 @@
       }
   })
 
+  const emit = defineEmits(['action'])
+
+
   const modalNewConversation = ref(null);
 
   const openModal = () => {
@@ -31,7 +34,8 @@
   }
 
   const actionModal = () => {
-
+      emit('action');
+      closeModal();
   }
 </script>
 
