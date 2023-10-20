@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -12,6 +12,7 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import {useAuthStore} from "@/stores/auth.store";
 import TimeslotModal from "@/components/Modal/ScheduleTimeslotModal.vue";
 import TimeslotAdminModal from "@/components/Modal/AdministrativeScheduleTimeslotModal.vue";
+import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 const authStore = useAuthStore()
 
@@ -31,6 +32,7 @@ const props = defineProps({
 })
 
 const selectedEvent = ref(null)
+const previousEvent = ref(null)
 const isAdministrativeEmployee = ref(null)
 
 onMounted(async () => {
@@ -39,12 +41,14 @@ onMounted(async () => {
   isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
 })
 
-const handleEventClick = (info) => {
+const handleEvent = (info) => {
   selectedEvent.value = info.event
+  previousEvent.value = info.oldEvent
 }
 
-const closeSelecteEvent = () => {
+const resetselectedEvent = () => {
   selectedEvent.value = null
+  previousEvent.value = null
 }
 
 const calendarOptions = {
@@ -54,9 +58,12 @@ const calendarOptions = {
     timeGridPlugin,
     listPlugin,
     multiMonthPlugin,
+
   ],
   initialView: props.view || 'timeGridWeek',
   locale: frLocale,
+  editable: true,
+  selectable: true,
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
@@ -88,8 +95,17 @@ const calendarOptions = {
     timeslot: timeslot,
   })),
   eventClick: function (info) {
-    handleEventClick(info)
+    handleEvent(info.event)
   },
+  eventDrop(info) {
+    handleEvent(info)
+  },
+  eventResizeStop({ event }) {
+    const start = getDateTimeWithoutTimeZone(event.start.toString())
+    const end = getDateTimeWithoutTimeZone(event.end.toString())
+    console.log(event.end);
+    //TODO: Fuck le calendar
+  }
 }
 </script>
 
@@ -97,9 +113,9 @@ const calendarOptions = {
   <FullCalendar :options="calendarOptions"/>
 
   <TimeslotAdminModal v-if="isAdministrativeEmployee"
-                      :selectedEvent="selectedEvent" :promotion="promotion" @close="closeSelecteEvent"/>
+                      :selectedEvent="selectedEvent" :previousEvent="previousEvent" :promotion="promotion" @close="resetselectedEvent"/>
 
-  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="closeSelecteEvent"/>
+  <TimeslotModal v-else :selectedEvent="selectedEvent" @close="resetselectedEvent"/>
 </template>
 
 <style scoped>

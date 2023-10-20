@@ -6,7 +6,7 @@ import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 const authStore = useAuthStore()
 
 const props = defineProps({
-  selectedEvent: {
+  currentEvent: {
     type: Object,
     default: null,
   }
@@ -18,28 +18,28 @@ onMounted(async () => await authStore.fetchAuthenticatedUser())
 </script>
 
 <template>
-  <nord-modal :open="props.selectedEvent" @close="emit('close')" size="m">
-    <h2 slot="header">{{ props.selectedEvent?.title }}</h2>
+  <nord-modal :open="props.currentEvent" @close="emit('close')" size="m">
+    <h2 slot="header">{{ props.currentEvent?.title }}</h2>
 
     <nord-stack direction="horizontal" align-items="start" justify-content="space-around">
       <nord-stack >
         <nord-stack v-if="authStore.authenticatedUser">
-          <nord-banner v-if="props.selectedEvent?.extendedProps?.is_teacher" variant="info">
+          <nord-banner v-if="props.currentEvent?.extendedProps?.is_teacher" variant="info">
             Vous êtes le formateur ou faites partie des formateurs
           </nord-banner>
-          <nord-banner v-if="props.selectedEvent?.extendedProps?.is_learner" variant="info">
+          <nord-banner v-if="props.currentEvent?.extendedProps?.is_learner" variant="info">
             Vous faites partie des apprenants
           </nord-banner>
         </nord-stack>
 
         <nord-input
-            :value="props.selectedEvent?.title"
+            :value="props.currentEvent?.title"
             expand
             label="Formation"
             readonly
         />
         <nord-input
-            :value="props.selectedEvent?.extendedProps?.timeslot?.training?.courses?.map(
+            :value="props.currentEvent?.extendedProps?.timeslot?.training?.courses?.map(
               course => course?.name
               ).join(' - ')"
             expand
@@ -48,7 +48,7 @@ onMounted(async () => await authStore.fetchAuthenticatedUser())
         />
 
         <nord-input
-            :value="props.selectedEvent?.extendedProps?.timeslot?.training?.courses?.map(
+            :value="props.currentEvent?.extendedProps?.timeslot?.training?.courses?.map(
               course => course?.promotions?.map(promotion => promotion?.name).join(' - ')
               ).join('')"
             expand
@@ -58,13 +58,13 @@ onMounted(async () => await authStore.fetchAuthenticatedUser())
 
         <nord-stack direction="horizontal">
           <nord-input
-              :value="getFrenchDateTimeWithoutTimeZone(selectedEvent?.start)"
+              :value="getFrenchDateTimeWithoutTimeZone(currentEvent?.start)"
               expand
               label="Début"
               readonly
           />
           <nord-input
-              :value="getFrenchDateTimeWithoutTimeZone(selectedEvent?.end)"
+              :value="getFrenchDateTimeWithoutTimeZone(currentEvent?.end)"
               expand
               label="Fin"
               readonly
@@ -74,14 +74,14 @@ onMounted(async () => await authStore.fetchAuthenticatedUser())
 
         <nord-stack direction="horizontal">
           <nord-input
-              :value="props.selectedEvent?.extendedProps?.timeslot?.room?.name ?? 'En distanciel'"
+              :value="props.currentEvent?.extendedProps?.timeslot?.room?.name ?? 'En distanciel'"
               expand
               label="Salle"
               readonly
           />
 
-          <nord-input v-if="props.selectedEvent?.extendedProps?.timeslot?.room?.building"
-                      :value="props.selectedEvent?.extendedProps?.timeslot?.room?.building?.name"
+          <nord-input v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
+                      :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.name"
                       expand
                       label="Bâtiment"
                       readonly
@@ -89,8 +89,8 @@ onMounted(async () => await authStore.fetchAuthenticatedUser())
 
         </nord-stack>
 
-        <nord-input v-if="props.selectedEvent?.extendedProps?.timeslot?.room?.building"
-                    :value="props.selectedEvent?.extendedProps?.timeslot?.room?.building?.place?.full_address"
+        <nord-input v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
+                    :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.place?.full_address"
                     expand
                     label="Adresse"
                     readonly
