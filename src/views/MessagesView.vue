@@ -8,7 +8,7 @@ const authStore = useAuthStore();
 
 const startInterval = setInterval(() => {
     authStore.fetchAuthenticatedUser();
-}, 10000)
+}, 60000)
 
 const stopInterval = startInterval => {
     clearInterval(startInterval);
