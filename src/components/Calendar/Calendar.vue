@@ -1,6 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
-
+import {computed, reactive} from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,13 +7,9 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import frLocale from '@fullcalendar/core/locales/fr';
-
-import {useAuthStore} from "@/stores/auth.store";
 import TimeslotModal from "@/components/Modal/ScheduleTimeslotModal.vue";
 import TimeslotAdminModal from "@/components/Modal/AdministrativeScheduleTimeslotModal.vue";
-import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
-
-const authStore = useAuthStore()
+import {useAuthStore} from "@/stores/auth.store";
 
 const props = defineProps({
   view: {
@@ -31,28 +26,25 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['resetEvents'])
+const authStore = useAuthStore()
 
-const selectedEvent = ref(null)
-const previousEvent = ref(null)
-const isAdministrativeEmployee = ref(null)
+const emits = defineEmits(['resetEvents'])
 
-onMounted(async () => {
-  await authStore.fetchAuthenticatedUser()
-
-  isAdministrativeEmployee.value = !! authStore.authenticatedUser.administrative_employee
+const state = reactive({
+  selectedEvent: null,
+  previousEvent: null,
 })
 
 const handleEventClick = (event) => {
-  selectedEvent.value = event.event
-  previousEvent.value = event.oldEvent
+  state.selectedEvent = event.event
+  state.previousEvent = event.oldEvent
 }
 
 const closeSelectedEvent = () => {
-  emit('resetEvents')
+  emits('resetEvents')
 }
 
-const calendarOptions = {
+const calendarOptions = computed(() => ({
   plugins: [
     interactionPlugin,
     dayGridPlugin,
@@ -91,8 +83,8 @@ const calendarOptions = {
     start: timeslot.starts_at,
     end: timeslot.ends_at,
     color: timeslot.is_validated ? 'rgb(29, 134, 51)' : 'rgb(210, 64, 35)',
-    is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser.id),
-    is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser.id),
+    is_teacher: timeslot.teachers.some(teacher => teacher.user_id === authStore.authenticatedUser?.teacher?.id),
+    is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser?.teacher?.id),
     timeslot: timeslot,
   })),
   eventClick: function (info) {
@@ -101,22 +93,21 @@ const calendarOptions = {
   eventDrop(info) {
     handleEventClick(info)
   },
-  eventResizeStop({ event }) {
-    const start = getDateTimeWithoutTimeZone(event.start.toString())
-    const end = getDateTimeWithoutTimeZone(event.end.toString())
-    console.log(event.end);
-    //TODO: Fuck le calendar
-  }
-}
+}))
 </script>
 
 <template>
   <FullCalendar :options="calendarOptions"/>
 
-  <TimeslotAdminModal v-if="isAdministrativeEmployee"
-                      :currentEvent="selectedEvent" :previous-event="previousEvent" :promotion="promotion" @close="closeSelectedEvent"/>
+  <TimeslotAdminModal
+      v-if="authStore.authenticatedUser?.administrative_employee"
+      :currentEvent="state.selectedEvent"
+      :previous-event="state.previousEvent"
+      :promotion="promotion"
+      @close="closeSelectedEvent"
+  />
 
-  <TimeslotModal v-else :currentEvent="selectedEvent" @close="closeSelectedEvent"/>
+  <TimeslotModal v-else :currentEvent="state.selectedEvent" @close="closeSelectedEvent"/>
 </template>
 
 <style scoped>

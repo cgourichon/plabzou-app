@@ -12,15 +12,15 @@ const props = defineProps({
   }
 })
 
-defineEmits(["close"])
+const emits = defineEmits(['close'])
 </script>
 
 <template>
-  <nord-modal :open="props.currentEvent" @close="emit('close')" size="m">
+  <nord-modal :open="props.currentEvent" size="m" @close="emits('close')">
     <h2 slot="header">{{ props.currentEvent?.title }}</h2>
 
-    <nord-stack direction="horizontal" align-items="start" justify-content="space-around">
-      <nord-stack >
+    <nord-stack align-items="start" direction="horizontal" justify-content="space-around">
+      <nord-stack>
         <nord-stack v-if="authStore.authenticatedUser">
           <nord-banner v-if="props.currentEvent?.extendedProps?.is_teacher" variant="info">
             Vous êtes le formateur ou faites partie des formateurs
@@ -36,6 +36,7 @@ defineEmits(["close"])
             label="Formation"
             readonly
         />
+
         <nord-input
             :value="props.currentEvent?.extendedProps?.timeslot?.training?.courses?.map(
               course => course?.name
@@ -78,20 +79,22 @@ defineEmits(["close"])
               readonly
           />
 
-          <nord-input v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
-                      :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.name"
-                      expand
-                      label="Bâtiment"
-                      readonly
+          <nord-input
+              v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
+              :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.name"
+              expand
+              label="Bâtiment"
+              readonly
           />
 
         </nord-stack>
 
-        <nord-input v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
-                    :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.place?.full_address"
-                    expand
-                    label="Adresse"
-                    readonly
+        <nord-input
+            v-if="props.currentEvent?.extendedProps?.timeslot?.room?.building"
+            :value="props.currentEvent?.extendedProps?.timeslot?.room?.building?.place?.full_address"
+            expand
+            label="Adresse"
+            readonly
         />
       </nord-stack>
     </nord-stack>

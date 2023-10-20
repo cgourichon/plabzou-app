@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, computed, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 
 import {useApplicationStore} from "@/stores/application.store";
@@ -39,12 +39,12 @@ const validatedLearners = ref(null)
 const isEditingTimeslot = ref(false)
 const isValidated = ref(false)
 
-const emit = defineEmits(['close'])
+const emits = defineEmits(['close'])
 
 const toggleEditing = () => {
   initForm()
-  if(props.previousEvent && isEditingTimeslot.value) {
-    emit('close')
+  if (props.previousEvent && isEditingTimeslot.value) {
+    emits('close')
   } else {
     isEditingTimeslot.value = !isEditingTimeslot.value
   }
@@ -53,7 +53,7 @@ const toggleEditing = () => {
 const resetModal = () => {
   isEditingTimeslot.value = false
   initForm()
-  emit('close')
+  emits('close')
 }
 
 const form = computed(() => initForm())
@@ -71,7 +71,7 @@ const initForm = () => {
     starts_at: props.currentEvent?.extendedProps?.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.currentEvent?.extendedProps?.timeslot?.starts_at) : '',
     ends_at: props.currentEvent?.extendedProps?.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.currentEvent?.extendedProps?.timeslot?.ends_at) : '',
     is_validated: props.currentEvent?.extendedProps?.timeslot?.is_validated,
-    learners:  props.currentEvent?.extendedProps?.timeslot?.learners,
+    learners: props.currentEvent?.extendedProps?.timeslot?.learners,
     teachers: props.currentEvent?.extendedProps?.timeslot?.teachers,
   }
 }
@@ -84,13 +84,13 @@ const teachersNumber = computed(() => form?.value?.teachers?.length)
 const teachersLabel = computed(() => learnersNumber.value > 1 ? 'formateurs' : 'formateur')
 
 const filteredPromotionLearners = computed(() => validatedLearners?.value?.filter(
-    learner => promotionStore.promotion?.value?.learners.filter(
-        promotionLearner => promotionLearner.user_id === learner.user_id)
+        learner => promotionStore.promotion?.value?.learners.filter(
+            promotionLearner => promotionLearner.user_id === learner.user_id)
     )
 )
 const filteredOthersLearners = computed(() => validatedLearners?.value?.filter(
-    (learner) => promotionStore.promotion?.value?.learners.filter(
-        (promotionLearner) => promotionLearner.user_id !== learner.user_id)
+        (learner) => promotionStore.promotion?.value?.learners.filter(
+            (promotionLearner) => promotionLearner.user_id !== learner.user_id)
     )
 )
 
@@ -105,9 +105,8 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
     let currentStartDate = getDateTimeWithoutTimeZone(props.currentEvent.start.toString())
     let currentEndDate = getDateTimeWithoutTimeZone(props.currentEvent.end.toString())
 
-    if(previousStartDate !== currentStartDate || previousEndDate !== currentEndDate) {
+    if (previousStartDate !== currentStartDate || previousEndDate !== currentEndDate) {
       isEditingTimeslot.value = true
-      console.log(props.currentEvent.start, props.previousEvent.start)
       form.value.starts_at = currentStartDate
       form.value.ends_at = currentEndDate
     }
@@ -116,11 +115,12 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
 </script>
 
 <template>
-  <nord-modal :open="props.currentEvent" @close="resetModal" size="l">
+  <nord-modal :open="props.currentEvent" size="l" @close="resetModal">
     <h2 slot="header">{{ props.currentEvent?.title }}</h2>
-    <nord-stack direction="horizontal" align-items="start" justify-content="space-around">
+    <nord-stack align-items="start" direction="horizontal" justify-content="space-around">
       <nord-stack>
-        <nord-input v-if="props.promotion"
+        <nord-input
+            v-if="props.promotion"
             :value="props.promotion?.course?.name"
             expand
             label="Cursus suivi"
@@ -131,34 +131,35 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
           <label class="n-label">Formation</label>
           <multi-select
               v-model="selectedTraining"
+              :disabled="!isEditingTimeslot"
               :options="trainingStore.trainings"
               :show-no-results="true"
               label="name"
               placeholder="Sélectionner une formation"
               track-by="id"
-              :disabled="!isEditingTimeslot"
           >
             <template #noResult>Pas de formations correspondantes</template>
             <template #noOptions>Pas de formations trouvées</template>
           </multi-select>
         </nord-stack>
 
-
         <nord-stack direction="horizontal">
-          <nord-input v-model="form.starts_at"
-                      :error="applicationStore.errors?.starts_at"
-                      expand
-                      label="Date de début"
-                      type="datetime-local"
-                      :readonly="!isEditingTimeslot"
+          <nord-input
+              v-model="form.starts_at"
+              :error="applicationStore.errors?.starts_at"
+              :readonly="!isEditingTimeslot"
+              expand
+              label="Date de début"
+              type="datetime-local"
           />
+
           <nord-input
               v-model="form.ends_at"
               :error="applicationStore.errors?.ends_at"
+              :readonly="!isEditingTimeslot"
               expand
               label="Date de fin"
               type="datetime-local"
-              :readonly="!isEditingTimeslot"
           />
         </nord-stack>
 
@@ -167,48 +168,48 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
             <label class="n-label">Salle</label>
             <multi-select
                 v-model="selectedRoom"
+                :disabled="!isEditingTimeslot"
                 :options="roomStore.rooms"
                 :show-no-results="true"
                 label="name"
                 placeholder="Sélectionner une salle"
                 track-by="id"
-                :disabled="!isEditingTimeslot"
             >
               <template #noResult>Pas de salles correspondantes</template>
               <template #noOptions>Pas de salles trouvées</template>
             </multi-select>
           </nord-stack>
 
-          <nord-input v-if="selectedRoom"
-                      :value="selectedRoom.building?.name ?? '-'"
-                      expand
-                      label="Bâtiment"
-                      :readonly="!isEditingTimeslot"
+          <nord-input
+              v-if="selectedRoom"
+              :readonly="!isEditingTimeslot"
+              :value="selectedRoom.building?.name ?? '-'"
+              expand
+              label="Bâtiment"
           />
-
         </nord-stack>
 
-        <nord-input v-if="selectedRoom"
-                    :value="selectedRoom.building?.place?.full_address ?? '-'"
-                    expand
-                    label="Adresse"
-                    :readonly="!isEditingTimeslot"
+        <nord-input
+            v-if="selectedRoom"
+            :readonly="!isEditingTimeslot"
+            :value="selectedRoom.building?.place?.full_address ?? '-'"
+            expand
+            label="Adresse"
         />
       </nord-stack>
-      <nord-divider/>
+
       <nord-stack>
         <nord-stack>
           <label class="n-label">Statut du créneau</label>
 
           <nord-checkbox
               v-model="isValidated"
+              :disabled="!isEditingTimeslot"
               :error="applicationStore.errors?.is_validated"
               :label="isValidated ? 'Validé' : 'Non validé'"
               type="checkbox"
-              :disabled="!isEditingTimeslot"
           />
         </nord-stack>
-
 
         <nord-stack v-if="isEditingTimeslot">
           <nord-stack>
@@ -222,8 +223,8 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
                 :hide-selected="true"
                 :multiple="true"
                 :options="teacherStore.teachers"
-                :show-no-results="true"
                 :select-label="null"
+                :show-no-results="true"
                 label="full_name"
                 track-by="user_id"
             >
@@ -231,6 +232,7 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
               <template #noOptions>Pas de formateurs trouvés</template>
             </multi-select>
           </nord-stack>
+
           <nord-stack>
             <label class="n-label">Apprenant(s) à inscrire</label>
             <multi-select
@@ -252,12 +254,18 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
             </multi-select>
           </nord-stack>
         </nord-stack>
+
         <nord-stack v-else>
           <nord-stack>
             <label class="n-label">{{ teachersNumber }} {{ teachersLabel }} :</label>
 
             <nord-stack>
-              <nord-stack direction="horizontal" align-items="center" v-for="teacher in form.teachers" :key="teacher.id">
+              <nord-stack
+                  v-for="teacher in form.teachers"
+                  :key="teacher.id"
+                  align-items="center"
+                  direction="horizontal"
+              >
                 <nord-avatar size="m"/>
                 {{ teacher.full_name }}
               </nord-stack>
@@ -267,12 +275,18 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
           <nord-stack>
             <label class="n-label">{{ learnersNumber }} {{ learnersLabel }} :</label>
 
-            <nord-stack direction="horizontal" justify-content="space-between" gap="xxl">
+            <nord-stack direction="horizontal" gap="xxl" justify-content="space-between">
               <nord-stack align-items="center">
                 <nord-badge variant="success">
                   <nord-icon slot="icon" name="text-list"></nord-icon>
-                  Membres de cette promo</nord-badge>
-                <nord-stack direction="horizontal" justify-content="start" v-for="learner in filteredPromotionLearners" :key="learner.id">
+                  Membres de cette promo
+                </nord-badge>
+                <nord-stack
+                    v-for="learner in filteredPromotionLearners"
+                    :key="learner.id"
+                    direction="horizontal"
+                    justify-content="start"
+                >
                   <nord-avatar size="m"/>
                   {{ learner.full_name }}
                 </nord-stack>
@@ -283,7 +297,12 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
                   <nord-icon slot="icon" name="interface-add"></nord-icon>
                   Autres apprenants
                 </nord-badge>
-                <nord-stack direction="horizontal" justify-content="start" v-for="learner in filteredOthersLearners" :key="learner.id">
+                <nord-stack
+                    v-for="learner in filteredOthersLearners"
+                    :key="learner.id"
+                    direction="horizontal"
+                    justify-content="start"
+                >
                   <nord-avatar size="m"/>
                   {{ learner.full_name }}
                 </nord-stack>
@@ -293,9 +312,12 @@ watch(() => props.previousEvent, (newPreviousEvent) => {
         </nord-stack>
       </nord-stack>
     </nord-stack>
+
     <nord-stack slot="footer" direction="horizontal" justify-content="end">
       <nord-button expand @click="toggleEditing"> {{ isEditingTimeslot ? 'Annuler' : 'Editer' }}</nord-button>
-      <nord-button expand v-if="isEditingTimeslot" @click="createConversation" value="add" variant="primary">Enregistrer</nord-button>
+      <nord-button v-if="isEditingTimeslot" expand value="add" variant="primary">
+        Enregistrer
+      </nord-button>
     </nord-stack>
   </nord-modal>
 </template>

@@ -1,5 +1,4 @@
 <script setup>
-import {useAuthStore} from "@/stores/auth.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import {usePromotionStore} from "@/stores/promotion.store";
 import {useTrainingStore} from "@/stores/training.store";
@@ -11,7 +10,6 @@ import Calendar from "@/components/Calendar/Calendar.vue";
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 
-const authStore = useAuthStore()
 const teacherStore = useTeacherStore()
 const learnerStore = useLearnerStore()
 const promotionStore = usePromotionStore()
@@ -27,24 +25,18 @@ const modalAdvancement = ref(null)
 const initialLoading = ref(true)
 const loadingPromotion = ref(false)
 
-const selectPromotion = async () => {
+const fetchTimeslotsOrPromotion = async () => {
+  loadingPromotion.value = true
   if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else {
-    loadingPromotion.value = true;
-    setTimeout(() =>loadingPromotion.value = false, 500);
-  }
+  else await fetchTimeslots()
+  loadingPromotion.value = false;
 }
 
 const showAdvancement = () => {
   modalAdvancement.value.showModal()
 }
 
-const fetchCurrent = async () => {
-  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else await fetchTimeslots()
-}
-
-const fetchPromotion = async(id) => {
+const fetchPromotion = async (id) => {
   loadingPromotion.value = true;
   await promotionStore.fetchPromotion(id, {advancement: 1})
   selectedPromotion.value = promotionStore.promotion
@@ -52,9 +44,9 @@ const fetchPromotion = async(id) => {
 }
 
 const fetchTimeslots = async () => {
-  loadingPromotion.value = true;
+  loadingPromotion.value = true
   await timeslotStore.fetchTimeslots()
-  loadingPromotion.value = false;
+  loadingPromotion.value = false
 }
 
 const filteredTimeslots = computed(() => {
@@ -64,8 +56,6 @@ const filteredTimeslots = computed(() => {
     return timeslotStore?.timeslots
   }
 })
-
-const hasTimeslots = computed(() => filteredTimeslots?.value?.length)
 
 onMounted(async () => {
   if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
@@ -104,21 +94,30 @@ onMounted(async () => {
             label="name"
             placeholder="Sélectionner une promotion"
             track-by="id"
-            @update:modelValue="selectPromotion"
+            @update:modelValue="fetchTimeslotsOrPromotion"
         >
           <template #noResult>Pas de promotions correspondantes</template>
           <template #noOptions>Pas de promotions trouvées</template>
         </multi-select>
       </nord-stack>
     </nord-card>
-    <Calendar v-if="!loadingPromotion"
-              :events="filteredTimeslots"
-              :promotion=selectedPromotion
-              view="dayGridMonth"
-              @resetEvents="fetchCurrent" />
 
-    <nord-modal v-if="selectedPromotion && !loadingPromotion" :open="false" ref="modalAdvancement" size="l" aria-labelledby="title">
-      <h2 slot="header" id="title">Promotion : {{ selectedPromotion.name }}</h2>
+    <Calendar
+        v-if="!loadingPromotion"
+        :events="filteredTimeslots"
+        :promotion=selectedPromotion
+        view="dayGridMonth"
+        @resetEvents="fetchTimeslotsOrPromotion"
+    />
+
+    <nord-modal
+        v-if="selectedPromotion && !loadingPromotion"
+        ref="modalAdvancement"
+        :open="false"
+        aria-labelledby="title"
+        size="l"
+    >
+      <h2 id="title" slot="header">Promotion : {{ selectedPromotion.name }}</h2>
       <promotion-progress :promotion="selectedPromotion"/>
     </nord-modal>
   </template>
