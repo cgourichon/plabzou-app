@@ -1,5 +1,5 @@
 <script setup>
-import {computed, reactive} from "vue";
+import {computed, reactive, ref} from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -31,17 +31,21 @@ const emits = defineEmits(['resetEvents'])
 
 const state = reactive({
   selectedEvent: null,
-  previousEvent: null,
 })
 
 const handleEventClick = (event) => {
   state.selectedEvent = event.event
-  state.previousEvent = event.oldEvent
+}
+
+const handleDateClick = (event) => {
+  state.selectedEvent = {
+    start: event.date,
+    end: new Date(event.date.getTime() + 30 * 60000),
+  }
 }
 
 const closeSelectedEvent = () => {
   state.selectedEvent = null
-  state.previousEvent = null
   emits('resetEvents')
 }
 
@@ -95,6 +99,7 @@ const calendarOptions = computed(() => ({
   eventClick: (info) => handleEventClick(info),
   eventDrop: (info) => handleEventClick(info),
   eventResize: (info) => handleEventClick(info),
+  dateClick: (info) => handleDateClick(info),
 }))
 </script>
 
@@ -104,7 +109,6 @@ const calendarOptions = computed(() => ({
   <template v-if="state.selectedEvent">
     <TimeslotModal
         :currentEvent="state.selectedEvent"
-        :previous-event="state.previousEvent"
         @close="closeSelectedEvent"
     />
   </template>

@@ -20,7 +20,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
     required: false,
-  }
+  },
+  newStartsAt: {
+    type: Date,
+    default: null,
+    required: false,
+  },
+  newEndsAt: {
+    type: Date,
+    default: null,
+    required: false,
+  },
 })
 
 const emit = defineEmits(['reset'])
@@ -51,11 +61,14 @@ const form = computed(() => {
   selectedTeachers.value = props.timeslot?.teachers ?? []
   selectedPromotions.value = props.timeslot?.promotions ?? []
 
+  const startsAt = props.newStartsAt ?? props.timeslot?.starts_at
+  const endsAt = props.newEndsAt ?? props.timeslot?.ends_at
+
   return {
     training: '',
     room: '',
-    starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
-    ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
+    starts_at: startsAt ? getDateTimeWithoutTimeZone(startsAt) : '',
+    ends_at: endsAt ? getDateTimeWithoutTimeZone(endsAt) : '',
     is_validated: props.timeslot?.is_validated ?? '',
     learners: [],
     teachers: [],
@@ -125,7 +138,7 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   // Ajouter les apprenants lors de l'ajout d'une promotion
   if (!oldPromotion || (newPromotion.length > oldPromotion.length)) {
     const learners = newPromotion.flatMap(promotion => promotion.learners)
-    selectedLearners.value = learners === null ? [...selectedLearners.value, ...learners] : selectedLearners.value
+    selectedLearners.value = [...selectedLearners.value, ...learners]
   }
 
   // Supprimer les apprenants lors de la suppression d'une promotion
@@ -133,6 +146,9 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
     const learners = oldPromotion.flatMap(promotion => promotion.learners)
     selectedLearners.value = selectedLearners.value.filter(learner => !learners.includes(learner))
   }
+
+  // Supprimer les apprenants undefined
+  selectedLearners.value = selectedLearners.value.filter(learner => !!learner)
 
   // Supprimer les apprenants en double
   const learners = selectedLearners.value.map(learner => learner.user_id)
