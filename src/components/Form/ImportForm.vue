@@ -14,7 +14,6 @@ const file = ref(null);
 
 const getFile = e => {
     file.value = e.target.files[0];
-    console.log(file.value);
 }
 const sendFile = () => {
     let formData = new FormData();
