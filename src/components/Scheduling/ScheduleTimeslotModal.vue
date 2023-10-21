@@ -26,10 +26,10 @@ const resetModal = () => {
   <nord-modal :open="!!props.currentEvent" size="l" @close="resetModal">
     <h2 slot="header">{{ props.currentEvent?.title ?? 'Nouveau créneau' }}</h2>
     <TimeslotForm
-        :timeslot="props.currentEvent?.extendedProps?.timeslot"
         :from-calendar="true"
-        :new-starts-at="props.currentEvent?.start"
         :new-ends-at="props.currentEvent?.end"
+        :new-starts-at="props.currentEvent?.start"
+        :timeslot="props.currentEvent?.extendedProps?.timeslot"
         @reset="emit('close')"
     />
   </nord-modal>

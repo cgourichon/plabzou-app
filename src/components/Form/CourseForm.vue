@@ -80,8 +80,8 @@ const redirect = async () => {
           :hide-selected="true"
           :multiple="true"
           :options="trainingStore.trainings"
-          :show-no-results="true"
           :select-label="null"
+          :show-no-results="true"
           label="name"
           track-by="id"
       >

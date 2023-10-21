@@ -160,7 +160,7 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
 
     timeslotLoaded.value = true
   }
-}, { deep: true })
+}, {deep: true})
 
 onMounted(async () => {
   await roomStore.fetchRooms()
@@ -177,19 +177,19 @@ onMounted(async () => {
             <nord-input
                 v-model="form.starts_at"
                 :error="applicationStore.errors?.starts_at"
+                :readonly="!isAdministrativeEmployee"
                 expand
                 label="Date de début"
                 type="datetime-local"
-                :readonly="!isAdministrativeEmployee"
             />
 
             <nord-input
                 v-model="form.ends_at"
                 :error="applicationStore.errors?.ends_at"
+                :readonly="!isAdministrativeEmployee"
                 expand
                 label="Date de fin"
                 type="datetime-local"
-                :readonly="!isAdministrativeEmployee"
             />
           </nord-stack>
 
@@ -197,12 +197,12 @@ onMounted(async () => {
             <label class="n-label">Formation</label>
             <multi-select
                 v-model="selectedTraining"
+                :disabled="!!props.timeslot || !isAdministrativeEmployee"
                 :options="trainingStore.trainings"
                 :show-no-results="true"
                 label="name"
                 placeholder="Sélectionner une formation"
                 track-by="id"
-                :disabled="!!props.timeslot || !isAdministrativeEmployee"
             >
               <template #noResult>Pas de formations correspondantes</template>
               <template #noOptions>Pas de formations trouvées</template>
@@ -224,6 +224,7 @@ onMounted(async () => {
                   :allow-empty="true"
                   :clear-on-select="true"
                   :close-on-select="false"
+                  :disabled="!isAdministrativeEmployee"
                   :hide-selected="true"
                   :multiple="true"
                   :options="promotionStore.promotions"
@@ -232,7 +233,6 @@ onMounted(async () => {
                   label="name"
                   placeholder="Ajouter des promotions"
                   track-by="id"
-                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas de promotions correspondantes</template>
                 <template #noOptions>Aucune promotions trouvées</template>
@@ -250,12 +250,12 @@ onMounted(async () => {
               <label class="n-label">Salle</label>
               <multi-select
                   v-model="selectedRoom"
+                  :disabled="!isAdministrativeEmployee"
                   :options="roomStore.rooms"
                   :show-no-results="true"
                   label="name"
                   placeholder="Sélectionner une salle"
                   track-by="id"
-                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas de salles correspondantes</template>
                 <template #noOptions>Pas de salles trouvées</template>
@@ -298,6 +298,7 @@ onMounted(async () => {
                   :allow-empty="true"
                   :clear-on-select="true"
                   :close-on-select="false"
+                  :disabled="!isAdministrativeEmployee"
                   :hide-selected="true"
                   :multiple="true"
                   :options="teacherStore.teachers"
@@ -306,7 +307,6 @@ onMounted(async () => {
                   label="full_name"
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
-                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas de formateurs correspondants</template>
                 <template #noOptions>Aucun formateurs trouvés</template>
@@ -327,6 +327,7 @@ onMounted(async () => {
                   :allow-empty="true"
                   :clear-on-select="true"
                   :close-on-select="false"
+                  :disabled="!isAdministrativeEmployee"
                   :hide-selected="true"
                   :multiple="true"
                   :options="learnerStore.learners"
@@ -335,7 +336,6 @@ onMounted(async () => {
                   label="full_name"
                   placeholder="Ajouter des apprenants"
                   track-by="user_id"
-                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas d'apprenants correspondants</template>
                 <template #noOptions>Aucun apprenants trouvés</template>
@@ -361,8 +361,8 @@ onMounted(async () => {
 
             <nord-checkbox
                 v-model="form.is_validated"
-                :error="applicationStore.errors?.is_validated"
                 :disabled="!isAdministrativeEmployee"
+                :error="applicationStore.errors?.is_validated"
                 label="Créneau validé"
                 type="checkbox"
             />

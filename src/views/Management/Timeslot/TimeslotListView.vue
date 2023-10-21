@@ -3,7 +3,7 @@ import {useTimeslotStore} from "@/stores/timeslot.store";
 import {onMounted} from "vue";
 import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const timeslotStore = useTimeslotStore()
 timeslotStore.resetTimeslots()
@@ -81,7 +81,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="timeslotStore.timeslots" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="timeslotStore.timeslots"/>
   </nord-card>
 </template>
 

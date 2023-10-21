@@ -89,7 +89,7 @@ onMounted(async () => {
           type="text"
       />
 
-      <nord-stack direction="horizontal" align-items="start" gap="xl">
+      <nord-stack align-items="start" direction="horizontal" gap="xl">
         <nord-input
             v-model="form.starts_at"
             :error="applicationStore.errors?.starts_at"
@@ -123,7 +123,10 @@ onMounted(async () => {
           label="Ville de rattachement"
       >
         <option selected value="">Choisir une ville</option>
-        <option v-for="city in cityStore.cities" :key="city.id" :value="city.id">{{ city.postcode }} - {{ city.name }}</option>
+        <option v-for="city in cityStore.cities" :key="city.id" :value="city.id">{{ city.postcode }} - {{
+            city.name
+          }}
+        </option>
       </nord-select>
 
       <label class="n-label">Apprenants affiliés</label>
@@ -135,8 +138,8 @@ onMounted(async () => {
           :hide-selected="true"
           :multiple="true"
           :options="learnerStore.learners"
-          :show-no-results="true"
           :select-label="null"
+          :show-no-results="true"
           label="full_name"
           track-by="user_id"
       >

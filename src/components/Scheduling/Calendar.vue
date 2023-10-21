@@ -1,5 +1,5 @@
 <script setup>
-import {computed, reactive, ref} from "vue";
+import {computed, reactive} from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -7,7 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import frLocale from '@fullcalendar/core/locales/fr';
-import TimeslotModal from "@/components/Modal/ScheduleTimeslotModal.vue";
+import TimeslotModal from "@/components/Scheduling/ScheduleTimeslotModal.vue";
 import {useAuthStore} from "@/stores/auth.store";
 
 const props = defineProps({

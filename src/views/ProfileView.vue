@@ -26,72 +26,74 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2>Mon profil</h2>
-  <form @submit.prevent="update()">
-    <nord-stack>
-      <nord-input
-          v-model="authStore.authenticatedUser.full_name"
-          expand
-          label="Nom"
-          type="text"
-          readonly
-      />
-
-      <nord-input
-          v-model="authStore.authenticatedUser.email"
-          expand
-          label="Adresse mail"
-          type="email"
-          readonly
-      />
-
-      <nord-input
-          v-model="form.phone_number"
-          :error="applicationStore.errors?.phone_number"
-          expand
-          label="Téléphone"
-          placeholder="Entrez un numéro de téléphone"
-          type="text"
-      />
-
-      <h3>Modification du mot de passe</h3>
-
+  <nord-card>
+    <h2 slot="header">Mon profil</h2>
+    <form @submit.prevent="update()">
       <nord-stack>
         <nord-input
-            v-model="form.current_password"
-            :error="applicationStore.errors?.current_password"
+            v-model="authStore.authenticatedUser.full_name"
             expand
-            label="Mot de passe actuelle"
-            placeholder="Entrez votre mot de passe"
-            type="password"
+            label="Nom"
+            readonly
+            type="text"
         />
 
         <nord-input
-            v-model="form.password"
-            :error="applicationStore.errors?.password"
+            v-model="authStore.authenticatedUser.email"
             expand
-            label="Nouveau mot de passe"
-            placeholder="Entrez un nouveau mot de passe"
-            type="password"
+            label="Adresse mail"
+            readonly
+            type="email"
         />
 
         <nord-input
-            v-model="form.password_confirm"
-            :error="applicationStore.errors?.password_confirm"
+            v-model="form.phone_number"
+            :error="applicationStore.errors?.phone_number"
             expand
-            label="Confirmez le nouveau mot de passe"
-            placeholder="Nouveau mot de passe"
-            type="password"
+            label="Téléphone"
+            placeholder="Entrez un numéro de téléphone"
+            type="text"
         />
-      </nord-stack>
 
-      <nord-stack>
-        <nord-button type="submit" variant="primary">
-          Modifier
-        </nord-button>
+        <h3>Modification du mot de passe</h3>
+
+        <nord-stack>
+          <nord-input
+              v-model="form.current_password"
+              :error="applicationStore.errors?.current_password"
+              expand
+              label="Mot de passe actuelle"
+              placeholder="Entrez votre mot de passe"
+              type="password"
+          />
+
+          <nord-input
+              v-model="form.password"
+              :error="applicationStore.errors?.password"
+              expand
+              label="Nouveau mot de passe"
+              placeholder="Entrez un nouveau mot de passe"
+              type="password"
+          />
+
+          <nord-input
+              v-model="form.password_confirm"
+              :error="applicationStore.errors?.password_confirm"
+              expand
+              label="Confirmez le nouveau mot de passe"
+              placeholder="Nouveau mot de passe"
+              type="password"
+          />
+        </nord-stack>
+
+        <nord-stack>
+          <nord-button type="submit" variant="primary">
+            Modifier
+          </nord-button>
+        </nord-stack>
       </nord-stack>
-    </nord-stack>
-  </form>
+    </form>
+  </nord-card>
 </template>
 
 <style scoped>

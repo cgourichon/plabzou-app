@@ -2,7 +2,7 @@
 import {usePromotionStore} from "@/stores/promotion.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
-import Calendar from "@/components/Calendar/Calendar.vue";
+import Calendar from "@/components/Scheduling/Calendar.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useTrainingStore} from "@/stores/training.store";
@@ -68,30 +68,30 @@ onMounted(async () => {
 
 watch(() => selectedPromotion.value, () => {
   selectedPromotion.value
-      ? router.push({name: 'schedule-promotions', params: { id: selectedPromotion.value.id }})
+      ? router.push({name: 'schedule-promotions', params: {id: selectedPromotion.value.id}})
       : router.push({name: 'schedule-promotions'})
 })
 
 /** const fetchTimeslotsOrPromotion = async () => {
-  loadingPromotion.value = true
-  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else await fetchTimeslots()
-  loadingPromotion.value = false;
-}
+ loadingPromotion.value = true
+ if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
+ else await fetchTimeslots()
+ loadingPromotion.value = false;
+ }
 
-const fetchTimeslots = async () => {
-  loadingPromotion.value = true
-  await timeslotStore.fetchTimeslots()
-  loadingPromotion.value = false
-}
+ const fetchTimeslots = async () => {
+ loadingPromotion.value = true
+ await timeslotStore.fetchTimeslots()
+ loadingPromotion.value = false
+ }
 
-const filteredTimeslots = computed(() => {
-  if (selectedPromotion.value?.timeslots) {
-    return selectedPromotion.value.timeslots
-  } else {
-    return timeslotStore?.timeslots
-  }
-})
+ const filteredTimeslots = computed(() => {
+ if (selectedPromotion.value?.timeslots) {
+ return selectedPromotion.value.timeslots
+ } else {
+ return timeslotStore?.timeslots
+ }
+ })
  **/
 </script>
 

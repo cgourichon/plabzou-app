@@ -2,7 +2,7 @@
 import {useTrainingStore} from "@/stores/training.store";
 import {onMounted} from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const trainingStore = useTrainingStore()
 trainingStore.resetTrainings()
@@ -51,7 +51,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="trainingStore.trainings" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="trainingStore.trainings"/>
   </nord-card>
 </template>
 

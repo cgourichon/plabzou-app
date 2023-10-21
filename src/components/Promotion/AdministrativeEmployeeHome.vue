@@ -1,12 +1,11 @@
 <script setup>
 import {usePromotionStore} from "@/stores/promotion.store";
-import {onMounted} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import ProgressBar from "@/components/Promotion/ProgressBar.vue";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
-import EditPromotionPlanningAction from "@/components/Action/EditPromotionPlanningAction.vue";
+import EditPromotionPlanningAction from "@/components/Table/Action/EditPromotionPlanningAction.vue";
 import {getFrenchDate} from "../../utils/dayjs";
 import {AgGridVue} from "ag-grid-vue3";
-import {reactive, ref} from "vue";
 
 const promotionStore = usePromotionStore()
 promotionStore.resetPromotions()
@@ -22,7 +21,7 @@ const rowClicked = () => {
 }
 
 onMounted(async () => {
-  await promotionStore.fetchPromotions({advancement:1})
+  await promotionStore.fetchPromotions({advancement: 1})
 })
 
 // copier coller de DataTable.vue pour le reste
@@ -117,16 +116,16 @@ const onFilterTextBoxChanged = () => {
           :defaultColDef="defaultColDef"
           :rowData="promotionStore.promotions"
           class="ag-theme-nord"
-          style="height: 500px"
           rowSelection="single"
+          style="height: 500px"
           @grid-ready="onGridReady"
           @row-clicked="rowClicked"
       />
     </nord-stack>
 
-    <nord-modal v-if="selectedPromotion" ref="modal" size="l" open aria-labelledby="title">
-      <h2 slot="header" id="title">Promotion : {{ selectedPromotion.name }}</h2>
-      <promotion-progress :promotion="selectedPromotion" />
+    <nord-modal v-if="selectedPromotion" ref="modal" aria-labelledby="title" open size="l">
+      <h2 id="title" slot="header">Promotion : {{ selectedPromotion.name }}</h2>
+      <promotion-progress :promotion="selectedPromotion"/>
     </nord-modal>
   </nord-card>
 </template>

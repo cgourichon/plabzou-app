@@ -25,7 +25,7 @@ axiosClient.interceptors.response.use(response => {
     applicationStore.loading = false
 
     applicationStore.clearSuccess()
-    if(response.config.method !== 'get') applicationStore.success = response.data.message
+    if (response.config.method !== 'get') applicationStore.success = response.data.message
 
     applicationStore.clearErrors()
 

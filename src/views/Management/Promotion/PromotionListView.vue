@@ -1,9 +1,9 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted} from "vue";
 import {usePromotionStore} from "@/stores/promotion.store";
 import {getFrenchDate} from "@/utils/dayjs"
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const promotionStore = usePromotionStore()
 promotionStore.resetPromotions()
@@ -70,7 +70,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="promotionStore.promotions" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="promotionStore.promotions"/>
   </nord-card>
 </template>
 

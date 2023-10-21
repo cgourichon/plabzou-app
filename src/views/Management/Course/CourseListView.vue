@@ -2,7 +2,7 @@
 import {onMounted} from "vue";
 import {useCourseStore} from "@/stores/course.store";
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const courseStore = useCourseStore()
 courseStore.resetCourses()
@@ -46,7 +46,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="courseStore.courses" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="courseStore.courses"/>
   </nord-card>
 </template>
 

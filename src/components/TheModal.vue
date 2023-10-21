@@ -1,69 +1,75 @@
 <script setup>
-  import {ref} from "vue";
+import {ref} from "vue";
 
-  const props = defineProps({
-      colorButton : {
-          type: String,
-          default: 'primary'
-      },
-      sizeModal : {
-          type: String,
-          default: 'm'
-      },
-      idModal : {
-          type: String,
-          default : null
-      },
-      disabledAction: {
-          type: Boolean,
-          default: false
-      },
-      showButton: {
-          type: Boolean,
-          default: true
-      }
-  })
-
-  const emit = defineEmits(['action'])
-
-
-  const modalNewConversation = ref(null);
-
-  const openModal = () => {
-      modalNewConversation.value.showModal();
+const props = defineProps({
+  colorButton: {
+    type: String,
+    default: 'primary'
+  },
+  sizeModal: {
+    type: String,
+    default: 'm'
+  },
+  idModal: {
+    type: String,
+    default: null
+  },
+  disabledAction: {
+    type: Boolean,
+    default: false
+  },
+  showButton: {
+    type: Boolean,
+    default: true
   }
+})
 
-  const closeModal = () => {
-      modalNewConversation.value.close();
-  }
+const emit = defineEmits(['action'])
 
-  const actionModal = () => {
-      emit('action');
-      closeModal();
-  }
+
+const modalNewConversation = ref(null);
+
+const openModal = () => {
+  modalNewConversation.value.showModal();
+}
+
+const closeModal = () => {
+  modalNewConversation.value.close();
+}
+
+const actionModal = () => {
+  emit('action');
+  closeModal();
+}
 </script>
 
 <template>
-    <nord-button @click="openModal" :variant="colorButton" :id="`openButton-${idModal}`"><slot name="openButton"></slot></nord-button>
+  <nord-button :id="`openButton-${idModal}`" :variant="colorButton" @click="openModal">
+    <slot name="openButton"></slot>
+  </nord-button>
 
-    <nord-modal ref="modalNewConversation" :id="`modal-${idModal}`" :size="sizeModal" aria-labelledby="title">
-        <h2 slot="header" :id="`title-${idModal}`"><slot name="title"></slot></h2>
-        <p class="n-reset"><slot name="content"></slot></p>
-        <nord-button @click="closeModal" slot="footer"
-                     expand
-                     :id="`cancelButton-${idModal}`">
-            <slot name="cancelButton"></slot>
-        </nord-button>
-        <nord-button v-show="showButton"
-                     @click="actionModal" slot="footer"
-                     expand
-                     :disabled="disabledAction"
-                     :id="`confirmButton-${idModal}`"
-                     variant="primary"
-                     autofocus>
-            <slot name="confirmButton"></slot>
-        </nord-button>
-    </nord-modal>
+  <nord-modal :id="`modal-${idModal}`" ref="modalNewConversation" :size="sizeModal" aria-labelledby="title">
+    <h2 :id="`title-${idModal}`" slot="header">
+      <slot name="title"></slot>
+    </h2>
+    <p class="n-reset">
+      <slot name="content"></slot>
+    </p>
+    <nord-button :id="`cancelButton-${idModal}`" slot="footer"
+                 expand
+                 @click="closeModal">
+      <slot name="cancelButton"></slot>
+    </nord-button>
+    <nord-button v-show="showButton"
+                 :id="`confirmButton-${idModal}`" slot="footer"
+                 :disabled="disabledAction"
+                 autofocus
+                 expand
+                 variant="primary"
+                 @click="actionModal">
+      <slot name="confirmButton"></slot>
+    </nord-button>
+  </nord-modal>
 
 </template>
 

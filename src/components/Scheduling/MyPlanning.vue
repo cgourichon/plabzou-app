@@ -1,5 +1,5 @@
 <script setup>
-import Calendar from "@/components/Calendar/Calendar.vue";
+import Calendar from "@/components/Scheduling/Calendar.vue";
 import {useTeacherStore} from "@/stores/teacher.store";
 import {onMounted, ref, watch} from "vue";
 import {useAuthStore} from "@/stores/auth.store";

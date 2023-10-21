@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
 import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import updateLocalePlugin from 'dayjs/plugin/updateLocale'
+
 dayjs.extend(relativeTimePlugin)
 dayjs.extend(updateLocalePlugin)
 
