@@ -41,7 +41,7 @@ const assignData = () => {
     comment: comment.value,
     is_approved_by_admin: getBooleanStatus(isValidatedAdmin.value),
     is_approved_by_teacher: props.request ? getBooleanStatus(isValidatedTeacher.value) : null,
-    administrative_employee_id: props.request ? props.request.administrative_employee_id : authStore.authenticatedUser.id
+    administrative_employee_id: props.request ? props.request.administrative_employee_id : authStore.authenticatedUser?.id
   }
 }
 

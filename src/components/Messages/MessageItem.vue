@@ -1,6 +1,6 @@
 <script setup>
 import {useAuthStore} from "@/stores/auth.store";
-import {getTimeFromNow} from "../../utils/dayjs";
+import {getTimeFromNow} from "@/utils/dayjs";
 import dayjs from "dayjs";
 import {computed} from "vue";
 
@@ -17,19 +17,16 @@ const sentDate = computed(() => dayjs().diff(dayjs(props.message.created_at), 'd
 )
 
 const authStore = useAuthStore();
-
 </script>
 
 <template>
-  <div :class="props.message.sender.id ===  authStore.authenticatedUser.id ? 'n-align-end' : 'n-align-start'">
+  <div :class="props.message.sender.id ===  authStore.authenticatedUser?.id ? 'n-align-end' : 'n-align-start'">
     <div id="name" class="n-font-weight-heading n-color-text-weak" @click="sentDate(props.message.created_at)">
-      <div v-if="props.message.sender.id ===  authStore.authenticatedUser.id">
+      <div v-if="props.message.sender.id ===  authStore.authenticatedUser?.id">
         Moi <span class="n-font-size-xs n-color-text-weaker">&nbsp; {{ sentDate }}</span>
       </div>
       <div v-else>{{ `${props.message.sender.first_name} ${props.message.sender.last_name}` }}
-        <span class="n-font-size-xs n-color-text-weaker">
-                    &nbsp; {{ sentDate }}
-                </span>
+        <span class="n-font-size-xs n-color-text-weaker">&nbsp; {{ sentDate }}</span>
       </div>
     </div>
     <div id="message-content" class="n-margin-be-m">{{ props.message.message }}</div>

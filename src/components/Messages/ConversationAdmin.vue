@@ -8,7 +8,7 @@ import ConversationModal from "@/components/Messages/ConversationModal.vue";
 
 const authStore = useAuthStore();
 const actualConversation = ref(null)
-const conversationsNumber = ref(authStore.authenticatedUser.conversations.length);
+const conversationsNumber = ref(authStore.authenticatedUser?.conversations.length);
 const changeConversation = conversation => actualConversation.value = conversation;
 const findNewConversation = () => authStore.authenticatedUser?.conversations.find(conversation => conversation.id === actualConversation.value?.id);
 
@@ -16,8 +16,8 @@ onBeforeUpdate(() => {
   changeConversation(findNewConversation());
 
   //Une nouvelle conversation a été créée, on définit la conversation actuelle comme celle-ci
-  if (authStore.authenticatedUser.conversations.length === conversationsNumber.value + 1) {
-    actualConversation.value = authStore.authenticatedUser.conversations[0];
+  if (authStore.authenticatedUser?.conversations.length === conversationsNumber.value + 1) {
+    actualConversation.value = authStore.authenticatedUser?.conversations[0];
     conversationsNumber.value++;
   }
 })
@@ -33,7 +33,7 @@ onBeforeUpdate(() => {
           <ConversationModal/>
         </div>
         <section id="conversation-list" class="">
-          <div v-for="conversation in authStore.authenticatedUser.conversations"
+          <div v-for="conversation in authStore.authenticatedUser?.conversations"
                :key="conversation.id"
                class="n-margin-be-s"
                @click="changeConversation(conversation)">

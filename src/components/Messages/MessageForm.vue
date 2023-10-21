@@ -17,7 +17,7 @@ const props = defineProps({
 
 const form = ref({
   message: null,
-  sender_id: authStore.authenticatedUser.id,
+  sender_id: authStore.authenticatedUser?.id,
   conversation_id: null
 })
 
@@ -27,7 +27,7 @@ let message = '';
 
 //Création de la conversation côté teacher si il n'y avait encore aucun message échangé
 const createConversation = async () => {
-  await conversationStore.createConversation({teacher_id: authStore.authenticatedUser.id})
+  await conversationStore.createConversation({teacher_id: authStore.authenticatedUser?.id})
 }
 
 const sendMessage = async () => {
@@ -37,7 +37,7 @@ const sendMessage = async () => {
     await createConversation()
         .then(() => {
           form.value.message = message;
-          form.value.conversation_id = authStore.authenticatedUser.conversations[0].id;
+          form.value.conversation_id = authStore.authenticatedUser?.conversations[0].id;
         })
   }
 

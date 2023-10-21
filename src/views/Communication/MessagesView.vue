@@ -16,14 +16,13 @@ const stopInterval = startInterval => {
 
 onMounted(() => startInterval);
 onUnmounted(() => stopInterval(startInterval));
-
 </script>
 
 <template>
-  <template v-if="authStore.authenticatedUser.teacher">
+  <template v-if="authStore.authenticatedUser?.teacher">
     <ConversationTeacher/>
   </template>
-  <template v-else-if="authStore.authenticatedUser.administrative_employee">
+  <template v-else-if="authStore.authenticatedUser?.administrative_employee">
     <ConversationAdmin/>
   </template>
   <template v-else>
