@@ -1,74 +1,74 @@
 <script setup>
-import {useTeacherStore} from "@/stores/teacher.store";
-import {usePromotionStore} from "@/stores/promotion.store";
-import {useTrainingStore} from "@/stores/training.store";
-import {useRoomStore} from "@/stores/room.store";
-import {useLearnerStore} from "@/stores/learner.store";
+  import {usePromotionStore} from "@/stores/promotion.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
 import Calendar from "@/components/Calendar/Calendar.vue";
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
+  import {useTrainingStore} from "@/stores/training.store";
+  import {useRoomStore} from "@/stores/room.store";
+  import {useTeacherStore} from "@/stores/teacher.store";
+  import {useLearnerStore} from "@/stores/learner.store";
 
-const teacherStore = useTeacherStore()
-const learnerStore = useLearnerStore()
-const promotionStore = usePromotionStore()
-const trainingStore = useTrainingStore()
-const roomStore = useRoomStore()
-const timeslotStore = useTimeslotStore()
+  const promotionStore = usePromotionStore()
+  const timeslotStore = useTimeslotStore()
+  const trainingStore = useTrainingStore()
+  const roomStore = useRoomStore()
+  const teacherStore = useTeacherStore()
+  const learnerStore = useLearnerStore()
 
-timeslotStore.resetTimeslots()
-promotionStore.resetPromotions()
+  timeslotStore.resetTimeslots()
+  promotionStore.resetPromotions()
+  trainingStore.resetTrainings()
+  roomStore.resetRooms()
+  teacherStore.resetTeachers()
+  learnerStore.resetLearners()
 
-const selectedPromotion = ref(null)
-const modalAdvancement = ref(null)
-const initialLoading = ref(true)
-const loadingPromotion = ref(false)
+  const selectedPromotion = ref(null)
+  const modalAdvancement = ref(null)
+  const initialLoading = ref(true)
+  const loadingPromotion = ref(false)
 
-const fetchTimeslotsOrPromotion = async () => {
-  loadingPromotion.value = true
-  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else await fetchTimeslots()
-  loadingPromotion.value = false;
-}
-
-const showAdvancement = () => {
-  modalAdvancement.value.showModal()
-}
-
-const fetchPromotion = async (id) => {
-  loadingPromotion.value = true;
-  await promotionStore.fetchPromotion(id, {advancement: 1})
-  selectedPromotion.value = promotionStore.promotion
-  loadingPromotion.value = false;
-}
-
-const fetchTimeslots = async () => {
-  loadingPromotion.value = true
-  await timeslotStore.fetchTimeslots()
-  loadingPromotion.value = false
-}
-
-const filteredTimeslots = computed(() => {
-  if (selectedPromotion.value?.timeslots) {
-    return selectedPromotion.value.timeslots
-  } else {
-    return timeslotStore?.timeslots
+  const fetchTimeslotsOrPromotion = async () => {
+    loadingPromotion.value = true
+    if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
+    else await fetchTimeslots()
+    loadingPromotion.value = false;
   }
-})
 
-onMounted(async () => {
-  if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
+  const showAdvancement = () => {
+    modalAdvancement.value.showModal()
+  }
 
-  await promotionStore.fetchPromotions()
-  await timeslotStore.fetchTimeslots()
-  await trainingStore.fetchTrainings()
-  await roomStore.fetchRooms()
-  await learnerStore.fetchLearners()
-  await teacherStore.fetchTeachers()
+  const fetchPromotion = async (id) => {
+    loadingPromotion.value = true;
+    await promotionStore.fetchPromotion(id, {advancement: 1})
+    selectedPromotion.value = promotionStore.promotion
+    loadingPromotion.value = false;
+  }
 
-  initialLoading.value = false
-})
+  const fetchTimeslots = async () => {
+    loadingPromotion.value = true
+    await timeslotStore.fetchTimeslots()
+    loadingPromotion.value = false
+  }
+
+  const filteredTimeslots = computed(() => {
+    if (selectedPromotion.value?.timeslots) {
+      return selectedPromotion.value.timeslots
+    } else {
+      return timeslotStore?.timeslots
+    }
+  })
+
+  onMounted(async () => {
+    if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
+
+    await promotionStore.fetchPromotions()
+    await timeslotStore.fetchTimeslots()
+
+    initialLoading.value = false
+  })
 </script>
 
 <template>

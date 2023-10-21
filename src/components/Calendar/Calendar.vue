@@ -41,7 +41,7 @@ const handleEventClick = (event) => {
 }
 
 const closeSelectedEvent = () => {
-  emits('resetEvents')
+  if(state.previousEvent) emits('resetEvents')
 }
 
 const calendarOptions = computed(() => ({
@@ -56,6 +56,9 @@ const calendarOptions = computed(() => ({
   initialView: props.view || 'timeGridWeek',
   locale: frLocale,
   editable: true,
+  eventStartEditable: true,
+  eventResizableFromStart: true,
+  eventDurationEditable: true,
   selectable: true,
   headerToolbar: {
     left: 'prev,next today',
@@ -67,6 +70,7 @@ const calendarOptions = computed(() => ({
   },
   weekNumbers: true,
   weekText: 'S',
+  multiMonthMaxColumns: 2,
   allDayText: 'Journée',
   slotLabelFormat: {
     hour: 'numeric',
@@ -87,12 +91,9 @@ const calendarOptions = computed(() => ({
     is_learner: timeslot.learners.some(learner => learner.user_id === authStore.authenticatedUser?.teacher?.id),
     timeslot: timeslot,
   })),
-  eventClick: function (info) {
-    handleEventClick(info)
-  },
-  eventDrop(info) {
-    handleEventClick(info)
-  },
+  eventClick: (info) => handleEventClick(info),
+  eventDrop: (info) => handleEventClick(info),
+  eventResize: (info) => handleEventClick(info),
 }))
 </script>
 
