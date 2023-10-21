@@ -28,6 +28,7 @@ import RequestCreateView from "@/views/Management/Request/RequestCreateView.vue"
 import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
 import RequestsView from "@/views/Communication/RequestsView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
+import ImportView from "@/views/Management/Import/ImportView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -167,6 +168,11 @@ const router = createRouter({
             path: '/gestion/demandes/:id/modifier',
             name: 'requests-edit',
             component: RequestEditView
+        },
+        {
+            path: '/gestion/import-excel',
+            name: 'import-excel',
+            component: ImportView
         },
     ]
 })
