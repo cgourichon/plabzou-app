@@ -74,19 +74,11 @@ onMounted(async () => {
 <template>
   <template v-if="!initialLoading">
     <nord-card>
-      <nord-stack slot="header" class="n-stack-horizontal">
-        <h2 v-if="!selectedPromotion">Planning des promotions</h2>
+      <h2 slot="header">
+        {{ selectedPromotion ? 'Planning de la promotion : ' + selectedPromotion.name : 'Planning des promotions' }}
+      </h2>
 
-        <template v-else>
-          <h2>Planning de la promotion : {{ selectedPromotion.name }}</h2>
-          <nord-button size="s" variant="primary" @click="showAdvancement">
-            <nord-icon slot="start" name="interface-edit-on"/>
-            Avancement
-          </nord-button>
-        </template>
-      </nord-stack>
-
-      <nord-stack slot="header-end">
+      <section class="n-grid-2 n-grid-center-i n-container-xs" style="align-items: center;">
         <multi-select
             v-model="selectedPromotion"
             :options="promotionStore.promotions"
@@ -99,7 +91,12 @@ onMounted(async () => {
           <template #noResult>Pas de promotions correspondantes</template>
           <template #noOptions>Pas de promotions trouvées</template>
         </multi-select>
-      </nord-stack>
+
+        <nord-button v-if="selectedPromotion" variant="primary" @click="showAdvancement">
+          <nord-icon name="graph-bars"/>
+          Avancement
+        </nord-button>
+      </section>
     </nord-card>
 
     <Calendar
