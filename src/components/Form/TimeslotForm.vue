@@ -9,15 +9,17 @@ import router from "@/router";
 import {computed, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
+import {useAuthStore} from "@/stores/auth.store";
 
 const props = defineProps({
   timeslot: {
     type: Object,
     default: null,
   },
-  name: {
-    type: String,
-    default: null
+  fromCalendar: {
+    type: Boolean,
+    default: false,
+    required: false,
   }
 })
 
@@ -30,32 +32,36 @@ const learnerStore = useLearnerStore()
 const teacherStore = useTeacherStore()
 const promotionStore = usePromotionStore()
 const applicationStore = useApplicationStore()
+const authStore = useAuthStore()
 
 const selectedTraining = ref(null)
-const selectedPromotions = ref([])
+const selectedPromotions = ref(null)
 const selectedRoom = ref(null)
-const selectedLearners = ref([])
-const selectedTeachers = ref([])
+const selectedLearners = ref(null)
+const selectedTeachers = ref(null)
+const timeslotLoaded = ref(false)
 const filterLearnersByTraining = ref(true)
 
-const form = computed(() => ({
-  training: props.timeslot?.training ?? '',
-  room: props.timeslot?.room ?? '',
-  starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
-  ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
-  is_validated: props.timeslot?.is_validated ?? '',
-  learners: props.timeslot?.learners ?? [],
-  teachers: props.timeslot?.teachers ?? [],
-  promotions: props.timeslot?.promotions ?? [],
-}))
+const isAdministrativeEmployee = computed(() => !!authStore.authenticatedUser?.administrative_employee)
 
-const setMultiselectValuesFromTimeslot = async () => {
-  selectedTraining.value = props.timeslot.training
-  selectedPromotions.value = props.timeslot.promotions
-  selectedRoom.value = props.timeslot.room
-  selectedLearners.value = props.timeslot.learners
-  selectedTeachers.value = props.timeslot.teachers
-}
+const form = computed(() => {
+  selectedTraining.value = props.timeslot?.training ?? ''
+  selectedRoom.value = props.timeslot?.room ?? ''
+  selectedLearners.value = props.timeslot?.learners ?? []
+  selectedTeachers.value = props.timeslot?.teachers ?? []
+  selectedPromotions.value = props.timeslot?.promotions ?? []
+
+  return {
+    training: '',
+    room: '',
+    starts_at: props.timeslot?.starts_at ? getDateTimeWithoutTimeZone(props.timeslot?.starts_at) : '',
+    ends_at: props.timeslot?.ends_at ? getDateTimeWithoutTimeZone(props.timeslot?.ends_at) : '',
+    is_validated: props.timeslot?.is_validated ?? '',
+    learners: [],
+    teachers: [],
+    promotions: [],
+  }
+})
 
 const setMultiselectValuesToForm = () => {
   form.value.training = selectedTraining.value.id
@@ -88,8 +94,9 @@ const destroy = async () => {
 }
 
 const redirect = async () => {
-  if (!applicationStore.hasErrors && props.name) await router.push({name: props.name})
-  else emit('reset')
+  if (!applicationStore.hasErrors) {
+    props.fromCalendar ? emit('reset') : await router.push({name: 'timeslots-list'})
+  }
 }
 
 const checkFilterLearnersByTraining = async () => {
@@ -111,24 +118,14 @@ const fetchDependencies = async () => {
 }
 
 watch(() => selectedTraining.value, async () => {
-  selectedPromotions.value = []
-  selectedLearners.value = []
-  selectedTeachers.value = []
-
   await fetchDependencies()
-
-  if (props.timeslot) {
-    selectedPromotions.value = props.timeslot.promotions
-    selectedLearners.value = props.timeslot.learners
-    selectedTeachers.value = props.timeslot.teachers
-  }
 })
 
 watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   // Ajouter les apprenants lors de l'ajout d'une promotion
   if (!oldPromotion || (newPromotion.length > oldPromotion.length)) {
     const learners = newPromotion.flatMap(promotion => promotion.learners)
-    selectedLearners.value = [...selectedLearners.value, ...learners]
+    selectedLearners.value = learners === null ? [...selectedLearners.value, ...learners] : selectedLearners.value
   }
 
   // Supprimer les apprenants lors de la suppression d'une promotion
@@ -138,38 +135,28 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   }
 
   // Supprimer les apprenants en double
-  selectedLearners.value = selectedLearners.value.filter(learner => learner !== undefined)
   const learners = selectedLearners.value.map(learner => learner.user_id)
-  console.log(selectedLearners)
-  console.log(learners);
   selectedLearners.value = selectedLearners.value.filter((learner, index) => !learners.includes(learner.user_id, index + 1))
-})
 
-watch(() => props.timeslot, async () => {
-  await setMultiselectValuesFromTimeslot()
-})
+  // Si le créneau n'est pas encore chargé, on retire les apprenants qui ne sont pas dans le créneau
+  if (!!props.timeslot && !timeslotLoaded.value) {
+    selectedLearners.value = selectedLearners.value.filter(learner => props.timeslot.learners.map(learner => learner.user_id).includes(learner.user_id))
+
+    timeslotLoaded.value = true
+  }
+}, { deep: true })
 
 onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
 })
-const addressRoom = computed(() => {
-    if(selectedRoom.value) {
-      let room = selectedRoom.value
-
-      return room.building.place.name + ' , ' + room.building.place.street_address + ' - ' + room.building.place.city.postcode + ' ' + room.building.place.city.name
-    }
-    return '-'
-})
-
-const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
 </script>
 
 <template>
-  <form @submit.prevent="!!timeslot ? update() : store()">
-    <nord-stack gap="xl">
+  <form v-if="!!roomStore.rooms" @submit.prevent="!!timeslot ? update() : store()">
+    <nord-stack>
       <nord-stack direction="horizontal">
-        <nord-stack>
+        <nord-stack direction="vertical">
           <nord-stack direction="horizontal">
             <nord-input
                 v-model="form.starts_at"
@@ -177,6 +164,7 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
                 expand
                 label="Date de début"
                 type="datetime-local"
+                :readonly="!isAdministrativeEmployee"
             />
 
             <nord-input
@@ -185,10 +173,11 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
                 expand
                 label="Date de fin"
                 type="datetime-local"
+                :readonly="!isAdministrativeEmployee"
             />
           </nord-stack>
 
-          <nord-stack>
+          <div class="n-stack n-gap-s">
             <label class="n-label">Formation</label>
             <multi-select
                 v-model="selectedTraining"
@@ -197,6 +186,7 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
                 label="name"
                 placeholder="Sélectionner une formation"
                 track-by="id"
+                :disabled="!!props.timeslot || !isAdministrativeEmployee"
             >
               <template #noResult>Pas de formations correspondantes</template>
               <template #noOptions>Pas de formations trouvées</template>
@@ -208,86 +198,10 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
             >
               {{ applicationStore.errors?.training[0] }}
             </div>
-          </nord-stack>
-          <nord-stack v-if="selectedTraining">
-            <label class="n-label">Salle</label>
-            <multi-select
-                v-model="selectedRoom"
-                :options="roomStore.rooms"
-                :show-no-results="true"
-                label="name"
-                placeholder="Sélectionner une salle"
-                track-by="id"
-            >
-              <template #noResult>Pas de salles correspondantes</template>
-              <template #noOptions>Pas de salles trouvées</template>
-            </multi-select>
-            <div
-                v-if="applicationStore.errors?.room"
-                class="n-error"
-                role="alert"
-            >
-              {{ applicationStore.errors?.room[0] }}
-            </div>
-          </nord-stack>
+          </div>
 
-          <nord-input v-if="selectedRoom"
-                      :value="buildingRoom"
-                      expand
-                      label="Bâtiment"
-                      readonly/>
-
-          <nord-input v-if="selectedRoom"
-                      :value="addressRoom"
-                      expand
-                      label="Adresse"
-                      readonly
-          />
-        </nord-stack>
-        <nord-divider/>
-        <nord-stack>
           <template v-if="selectedTraining">
-            <nord-stack>
-              <label class="n-label">Statut</label>
-
-              <nord-checkbox class="n-padding-xs"
-                             v-model="form.is_validated"
-                             :error="applicationStore.errors?.is_validated"
-                             label="Créneau validé"
-                             type="checkbox"
-              />
-            </nord-stack>
-
-            <nord-stack>
-              <label class="n-label">Formateurs</label>
-              <multi-select
-                  v-model="selectedTeachers"
-                  :allow-empty="true"
-                  :clear-on-select="true"
-                  :close-on-select="false"
-                  :hide-selected="true"
-                  :multiple="true"
-                  :options="teacherStore.teachers"
-                  :select-label="null"
-                  :show-no-results="true"
-                  label="full_name"
-                  placeholder="Ajouter des formateurs"
-                  track-by="user_id"
-              >
-                <template #noResult>Pas de formateurs correspondants</template>
-                <template #noOptions>Aucun formateurs trouvés</template>
-              </multi-select>
-              <div
-                  v-if="applicationStore.errors?.teachers"
-                  class="n-error"
-                  role="alert"
-              >
-                {{ applicationStore.errors?.teachers[0] }}
-              </div>
-            </nord-stack>
-
-
-            <nord-stack>
+            <div class="n-stack n-gap-s">
               <label class="n-label">Promotions</label>
               <multi-select
                   v-model="selectedPromotions"
@@ -302,6 +216,7 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
                   label="name"
                   placeholder="Ajouter des promotions"
                   track-by="id"
+                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas de promotions correspondantes</template>
                 <template #noOptions>Aucune promotions trouvées</template>
@@ -313,9 +228,83 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
               >
                 {{ applicationStore.errors?.promotions[0] }}
               </div>
-            </nord-stack>
+            </div>
 
-            <nord-stack>
+            <div class="n-stack n-gap-s">
+              <label class="n-label">Salle</label>
+              <multi-select
+                  v-model="selectedRoom"
+                  :options="roomStore.rooms"
+                  :show-no-results="true"
+                  label="name"
+                  placeholder="Sélectionner une salle"
+                  track-by="id"
+                  :disabled="!isAdministrativeEmployee"
+              >
+                <template #noResult>Pas de salles correspondantes</template>
+                <template #noOptions>Pas de salles trouvées</template>
+              </multi-select>
+              <div
+                  v-if="applicationStore.errors?.room"
+                  class="n-error"
+                  role="alert"
+              >
+                {{ applicationStore.errors?.room[0] }}
+              </div>
+            </div>
+
+            <nord-input
+                v-if="selectedRoom"
+                :value="selectedRoom?.building?.name"
+                expand
+                label="Bâtiment"
+                readonly
+            />
+
+            <nord-input
+                v-if="selectedRoom"
+                :value="selectedRoom?.building?.place?.full_address"
+                expand
+                label="Adresse"
+                readonly
+            />
+          </template>
+        </nord-stack>
+
+        <nord-divider/>
+
+        <nord-stack direction="vertical">
+          <template v-if="selectedTraining">
+            <div class="n-stack n-gap-s">
+              <label class="n-label">Formateurs</label>
+              <multi-select
+                  v-model="selectedTeachers"
+                  :allow-empty="true"
+                  :clear-on-select="true"
+                  :close-on-select="false"
+                  :hide-selected="true"
+                  :multiple="true"
+                  :options="teacherStore.teachers"
+                  :select-label="null"
+                  :show-no-results="true"
+                  label="full_name"
+                  placeholder="Ajouter des formateurs"
+                  track-by="user_id"
+                  :disabled="!isAdministrativeEmployee"
+              >
+                <template #noResult>Pas de formateurs correspondants</template>
+                <template #noOptions>Aucun formateurs trouvés</template>
+              </multi-select>
+              <div
+                  v-if="applicationStore.errors?.teachers"
+                  class="n-error"
+                  role="alert"
+              >
+                {{ applicationStore.errors?.teachers[0] }}
+              </div>
+            </div>
+
+            <div class="n-stack n-gap-s">
               <label class="n-label">Apprenants</label>
               <multi-select
                   v-model="selectedLearners"
@@ -330,11 +319,12 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
                   label="full_name"
                   placeholder="Ajouter des apprenants"
                   track-by="user_id"
+                  :disabled="!isAdministrativeEmployee"
               >
                 <template #noResult>Pas d'apprenants correspondants</template>
                 <template #noOptions>Aucun apprenants trouvés</template>
               </multi-select>
-              <div>
+              <div v-if="isAdministrativeEmployee">
                 <nord-toggle
                     v-model="filterLearnersByTraining"
                     :checked="filterLearnersByTraining"
@@ -351,21 +341,32 @@ const buildingRoom = computed(() => selectedRoom.value?.building?.name ?? '-')
               >
                 {{ applicationStore.errors?.learners[0] }}
               </div>
-            </nord-stack>
+            </div>
+
+            <nord-checkbox
+                v-model="form.is_validated"
+                :error="applicationStore.errors?.is_validated"
+                :disabled="!isAdministrativeEmployee"
+                label="Créneau validé"
+                type="checkbox"
+            />
           </template>
         </nord-stack>
       </nord-stack>
-      <nord-stack>
-          <nord-stack direction="horizontal">
-            <nord-button expand type="submit" variant="primary">
-              {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
-            </nord-button>
 
-            <nord-button v-if="!!timeslot" expand type="button" variant="danger" @click="destroy">
-              Supprimer
-            </nord-button>
-          </nord-stack>
-      </nord-stack>
+      <template v-if="isAdministrativeEmployee">
+        <nord-divider/>
+
+        <nord-stack direction="horizontal">
+          <nord-button expand type="submit" variant="primary">
+            {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
+          </nord-button>
+
+          <nord-button v-if="!!timeslot" expand type="button" variant="danger" @click="destroy">
+            Supprimer
+          </nord-button>
+        </nord-stack>
+      </template>
     </nord-stack>
   </form>
 </template>

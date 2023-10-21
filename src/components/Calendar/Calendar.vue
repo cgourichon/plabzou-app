@@ -8,7 +8,6 @@ import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import frLocale from '@fullcalendar/core/locales/fr';
 import TimeslotModal from "@/components/Modal/ScheduleTimeslotModal.vue";
-import TimeslotAdminModal from "@/components/Modal/AdministrativeScheduleTimeslotModal.vue";
 import {useAuthStore} from "@/stores/auth.store";
 
 const props = defineProps({
@@ -41,7 +40,9 @@ const handleEventClick = (event) => {
 }
 
 const closeSelectedEvent = () => {
-  if(state.previousEvent) emits('resetEvents')
+  state.selectedEvent = null
+  state.previousEvent = null
+  emits('resetEvents')
 }
 
 const calendarOptions = computed(() => ({
@@ -100,15 +101,13 @@ const calendarOptions = computed(() => ({
 <template>
   <FullCalendar :options="calendarOptions"/>
 
-  <TimeslotAdminModal
-      v-if="authStore.authenticatedUser?.administrative_employee"
-      :currentEvent="state.selectedEvent"
-      :previous-event="state.previousEvent"
-      :promotion="promotion"
-      @close="closeSelectedEvent"
-  />
-
-  <TimeslotModal v-else :currentEvent="state.selectedEvent" @close="closeSelectedEvent"/>
+  <template v-if="state.selectedEvent">
+    <TimeslotModal
+        :currentEvent="state.selectedEvent"
+        :previous-event="state.previousEvent"
+        @close="closeSelectedEvent"
+    />
+  </template>
 </template>
 
 <style scoped>
