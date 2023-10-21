@@ -9,7 +9,6 @@ const courseStore = useCourseStore()
 const trainingStore = useTrainingStore()
 const applicationStore = useApplicationStore()
 
-
 const props = defineProps({
   course: {
     type: Object,
@@ -101,7 +100,7 @@ const redirect = async () => {
           {{ !!course ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!course" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!course" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>

@@ -106,61 +106,83 @@ onMounted(async () => {
         />
       </nord-stack>
 
-      <nord-select
-          v-model="selectedCourse"
-          :error="applicationStore.errors?.course"
-          expand
-          label="Cursus suivi"
-      >
-        <option selected value="">Choisir un cursus</option>
-        <option v-for="course in courseStore.courses" :value="course.id">{{ course.name }}</option>
-      </nord-select>
-
-      <nord-select
-          v-model="selectedCity"
-          :error="applicationStore.errors?.city"
-          expand
-          label="Ville de rattachement"
-      >
-        <option selected value="">Choisir une ville</option>
-        <option v-for="city in cityStore.cities" :key="city.id" :value="city.id">{{ city.postcode }} - {{
-            city.name
-          }}
-        </option>
-      </nord-select>
-
-      <label class="n-label">Apprenants affiliés</label>
-      <multi-select
-          v-model="selectedLearners"
-          :allow-empty="true"
-          :clear-on-select="true"
-          :close-on-select="false"
-          :hide-selected="true"
-          :multiple="true"
-          :options="learnerStore.learners"
-          :select-label="null"
-          :show-no-results="true"
-          label="full_name"
-          track-by="user_id"
-      >
-        <template #noResult>Aucun apprenant correspondant</template>
-        <template #noOptions>Pas d'apprenants...</template>
-      </multi-select>
-      <div
-          v-if="applicationStore.errors?.learners"
-          class="n-error"
-          role="alert"
-      >
-        {{ applicationStore.errors?.learners[0] }}
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Cursus</label>
+        <multi-select
+            v-model="selectedCourse"
+            :options="courseStore.courses"
+            :show-no-results="true"
+            label="name"
+            placeholder="Choisir un cursus"
+            track-by="id"
+        >
+          <template #noResult>Pas de cursus correspondants</template>
+          <template #noOptions>Aucun cursus trouvés</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.course"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.course }}
+        </div>
       </div>
 
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Ville</label>
+        <multi-select
+            v-model="selectedCity"
+            :options="cityStore.cities"
+            :show-no-results="true"
+            label="name"
+            placeholder="Choisir une ville"
+            track-by="id"
+        >
+          <template #noResult>Pas de villes correspondants</template>
+          <template #noOptions>Aucun villes trouvées</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.city"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.city }}
+        </div>
+      </div>
+
+      <div class="n-stack n-gap-s">
+        <label class="n-label">Apprenants affiliés</label>
+        <multi-select
+            v-model="selectedLearners"
+            :allow-empty="true"
+            :clear-on-select="true"
+            :close-on-select="false"
+            :hide-selected="true"
+            :multiple="true"
+            :options="learnerStore.learners"
+            :select-label="null"
+            :show-no-results="true"
+            label="full_name"
+            track-by="user_id"
+        >
+          <template #noResult>Aucun apprenant correspondant</template>
+          <template #noOptions>Pas d'apprenants...</template>
+        </multi-select>
+        <div
+            v-if="applicationStore.errors?.learners"
+            class="n-error"
+            role="alert"
+        >
+          {{ applicationStore.errors?.learners[0] }}
+        </div>
+      </div>
 
       <nord-stack direction="horizontal">
         <nord-button expand type="submit" variant="primary">
           {{ !!promotion ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!promotion" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!promotion" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>

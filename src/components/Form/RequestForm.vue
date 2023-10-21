@@ -214,7 +214,7 @@ watch(() => props.request, async () => {
           {{ request ? 'Modifier' : 'Créer' }}
         </nord-button>
 
-        <nord-button v-if="request" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="request" expand type="button" variant="dashed" @click="destroy">
           Annuler la demande
         </nord-button>
       </nord-stack>

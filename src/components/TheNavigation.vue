@@ -1,4 +1,5 @@
 <script setup>
+import pbzLogoLarge from '@/assets/images/pbz-logo-large.png'
 import {RouterLink} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
 import {computed} from "vue";
@@ -16,19 +17,10 @@ const logout = async () => {
 
 <template>
   <nord-navigation slot="nav">
-    <nord-dropdown slot="header" expand>
-      <nord-button slot="toggle" expand>
-        <nord-avatar slot="start" name="Plabzou" variant="square">P</nord-avatar>
-        Plabzou
+    <nord-dropdown slot="header" expand align="start" position="block-end" size="m">
+      <nord-button class="n-logo has-logo" slot="toggle" expand aria-haspopup="true" variant="default" type="submit" size="m" aria-expanded="false" href="#">
+        <div slot="start" aria-hidden="true" class="n-clinic-img" :style="`background-image: url(${pbzLogoLarge})`"></div>
       </nord-button>
-
-      <nord-dropdown-group heading="Applications">
-        <nord-dropdown-item>
-          <nord-avatar slot="start" name="Plabzou" size="s" variant="square">P</nord-avatar>
-          Plabzou
-          <nord-icon slot="end" name="interface-checked"></nord-icon>
-        </nord-dropdown-item>
-      </nord-dropdown-group>
     </nord-dropdown>
 
     <nord-nav-group heading="Global">
@@ -133,7 +125,9 @@ const logout = async () => {
       </nord-dropdown-group>
 
       <nord-dropdown-group>
-        <nord-dropdown-item>Aide & Support</nord-dropdown-item>
+        <a href="https://bibz-tec.atlassian.net/servicedesk/" target="_blank">
+          <nord-dropdown-item>Aide & Support</nord-dropdown-item>
+        </a>
       </nord-dropdown-group>
 
       <nord-dropdown-item @click.prevent="logout">

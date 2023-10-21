@@ -60,7 +60,7 @@ const redirect = async () => {
           {{ !!category ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!category" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!category" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>

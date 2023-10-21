@@ -15,12 +15,14 @@ const props = defineProps({
 const latestMessage = conversation => {
   return conversation.messages[conversation.messages.length - 1];
 }
-
 </script>
 
 <template>
   <div
-      :class="props.actualConversation?.id === props.conversation.id ? 'n-color-status-info-weak n-padding-s n-margin-be-s  item-list' : 'n-margin-be-s n-padding-s item-list'">
+      :class="props.actualConversation?.id === props.conversation.id
+      ? 'n-color-status-info-weak n-padding-s n-margin-be-s item-list'
+      : 'n-margin-be-s n-padding-s item-list'"
+  >
     <div>{{ props.conversation.teacher.full_name }}</div>
     <nord-stack align-items="center" direction="horizontal" justify-content="space-between">
       <div class="n-font-size-s n-color-text-weaker">{{ latestMessage(props.conversation)?.message }}</div>
@@ -34,8 +36,12 @@ const latestMessage = conversation => {
 
 <style scoped>
 .item-list:hover {
-  background: #3559c7;
+  background: var(--n-color-status-info);
   color: white;
   cursor: pointer;
+}
+
+.item-list:hover .n-color-text-weaker {
+  color: white;
 }
 </style>

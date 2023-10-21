@@ -378,7 +378,7 @@ onMounted(async () => {
             {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
           </nord-button>
 
-          <nord-button v-if="!!timeslot" expand type="button" variant="danger" @click="destroy">
+          <nord-button v-if="!!timeslot" expand type="button" variant="dashed" @click="destroy">
             Supprimer
           </nord-button>
         </nord-stack>

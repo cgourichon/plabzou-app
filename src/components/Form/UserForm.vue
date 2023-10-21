@@ -212,7 +212,7 @@ const redirect = async () => {
           {{ !!user ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!user" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!user" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>

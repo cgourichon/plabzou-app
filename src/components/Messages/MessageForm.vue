@@ -66,18 +66,20 @@ onBeforeUpdate(() => {
         class="n-margin-bs-l"
         @submit.prevent="sendMessage">
     <div id="send-area">
-      <nord-textarea v-model="form.message"
-                     :error="applicationStore.errors?.message"
-                     character-counter
-                     expand
-                     hideLabel
-                     label="Message"
-                     maxlength="255"
-                     name="test-b"
-                     placeholder="Ecrivez votre message ici"
-                     resize="auto"
-                     style="--n-textarea-block-size: 50px"
-                     @keydown.enter="sendMessage">
+      <nord-textarea
+          v-model="form.message"
+          :error="applicationStore.errors?.message"
+          character-counter
+          expand
+          hideLabel
+          label="Message"
+          maxlength="255"
+          placeholder="Ecrivez votre message ici"
+          resize="auto"
+          style="--n-textarea-block-size: 50px"
+          @keydown.enter="sendMessage"
+          name="textarea-message"
+      >
       </nord-textarea>
       <nord-button
           id="send-button"
@@ -102,5 +104,4 @@ onBeforeUpdate(() => {
 #send-area {
   position: relative;
 }
-
 </style>

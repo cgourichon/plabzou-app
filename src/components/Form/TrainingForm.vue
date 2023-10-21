@@ -160,7 +160,7 @@ onMounted(async () => {
           {{ !!training ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!training" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>
