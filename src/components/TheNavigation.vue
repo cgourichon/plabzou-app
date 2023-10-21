@@ -81,6 +81,12 @@ const logout = async () => {
           Créneaux
         </nord-nav-item>
       </RouterLink>
+
+      <RouterLink to="/gestion/demandes">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/demandes')" icon="interface-grid">
+           Demandes
+        </nord-nav-item>
+      </RouterLink>
     </nord-nav-group>
 
 
@@ -90,6 +96,11 @@ const logout = async () => {
         <nord-nav-item :active="$route.path === '/messagerie'" icon="generic-mail">
           Messages
         </nord-nav-item>
+      </RouterLink>
+      <RouterLink to="/mes-demandes">
+         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
+            Demandes
+         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
 
