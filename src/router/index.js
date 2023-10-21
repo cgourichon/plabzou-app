@@ -37,12 +37,15 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: HomeView
+            component: HomeView,
         },
         {
             path: '/planning/promotions/:id?',
             name: 'schedule-promotions',
-            component: PromotionScheduleView
+            component: PromotionScheduleView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/connexion',
@@ -52,13 +55,18 @@ const router = createRouter({
         {
             path: '/messagerie',
             name: 'messagerie',
-            component: MessagesView
-            //TODO guards
+            component: MessagesView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee || !!useAuthStore().authenticatedUser?.teacher ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/mes-demandes',
             name: 'demandes-teacher',
-            component: RequestsView
+            component: RequestsView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee || !!useAuthStore().authenticatedUser?.teacher ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/profil',
@@ -68,102 +76,162 @@ const router = createRouter({
         {
             path: '/gestion/utilisateurs',
             name: 'users-list',
-            component: UserListView
+            component: UserListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/utilisateurs/ajouter',
             name: 'users-create',
-            component: UserCreateView
+            component: UserCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/utilisateurs/:id/modifier',
             name: 'users-edit',
-            component: UserEditView
+            component: UserEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/categories',
             name: 'categories-list',
-            component: CategoryListView
+            component: CategoryListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/categories/ajouter',
             name: 'categories-create',
-            component: CategoryCreateView
+            component: CategoryCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/categories/:id/modifier',
             name: 'categories-edit',
-            component: CategoryEditView
+            component: CategoryEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/formations',
             name: 'trainings-list',
-            component: TrainingListView
+            component: TrainingListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/formations/ajouter',
             name: 'trainings-create',
-            component: TrainingCreateView
+            component: TrainingCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/formations/:id/modifier',
             name: 'trainings-edit',
-            component: TrainingEditView
+            component: TrainingEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/cursus',
             name: 'courses-list',
-            component: CourseListView
+            component: CourseListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/cursus/ajouter',
             name: 'courses-create',
-            component: CourseCreateView
+            component: CourseCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/cursus/:id/modifier',
             name: 'courses-edit',
-            component: CourseEditView
+            component: CourseEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/creneaux',
             name: 'timeslots-list',
-            component: TimeslotListView
+            component: TimeslotListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/creneaux/ajouter',
             name: 'timeslots-create',
-            component: TimeslotCreateView
+            component: TimeslotCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/creneaux/:id/modifier',
             name: 'timeslots-edit',
-            component: TimeslotEditView
+            component: TimeslotEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/promotions',
             name: 'promotions-list',
-            component: PromotionListView
+            component: PromotionListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/promotions/ajouter',
             name: 'promotions-create',
-            component: PromotionCreateView
+            component: PromotionCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/promotions/:id/modifier',
             name: 'promotions-edit',
-            component: PromotionEditView
+            component: PromotionEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/demandes',
             name: 'requests-list',
-            component: RequestListView
+            component: RequestListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/demandes/ajouter',
             name: 'requests-create',
-            component: RequestCreateView
+            component: RequestCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/gestion/demandes/:id/modifier',
@@ -171,9 +239,12 @@ const router = createRouter({
             component: RequestEditView
         },
         {
-            path: '/gestion/import-excel',
+            path: '/gestion/imports',
             name: 'import-excel',
-            component: ImportView
+            component: ImportView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
         },
         {
             path: '/erreur',

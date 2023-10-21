@@ -56,7 +56,6 @@ const calendarOptions = computed(() => ({
     timeGridPlugin,
     listPlugin,
     multiMonthPlugin,
-
   ],
   initialView: props.view || 'timeGridWeek',
   locale: frLocale,
@@ -85,7 +84,7 @@ const calendarOptions = computed(() => ({
   },
   nowIndicator: true,
   dayMaxEvents: true,
-  height: (window.innerHeight - 120),
+  height: (window.innerHeight - 250),
   events: props.events?.map(timeslot => ({
     id: timeslot.id,
     title: timeslot.training.name,

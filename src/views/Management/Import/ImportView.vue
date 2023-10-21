@@ -11,22 +11,22 @@ import ImportForm from "@/components/Form/ImportForm.vue";
         <h5>Les modalités concernant le contenu des fichiers à importer se trouve dans le mode opératoire</h5>
       </div>
       <div>
-        <ImportForm path="/import-formations">Formations</ImportForm>
+        <ImportForm path="/trainings">Formations</ImportForm>
       </div>
       <div>
-        <ImportForm path="/import-formateurs">Formateurs</ImportForm>
+        <ImportForm path="/teachers">Formateurs</ImportForm>
       </div>
       <div>
-        <ImportForm path="/import-employes">Employés administratifs</ImportForm>
+        <ImportForm path="/administrative-employees">Employés administratifs</ImportForm>
       </div>
       <div>
-        <ImportForm path="/import-salles">Salles de formations</ImportForm>
+        <ImportForm path="/rooms">Salles de formations</ImportForm>
       </div>
       <div>
-        <ImportForm path="/import-promotions">Promotions</ImportForm>
+        <ImportForm path="/promotions">Promotions</ImportForm>
       </div>
       <div>
-        <ImportForm path="/import-apprenants">Apprenants</ImportForm>
+        <ImportForm path="/learners">Apprenants</ImportForm>
       </div>
     </nord-stack>
   </nord-card>

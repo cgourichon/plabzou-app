@@ -38,14 +38,14 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
-      <RouterLink to="/planning/promotions">
+      <RouterLink v-if="!!authenticatedUser?.administrative_employee" to="/planning/promotions">
         <nord-nav-item :active="$route.path.startsWith('/planning/promotions')" icon="interface-calendar">
           Planning
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
 
-    <nord-nav-group heading="Gestion">
+    <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Gestion">
       <RouterLink to="/gestion/utilisateurs">
         <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
           Utilisateurs
@@ -88,8 +88,8 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
-      <RouterLink to="/gestion/import-excel">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/import-excel')" icon="interface-upload">
+      <RouterLink to="/gestion/imports">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/imports')" icon="interface-upload">
           Imports
         </nord-nav-item>
       </RouterLink>
@@ -105,7 +105,7 @@ const logout = async () => {
           Messages
         </nord-nav-item>
       </RouterLink>
-      <RouterLink to="/mes-demandes">
+      <RouterLink v-if="!!authenticatedUser?.teacher" to="/mes-demandes">
         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
           Demandes
         </nord-nav-item>
