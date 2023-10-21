@@ -1,12 +1,13 @@
 <script setup>
 import {useAuthStore} from "@/stores/auth.store";
+import pbzLogoLarge from '@/assets/images/pbz-logo-large.png'
 
 const authStore = useAuthStore()
 </script>
 
 <template>
   <nord-header slot="header">
-    <h1 class="n-typescale-l">Plabzou - Application de planning</h1>
+    <img :src="pbzLogoLarge" alt="Logo Plabzou" height="35"/>
     <div slot="end">
       <nord-badge variant="info">
         Connecté en tant que
