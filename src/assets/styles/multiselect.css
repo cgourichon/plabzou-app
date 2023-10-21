@@ -3,11 +3,11 @@
 }
 
 .multiselect__option--highlight {
-    background: #3559c7;
+    background: #f9b533;
 }
 
 .multiselect__option--highlight:after {
-    background: #3559c7;
+    background: #f9b533;
 }
 
 .multiselect__tags {
@@ -17,7 +17,7 @@
 
 .multiselect__tag {
     border: 0;
-    background: #3559c7;
+    background: #3a477b;
 }
 
 .multiselect__tag-icon::after {
@@ -35,4 +35,12 @@
     color: #b2babf;
     margin-bottom: 0;
     padding-top: 0;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+    background: #f9b533;
+}
+
+.multiselect__option--selected.multiselect__option--highlight::after {
+    background: #f9b533;
 }

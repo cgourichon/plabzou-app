@@ -2,7 +2,7 @@
 import {useCategoryStore} from "@/stores/category.store";
 import {onMounted} from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const categoryStore = useCategoryStore()
 categoryStore.resetCategories()
@@ -46,7 +46,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="categoryStore.categories" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="categoryStore.categories"/>
   </nord-card>
 </template>
 

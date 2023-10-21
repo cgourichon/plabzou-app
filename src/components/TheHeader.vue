@@ -6,9 +6,9 @@ const authStore = useAuthStore()
 
 <template>
   <nord-header slot="header">
-    <h1 class="n-typescale-l">Plabzou - Application de planning</h1>
+    <h2 class="n-font-size-m">Mon application dédiée à la formation</h2>
     <div slot="end">
-      <nord-badge variant="info">
+      <nord-badge v-if="authStore.authenticatedUser" variant="info">
         Connecté en tant que
         {{
           authStore.authenticatedUser?.administrative_employee

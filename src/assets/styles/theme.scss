@@ -1,0 +1,38 @@
+:root {
+  --n-color-accent: #ad606a !important;
+  --n-color-status-info: #3a477b !important;
+  --n-color-status-info-weak: rgba(159, 184, 215, 0.35) !important;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.ag-align-vertical-center {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.has-logo .n-clinic-img {
+  opacity: 1;
+  visibility: visible;
+}
+
+.n-clinic-img {
+  max-width: calc(100% - var(--n-space-xl) - var(--n-space-s));
+  width: calc(100% - var(--n-space-xl) - var(--n-space-s));
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  margin-left: calc(var(--n-space-s) / 1.2);
+  background: transparent;
+  background-position-x: 0%;
+  background-position-y: 0%;
+  background-repeat: repeat;
+  background-image: none;
+  background-size: auto;
+  height: 100%;
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  background-size: 60% auto;
+}

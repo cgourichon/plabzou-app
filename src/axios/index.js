@@ -1,6 +1,7 @@
 import axios from "axios";
 import {useAuthStore} from "@/stores/auth.store";
 import {useApplicationStore} from "@/stores/application.store";
+import router from "@/router";
 
 const axiosClient = axios.create({
     baseURL: 'https://plabzou-api.mitermitek.fr/api'
@@ -25,7 +26,7 @@ axiosClient.interceptors.response.use(response => {
     applicationStore.loading = false
 
     applicationStore.clearSuccess()
-    if(response.config.method !== 'get') applicationStore.success = response.data.message
+    if (response.config.method !== 'get') applicationStore.success = response.data.message
 
     applicationStore.clearErrors()
 
@@ -33,10 +34,20 @@ axiosClient.interceptors.response.use(response => {
 }, error => {
     const applicationStore = useApplicationStore()
 
+    if (
+        error.response.status === 401
+        || error.response.status === 403
+        || error.response.status === 419
+        || error.response.status === 429
+        || error.response.status === 500
+    ) {
+        router.push({name: 'error'})
+    }
+
     applicationStore.loading = false
 
-    applicationStore.error = error.response.data.message
-    applicationStore.errors = error.response.data.errors
+    applicationStore.error = error?.response?.data?.message
+    applicationStore.errors = error?.response?.data?.errors
 })
 
 export default axiosClient

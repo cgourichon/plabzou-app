@@ -1,4 +1,5 @@
 <script setup>
+import pbzLogoLarge from '@/assets/images/pbz-logo-large.png'
 import {RouterLink} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
 import {computed} from "vue";
@@ -16,19 +17,10 @@ const logout = async () => {
 
 <template>
   <nord-navigation slot="nav">
-    <nord-dropdown slot="header" expand>
-      <nord-button slot="toggle" expand>
-        <nord-avatar slot="start" name="Plabzou" variant="square">P</nord-avatar>
-        Plabzou
+    <nord-dropdown slot="header" expand align="start" position="block-end" size="m">
+      <nord-button class="n-logo has-logo" slot="toggle" expand aria-haspopup="true" variant="default" type="submit" size="m" aria-expanded="false" href="#">
+        <div slot="start" aria-hidden="true" class="n-clinic-img" :style="`background-image: url(${pbzLogoLarge})`"></div>
       </nord-button>
-
-      <nord-dropdown-group heading="Applications">
-        <nord-dropdown-item>
-          <nord-avatar slot="start" name="Plabzou" size="s" variant="square">P</nord-avatar>
-          Plabzou
-          <nord-icon slot="end" name="interface-checked"></nord-icon>
-        </nord-dropdown-item>
-      </nord-dropdown-group>
     </nord-dropdown>
 
     <nord-nav-group heading="Global">
@@ -38,14 +30,14 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
-      <RouterLink to="/about">
-        <nord-nav-item :active="$route.path === '/about'" icon="interface-info">
-          A propos
+      <RouterLink v-if="!!authenticatedUser?.administrative_employee" to="/planning/promotions">
+        <nord-nav-item :active="$route.path.startsWith('/planning/promotions')" icon="interface-calendar">
+          Planning
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
 
-    <nord-nav-group heading="Gestion">
+    <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Gestion">
       <RouterLink to="/gestion/utilisateurs">
         <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
           Utilisateurs
@@ -81,14 +73,33 @@ const logout = async () => {
           Créneaux
         </nord-nav-item>
       </RouterLink>
+
+      <RouterLink to="/gestion/demandes">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/demandes')" icon="interface-grid">
+          Demandes
+        </nord-nav-item>
+      </RouterLink>
+
+      <RouterLink to="/gestion/imports">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/imports')" icon="interface-upload">
+          Imports
+        </nord-nav-item>
+      </RouterLink>
     </nord-nav-group>
 
 
-    <nord-nav-group v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
-                    heading="Communication">
+    <nord-nav-group
+        v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
+        heading="Communication"
+    >
       <RouterLink to="/messagerie">
         <nord-nav-item :active="$route.path === '/messagerie'" icon="generic-mail">
           Messages
+        </nord-nav-item>
+      </RouterLink>
+      <RouterLink v-if="!!authenticatedUser?.teacher" to="/mes-demandes">
+        <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
+          Demandes
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
@@ -108,11 +119,15 @@ const logout = async () => {
       </nord-button>
 
       <nord-dropdown-group>
-        <nord-dropdown-item href="/profil">Voir mon profil</nord-dropdown-item>
+        <RouterLink to="/profil">
+          <nord-dropdown-item>Profil</nord-dropdown-item>
+        </RouterLink>
       </nord-dropdown-group>
 
       <nord-dropdown-group>
-        <nord-dropdown-item>Aide & Support</nord-dropdown-item>
+        <a href="https://bibz-tec.atlassian.net/servicedesk/" target="_blank">
+          <nord-dropdown-item>Aide & Support</nord-dropdown-item>
+        </a>
       </nord-dropdown-group>
 
       <nord-dropdown-item @click.prevent="logout">

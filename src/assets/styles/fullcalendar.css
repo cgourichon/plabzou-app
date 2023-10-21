@@ -15,7 +15,7 @@
 }
 
 .fc-col-header-cell-cushion {
-    color: #3559c7;
+    color: #3a477b;
     text-decoration: none;
 }
 
@@ -25,11 +25,16 @@
 }
 
 .fc-button-active, .fc-button-active:focus {
-    background: #4774fd !important;
-    border-color: #4774fd !important;
+    background: #456895 !important;
+    border-color: #456895 !important;
 }
 
 .fc-button-primary {
-    background: #3559c7 !important;
-    border-color: #3559c7 !important;
+    background: #3a477b !important;
+    border-color: #3a477b !important;
+}
+
+.fc-day-today {
+    background: rgba(211, 219, 232, 0.3) !important;
+    color: #ffffff !important;
 }

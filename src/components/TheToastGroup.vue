@@ -39,8 +39,8 @@ watch(success, () => {
     <nord-toast
         v-for="(toast, index) in toasts"
         :key="index"
-        :variant="toast.color"
         :auto-dismiss="toast.timeout"
+        :variant="toast.color"
         @dismiss="removeToast(index)"
     >
       {{ toast.message }}

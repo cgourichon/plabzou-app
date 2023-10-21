@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr.js";
 import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import updateLocalePlugin from 'dayjs/plugin/updateLocale'
+
 dayjs.extend(relativeTimePlugin)
 dayjs.extend(updateLocalePlugin)
 
@@ -17,6 +18,14 @@ export const getDateWithoutTimeZone = (datetime) => {
 
 export const getDateTimeWithoutTimeZone = (datetime) => {
     return dayjs(datetime).format('YYYY-MM-DD HH:mm:ss')
+}
+
+export const getDatetimeShortFormat = datetime => {
+    return dayjs(datetime).format('DD/MM/YY à HH:mm');
+}
+
+export const getDatetimeShortFormatWithoutTime = datetime => {
+    return dayjs(datetime).format('DD/MM/YY');
 }
 
 export const getTimeFromNow = datetime => {

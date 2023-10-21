@@ -2,7 +2,7 @@
 import {useUserStore} from "@/stores/user.store";
 import {onMounted} from "vue";
 import DataTable from "@/components/Table/DataTable.vue";
-import EditAction from "@/components/Action/EditAction.vue";
+import EditAction from "@/components/Table/Action/EditAction.vue";
 
 const userStore = useUserStore()
 userStore.resetUsers()
@@ -77,7 +77,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="userStore.users" :components="components"/>
+    <DataTable :columns="columns" :components="components" :data="userStore.users"/>
   </nord-card>
 </template>
 

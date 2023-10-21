@@ -107,8 +107,8 @@ onMounted(async () => {
           :hide-selected="true"
           :multiple="true"
           :options="categoryStore.categories"
-          :show-no-results="true"
           :select-label="null"
+          :show-no-results="true"
           label="name"
           placeholder="Associer cette formation a des catégories"
           track-by="id"
@@ -126,8 +126,8 @@ onMounted(async () => {
           :hide-selected="true"
           :multiple="true"
           :options="courseStore.courses"
-          :show-no-results="true"
           :select-label="null"
+          :show-no-results="true"
           label="name"
           placeholder="Associer des cursus à cette formation"
           track-by="id"
@@ -145,8 +145,8 @@ onMounted(async () => {
           :hide-selected="true"
           :multiple="true"
           :options="teacherStore.teachers"
-          :show-no-results="true"
           :select-label="null"
+          :show-no-results="true"
           label="full_name"
           placeholder="Associer des formateurs à cette formation"
           track-by="user_id"
@@ -160,7 +160,7 @@ onMounted(async () => {
           {{ !!training ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!training" expand type="button" variant="danger" @click="destroy">
+        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>

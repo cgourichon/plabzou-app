@@ -7,27 +7,26 @@ import {onMounted, onUnmounted} from "vue";
 const authStore = useAuthStore();
 
 const startInterval = setInterval(() => {
-    authStore.fetchAuthenticatedUser();
-}, 10000)
+  authStore.fetchAuthenticatedUser();
+}, 60000)
 
 const stopInterval = startInterval => {
-    clearInterval(startInterval);
+  clearInterval(startInterval);
 }
 
 onMounted(() => startInterval);
 onUnmounted(() => stopInterval(startInterval));
-
 </script>
 
 <template>
-    <template v-if="authStore.authenticatedUser.teacher">
-        <ConversationTeacher />
-    </template>
-    <template v-else-if="authStore.authenticatedUser.administrative_employee">
-        <ConversationAdmin/>
-    </template>
+  <template v-if="authStore.authenticatedUser?.teacher">
+    <ConversationTeacher/>
+  </template>
+  <template v-else-if="authStore.authenticatedUser?.administrative_employee">
+    <ConversationAdmin/>
+  </template>
   <template v-else>
-      <p>Rien à afficher ici pour vous :-)</p>
+    <p>Rien à afficher ici pour vous :-)</p>
   </template>
 </template>
 
