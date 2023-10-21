@@ -84,29 +84,31 @@ const logout = async () => {
 
       <RouterLink to="/gestion/demandes">
         <nord-nav-item :active="$route.path.startsWith('/gestion/demandes')" icon="interface-grid">
-           Demandes
+          Demandes
         </nord-nav-item>
       </RouterLink>
 
-        <RouterLink to="/gestion/import-excel">
-            <nord-nav-item :active="$route.path.startsWith('/gestion/import-excel')" icon="interface-upload">
-                Imports
-            </nord-nav-item>
-        </RouterLink>
+      <RouterLink to="/gestion/import-excel">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/import-excel')" icon="interface-upload">
+          Imports
+        </nord-nav-item>
+      </RouterLink>
     </nord-nav-group>
 
 
-    <nord-nav-group v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
-                    heading="Communication">
+    <nord-nav-group
+        v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
+        heading="Communication"
+    >
       <RouterLink to="/messagerie">
         <nord-nav-item :active="$route.path === '/messagerie'" icon="generic-mail">
           Messages
         </nord-nav-item>
       </RouterLink>
       <RouterLink to="/mes-demandes">
-         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
-            Demandes
-         </nord-nav-item>
+        <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
+          Demandes
+        </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
 
@@ -125,7 +127,9 @@ const logout = async () => {
       </nord-button>
 
       <nord-dropdown-group>
-        <nord-dropdown-item href="/profil">Voir mon profil</nord-dropdown-item>
+        <RouterLink to="/profil">
+          <nord-dropdown-item>Profil</nord-dropdown-item>
+        </RouterLink>
       </nord-dropdown-group>
 
       <nord-dropdown-group>
