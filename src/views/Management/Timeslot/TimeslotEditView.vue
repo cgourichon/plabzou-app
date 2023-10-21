@@ -25,7 +25,7 @@ onMounted(async () => {
       </RouterLink>
     </div>
 
-    <TimeslotForm :timeslot="timeslotStore.timeslot"/>
+    <TimeslotForm :timeslot="timeslotStore.timeslot" name="timeslots-list"/>
   </nord-card>
 </template>
 
