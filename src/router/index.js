@@ -19,10 +19,14 @@ import CourseCreateView from "@/views/Management/Course/CourseCreateView.vue";
 import TimeslotListView from "@/views/Management/Timeslot/TimeslotListView.vue";
 import TimeslotCreateView from "@/views/Management/Timeslot/TimeslotCreateView.vue";
 import TimeslotEditView from "@/views/Management/Timeslot/TimeslotEditView.vue";
-import MessagesView from "@/views/MessagesView.vue";
+import MessagesView from "@/views/Communication/MessagesView.vue";
 import PromotionListView from "@/views/Management/Promotion/PromotionListView.vue";
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
 import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
+import RequestListView from "@/views/Management/Request/RequestListView.vue";
+import RequestCreateView from "@/views/Management/Request/RequestCreateView.vue";
+import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
+import RequestsView from "@/views/Communication/RequestsView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
 import ImportView from "@/views/Management/Import/ImportView.vue";
 
@@ -49,6 +53,11 @@ const router = createRouter({
             name: 'messagerie',
             component: MessagesView
             //TODO guards
+        },
+        {
+            path: '/mes-demandes',
+            name: 'demandes-teacher',
+            component: RequestsView
         },
         {
             path: '/profil',
@@ -144,6 +153,21 @@ const router = createRouter({
             path: '/gestion/promotions/:id/modifier',
             name: 'promotions-edit',
             component: PromotionEditView
+        },
+        {
+            path: '/gestion/demandes',
+            name: 'requests-list',
+            component: RequestListView
+        },
+        {
+            path: '/gestion/demandes/ajouter',
+            name: 'requests-create',
+            component: RequestCreateView
+        },
+        {
+            path: '/gestion/demandes/:id/modifier',
+            name: 'requests-edit',
+            component: RequestEditView
         },
         {
             path: '/gestion/import-excel',
