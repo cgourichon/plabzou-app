@@ -48,7 +48,6 @@ const sendMessage = async () => {
     await conversationStore.sendMessage(form.value)
         .then(() => {
             form.value.message = null
-            console.log('here 2');
         })
         .finally(() => submitButton.value.loading = false);
 
