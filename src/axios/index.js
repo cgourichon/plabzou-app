@@ -35,8 +35,8 @@ axiosClient.interceptors.response.use(response => {
 
     applicationStore.loading = false
 
-    applicationStore.error = error.response.data.message
-    applicationStore.errors = error.response.data.errors
+    applicationStore.error = error?.response?.data?.message
+    applicationStore.errors = error?.response?.data?.errors
 })
 
 export default axiosClient

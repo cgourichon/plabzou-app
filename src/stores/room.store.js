@@ -10,6 +10,9 @@ export const useRoomStore = defineStore('room', {
         async fetchRooms() {
             const response = await axiosClient.get('/rooms')
             if (response) this.rooms = response.data.data
+        },
+        resetRooms() {
+            this.rooms = null
         }
     }
 })

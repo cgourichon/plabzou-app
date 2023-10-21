@@ -7,17 +7,17 @@ const authStore = useAuthStore();
 const requests = ref(null);
 
 onMounted(() => {
-    requests.value = authStore.authenticatedUser.teacher.requests;
+    requests.value = authStore.authenticatedUser?.teacher?.requests;
 })
 
 onBeforeUpdate(() => {
-    requests.value = authStore.authenticatedUser.teacher.requests;
+    requests.value = authStore.authenticatedUser?.teacher?.requests;
 })
 </script>
 
 <template>
     <div class="container">
-        <template v-for="request in authStore.authenticatedUser.teacher.requests" :key="request.id">
+        <template v-for="request in authStore.authenticatedUser?.teacher?.requests" :key="request.id">
             <div class="card">
                 <RequestItem :request="request"/>
             </div>

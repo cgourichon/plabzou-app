@@ -15,7 +15,7 @@ import TimeslotForm from "@/components/Form/TimeslotForm.vue";
       </RouterLink>
     </div>
 
-    <TimeslotForm/>
+    <TimeslotForm name="timeslots-list"/>
   </nord-card>
 </template>
 

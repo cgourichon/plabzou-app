@@ -1,60 +1,88 @@
 <script setup>
-import {useAuthStore} from "@/stores/auth.store";
-import {useTeacherStore} from "@/stores/teacher.store";
 import {usePromotionStore} from "@/stores/promotion.store";
-import {useTrainingStore} from "@/stores/training.store";
-import {useRoomStore} from "@/stores/room.store";
-import {useLearnerStore} from "@/stores/learner.store";
 import {useTimeslotStore} from "@/stores/timeslot.store";
 import PromotionProgress from "@/components/Promotion/PromotionProgress.vue";
 import Calendar from "@/components/Calendar/Calendar.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
+import {useTrainingStore} from "@/stores/training.store";
+import {useRoomStore} from "@/stores/room.store";
+import {useTeacherStore} from "@/stores/teacher.store";
+import {useLearnerStore} from "@/stores/learner.store";
+import router from "@/router";
 
-const authStore = useAuthStore()
-const teacherStore = useTeacherStore()
-const learnerStore = useLearnerStore()
 const promotionStore = usePromotionStore()
+const timeslotStore = useTimeslotStore()
 const trainingStore = useTrainingStore()
 const roomStore = useRoomStore()
-const timeslotStore = useTimeslotStore()
+const teacherStore = useTeacherStore()
+const learnerStore = useLearnerStore()
 
 timeslotStore.resetTimeslots()
 promotionStore.resetPromotions()
+trainingStore.resetTrainings()
+roomStore.resetRooms()
+teacherStore.resetTeachers()
+learnerStore.resetLearners()
 
 const selectedPromotion = ref(null)
 const modalAdvancement = ref(null)
-const initialLoading = ref(true)
-const loadingPromotion = ref(false)
-
-const selectPromotion = async () => {
-  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else {
-    loadingPromotion.value = true;
-    setTimeout(() =>loadingPromotion.value = false, 500);
-  }
-}
+const calendarReloaded = ref(false)
 
 const showAdvancement = () => {
   modalAdvancement.value.showModal()
 }
 
-const fetchCurrent = async () => {
-  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
-  else await fetchTimeslots()
+const filteredTimeslots = computed(() => {
+  if (selectedPromotion.value) {
+    return timeslotStore?.timeslots.filter(timeslot => timeslot.promotions.find(promotion => promotion.id === selectedPromotion.value.id))
+  } else {
+    return timeslotStore?.timeslots
+  }
+})
+
+const fetchDependencies = async () => {
+  timeslotStore.resetTimeslots()
+  promotionStore.resetPromotions()
+
+  await promotionStore.fetchPromotions({advancement: 1})
+  await timeslotStore.fetchTimeslots()
 }
 
-const fetchPromotion = async(id) => {
-  loadingPromotion.value = true;
-  await promotionStore.fetchPromotion(id, {advancement: 1})
-  selectedPromotion.value = promotionStore.promotion
+const reset = async () => {
+  await fetchDependencies()
+}
+
+onMounted(async () => {
+  calendarReloaded.value = false
+  const routeId = useRoute().params.id
+
+  await fetchDependencies()
+
+  if (routeId) {
+    selectedPromotion.value = promotionStore.promotions.find(promotion => promotion.id === Number(routeId))
+  }
+
+  calendarReloaded.value = true
+})
+
+watch(() => selectedPromotion.value, () => {
+  selectedPromotion.value
+      ? router.push({name: 'schedule-promotions', params: { id: selectedPromotion.value.id }})
+      : router.push({name: 'schedule-promotions'})
+})
+
+/** const fetchTimeslotsOrPromotion = async () => {
+  loadingPromotion.value = true
+  if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
+  else await fetchTimeslots()
   loadingPromotion.value = false;
 }
 
 const fetchTimeslots = async () => {
-  loadingPromotion.value = true;
+  loadingPromotion.value = true
   await timeslotStore.fetchTimeslots()
-  loadingPromotion.value = false;
+  loadingPromotion.value = false
 }
 
 const filteredTimeslots = computed(() => {
@@ -64,64 +92,53 @@ const filteredTimeslots = computed(() => {
     return timeslotStore?.timeslots
   }
 })
-
-const hasTimeslots = computed(() => filteredTimeslots?.value?.length)
-
-onMounted(async () => {
-  if (useRoute().params.id) await fetchPromotion(useRoute().params.id)
-
-  await promotionStore.fetchPromotions()
-  await timeslotStore.fetchTimeslots()
-  await trainingStore.fetchTrainings()
-  await roomStore.fetchRooms()
-  await learnerStore.fetchLearners()
-  await teacherStore.fetchTeachers()
-
-  initialLoading.value = false
-})
+ **/
 </script>
 
 <template>
-  <template v-if="!initialLoading">
-    <nord-card>
-      <nord-stack slot="header" class="n-stack-horizontal">
-        <h2 v-if="!selectedPromotion">Planning des promotions</h2>
+  <nord-card>
+    <h2 slot="header">
+      {{ selectedPromotion ? 'Planning de la promotion : ' + selectedPromotion.name : 'Planning des promotions' }}
+    </h2>
 
-        <template v-else>
-          <h2>Planning de la promotion : {{ selectedPromotion.name }}</h2>
-          <nord-button size="s" variant="primary" @click="showAdvancement">
-            <nord-icon slot="start" name="interface-edit-on"/>
-            Avancement
-          </nord-button>
-        </template>
-      </nord-stack>
+    <section class="n-grid-2 n-grid-center-i n-container-xs" style="align-items: center;">
+      <multi-select
+          v-model="selectedPromotion"
+          :options="promotionStore.promotions"
+          :show-no-results="true"
+          label="name"
+          placeholder="Sélectionner une promotion"
+          track-by="id"
+      >
+        <template #noResult>Pas de promotions correspondantes</template>
+        <template #noOptions>Pas de promotions trouvées</template>
+      </multi-select>
 
-      <nord-stack slot="header-end">
-        <multi-select
-            v-model="selectedPromotion"
-            :options="promotionStore.promotions"
-            :show-no-results="true"
-            label="name"
-            placeholder="Sélectionner une promotion"
-            track-by="id"
-            @update:modelValue="selectPromotion"
-        >
-          <template #noResult>Pas de promotions correspondantes</template>
-          <template #noOptions>Pas de promotions trouvées</template>
-        </multi-select>
-      </nord-stack>
-    </nord-card>
-    <Calendar v-if="!loadingPromotion"
-              :events="filteredTimeslots"
-              :promotion=selectedPromotion
-              view="dayGridMonth"
-              @resetEvents="fetchCurrent" />
+      <nord-button v-if="selectedPromotion" variant="primary" @click="showAdvancement">
+        <nord-icon name="graph-bars"/>
+        Avancement
+      </nord-button>
+    </section>
+  </nord-card>
 
-    <nord-modal v-if="selectedPromotion && !loadingPromotion" :open="false" ref="modalAdvancement" size="l" aria-labelledby="title">
-      <h2 slot="header" id="title">Promotion : {{ selectedPromotion.name }}</h2>
-      <promotion-progress :promotion="selectedPromotion"/>
-    </nord-modal>
-  </template>
+  <Calendar
+      v-if="calendarReloaded"
+      :events="filteredTimeslots"
+      :promotion=selectedPromotion
+      view="dayGridMonth"
+      @resetEvents="reset"
+  />
+
+  <nord-modal
+      v-if="selectedPromotion"
+      ref="modalAdvancement"
+      :open="false"
+      aria-labelledby="title"
+      size="l"
+  >
+    <h2 id="title" slot="header">Promotion : {{ selectedPromotion.name }}</h2>
+    <promotion-progress :promotion="selectedPromotion"/>
+  </nord-modal>
 </template>
 
 <style scoped>
