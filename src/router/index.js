@@ -24,6 +24,7 @@ import PromotionListView from "@/views/Management/Promotion/PromotionListView.vu
 import PromotionCreateView from "@/views/Management/Promotion/PromotionCreateView.vue";
 import PromotionEditView from "@/views/Management/Promotion/PromotionEditView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
+import ImportView from "@/views/Management/Import/ImportView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -144,7 +145,11 @@ const router = createRouter({
             name: 'promotions-edit',
             component: PromotionEditView
         },
-
+        {
+            path: '/gestion/import-excel',
+            name: 'import-excel',
+            component: ImportView
+        },
     ]
 })
 

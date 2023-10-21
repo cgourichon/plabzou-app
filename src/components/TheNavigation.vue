@@ -81,6 +81,12 @@ const logout = async () => {
           Créneaux
         </nord-nav-item>
       </RouterLink>
+
+        <RouterLink to="/gestion/import-excel">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/import-excel')" icon="interface-upload">
+                Imports
+            </nord-nav-item>
+        </RouterLink>
     </nord-nav-group>
 
 
