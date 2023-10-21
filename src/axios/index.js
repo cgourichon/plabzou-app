@@ -1,6 +1,7 @@
 import axios from "axios";
 import {useAuthStore} from "@/stores/auth.store";
 import {useApplicationStore} from "@/stores/application.store";
+import router from "@/router";
 
 const axiosClient = axios.create({
     baseURL: 'http://plabzou-api.test/api'
@@ -32,6 +33,16 @@ axiosClient.interceptors.response.use(response => {
     return response
 }, error => {
     const applicationStore = useApplicationStore()
+
+    if (
+        error.response.status === 401
+        || error.response.status === 403
+        || error.response.status === 419
+        || error.response.status === 429
+        || error.response.status === 500
+    ) {
+        router.push({name: 'error'})
+    }
 
     applicationStore.loading = false
 

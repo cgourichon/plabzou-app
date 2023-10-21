@@ -29,6 +29,7 @@ import RequestEditView from "@/views/Management/Request/RequestEditView.vue";
 import RequestsView from "@/views/Communication/RequestsView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
 import ImportView from "@/views/Management/Import/ImportView.vue";
+import ErrorView from "@/views/ErrorView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -174,6 +175,11 @@ const router = createRouter({
             name: 'import-excel',
             component: ImportView
         },
+        {
+            path: '/erreur',
+            name: 'error',
+            component: ErrorView
+        }
     ]
 })
 
