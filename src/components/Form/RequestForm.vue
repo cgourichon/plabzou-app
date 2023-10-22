@@ -7,6 +7,7 @@ import {useAuthStore} from "@/stores/auth.store";
 import {useRequestStore} from "@/stores/request.store";
 import router from "@/router";
 import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
+import {useTeacherStore} from "@/stores/teacher.store";
 
 const props = defineProps({
   request: {
@@ -19,6 +20,7 @@ const applicationStore = useApplicationStore();
 const timeslotStore = useTimeslotStore();
 const authStore = useAuthStore();
 const requestStore = useRequestStore();
+const teacherStore = useTeacherStore();
 
 const teachers = ref([])
 const selectedTimeslot = ref(null)
@@ -29,9 +31,11 @@ const comment = ref(null)
 const disabledTeachers = ref(true)
 const createdDate = ref(null);
 
-const changeTeachers = () => {
+
+const changeTeachers = async () => {
   selectedTeacher.value = null;
-  teachers.value = selectedTimeslot.value.teachers;
+    await teacherStore.fetchTeachers({training: selectedTimeslot.value.training_id});
+    teachers.value = teacherStore.teachers;
 }
 
 const assignData = () => {
@@ -50,13 +54,15 @@ const getBooleanStatus = value => {
 }
 
 const update = async () => {
+    applicationStore.clearErrors();
   const data = assignData();
   await requestStore.updateRequest(props.request.id, data);
   await redirect();
 }
 
 const store = async () => {
-  const data = assignData();
+    applicationStore.clearErrors();
+    const data = assignData();
   await requestStore.createRequest(data);
   await redirect();
 }
@@ -67,7 +73,7 @@ const destroy = async () => {
 }
 
 const getDatas = async () => {
-  if (timeslotStore.timeslots.length === 0) await timeslotStore.fetchTimeslots();
+  await timeslotStore.fetchTimeslots();
 }
 
 const resetTeachers = () => {
