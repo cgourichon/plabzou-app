@@ -26,16 +26,16 @@ const selectedCity = ref(null)
 const selectedLearners = ref(null)
 
 const form = computed(() => {
-  selectedCourse.value = props.promotion?.course_id ?? ''
-  selectedCity.value = props.promotion?.city_id ?? ''
+  selectedCourse.value = props.promotion?.course ?? ''
+  selectedCity.value = props.promotion?.city ?? ''
   selectedLearners.value = props.promotion?.learners ?? []
 
   return {
     name: props.promotion?.name ?? null,
     starts_at: props.promotion?.starts_at ? getDateWithoutTimeZone(props.promotion?.starts_at) : '',
     ends_at: props.promotion?.ends_at ? getDateWithoutTimeZone(props.promotion?.ends_at) : '',
-    course: props.promotion?.course_id ?? '',
-    city: props.promotion?.city_id ?? '',
+    course: '',
+    city: '',
     learners: props.promotion?.learners ?? [],
   }
 })
