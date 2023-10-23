@@ -41,8 +41,8 @@ const form = computed(() => {
 })
 
 const store = async () => {
-  form.value.course = selectedCourse.value
-  form.value.city = selectedCity.value
+  form.value.course = selectedCourse.value.id
+  form.value.city = selectedCity.value.id
   form.value.learners = selectedLearners.value
 
   applicationStore.clearErrors()
@@ -51,8 +51,8 @@ const store = async () => {
 }
 
 const update = async () => {
-  form.value.course = selectedCourse.value
-  form.value.city = selectedCity.value
+  form.value.course = selectedCourse.value.id
+  form.value.city = selectedCity.value.id
   form.value.learners = selectedLearners.value
 
   applicationStore.clearErrors()
