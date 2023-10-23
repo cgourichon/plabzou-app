@@ -27,13 +27,13 @@ const getIcon = value => {
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Mode</span> : <span
           class="n-input">{{ isOnline }}</span></p>
     </div>
-    <div class="n-grid-2">
+    <div class="n-grid-2" v-if="request.timeslot.room?.name">
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Salle</span> : <span
-          class="n-input">{{ request.timeslot.room.name }}</span></p>
+          class="n-input">{{ request.timeslot.room?.name }}</span></p>
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Batiment</span> : <span
-          class="n-input">{{ request.timeslot.room.building.name }}</span></p>
+          class="n-input">{{ request.timeslot.room?.building?.name }}</span></p>
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Adresse</span> : <span
-          class="n-input">{{ request.timeslot.room.building.place.name }} à {{ request.timeslot.room.building.place.city.name }}</span>
+          class="n-input">{{ request.timeslot.room?.building?.place?.name }} à {{ request.timeslot.room?.building?.place?.city.name }}</span>
       </p>
     </div>
     <div class="n-grid-2">
