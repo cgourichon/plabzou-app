@@ -11,6 +11,8 @@ import {useTeacherStore} from "@/stores/teacher.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import router from "@/router";
 
+const routeId = useRoute().params.id
+
 const promotionStore = usePromotionStore()
 const timeslotStore = useTimeslotStore()
 const trainingStore = useTrainingStore()
@@ -51,11 +53,14 @@ const fetchDependencies = async () => {
 
 const reset = async () => {
   await fetchDependencies()
+
+  if (routeId) {
+    selectedPromotion.value = promotionStore.promotions.find(promotion => promotion.id === Number(routeId))
+  }
 }
 
 onMounted(async () => {
   calendarReloaded.value = false
-  const routeId = useRoute().params.id
 
   await fetchDependencies()
 
@@ -71,28 +76,6 @@ watch(() => selectedPromotion.value, () => {
       ? router.push({name: 'schedule-promotions', params: {id: selectedPromotion.value.id}})
       : router.push({name: 'schedule-promotions'})
 })
-
-/** const fetchTimeslotsOrPromotion = async () => {
- loadingPromotion.value = true
- if (selectedPromotion.value) await fetchPromotion(selectedPromotion.value.id)
- else await fetchTimeslots()
- loadingPromotion.value = false;
- }
-
- const fetchTimeslots = async () => {
- loadingPromotion.value = true
- await timeslotStore.fetchTimeslots()
- loadingPromotion.value = false
- }
-
- const filteredTimeslots = computed(() => {
- if (selectedPromotion.value?.timeslots) {
- return selectedPromotion.value.timeslots
- } else {
- return timeslotStore?.timeslots
- }
- })
- **/
 </script>
 
 <template>
