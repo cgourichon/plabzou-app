@@ -27,7 +27,7 @@ const getIcon = value => {
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Mode</span> : <span
           class="n-input">{{ isOnline }}</span></p>
     </div>
-    <div class="n-grid-2">
+    <div class="n-grid-2" v-if="request.timeslot.room">
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Salle</span> : <span
           class="n-input">{{ request.timeslot.room?.name }}</span></p>
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Batiment</span> : <span
