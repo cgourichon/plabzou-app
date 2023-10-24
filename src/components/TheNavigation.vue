@@ -18,8 +18,10 @@ const logout = async () => {
 <template>
   <nord-navigation slot="nav">
     <nord-dropdown slot="header" expand align="start" position="block-end" size="m">
-      <nord-button class="n-logo has-logo" slot="toggle" expand aria-haspopup="true" variant="default" type="submit" size="m" aria-expanded="false" href="#">
-        <div slot="start" aria-hidden="true" class="n-clinic-img" :style="`background-image: url(${pbzLogoLarge})`"></div>
+      <nord-button class="n-logo has-logo" slot="toggle" expand aria-haspopup="true" variant="default" type="submit"
+                   size="m" aria-expanded="false" href="#">
+        <div slot="start" aria-hidden="true" class="n-clinic-img"
+             :style="`background-image: url(${pbzLogoLarge})`"></div>
       </nord-button>
     </nord-dropdown>
 
@@ -65,6 +67,12 @@ const logout = async () => {
       <RouterLink to="/gestion/batiments">
         <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
           Bâtiments
+        </nord-nav-item>
+      </RouterLink>
+
+      <RouterLink to="/gestion/salles">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/salles')" icon="interface-grid">
+          Salles
         </nord-nav-item>
       </RouterLink>
 
