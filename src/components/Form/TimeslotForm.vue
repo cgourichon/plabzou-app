@@ -146,10 +146,6 @@ const fetchDependencies = async () => {
   }
 }
 
-const test = $event => {
-    console.log($event);
-}
-
 watch(() => selectedTraining.value, async () => {
   await fetchDependencies()
 })
