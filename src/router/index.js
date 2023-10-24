@@ -33,6 +33,9 @@ import RequestsView from "@/views/Communication/RequestsView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
 import ImportView from "@/views/Management/Import/ImportView.vue";
 import ErrorView from "@/views/ErrorView.vue";
+import PlaceListView from "@/views/Management/Place/PlaceListView.vue";
+import PlaceCreateView from "@/views/Management/Place/PlaceCreateView.vue";
+import PlaceEditView from "@/views/Management/Place/PlaceEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -144,6 +147,30 @@ const router = createRouter({
             path: '/gestion/villes/:id/modifier',
             name: 'cities-edit',
             component: CityEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux',
+            name: 'places-list',
+            component: PlaceListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux/ajouter',
+            name: 'places-create',
+            component: PlaceCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux/:id/modifier',
+            name: 'places-edit',
+            component: PlaceEditView,
             beforeEnter: (to, from, next) => {
                 !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
             }
