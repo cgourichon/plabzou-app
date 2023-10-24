@@ -78,7 +78,7 @@ onMounted(async () => {
           :error="applicationStore.errors?.seats_number"
           expand
           label="Nombre de place"
-          placeholder="Entrez un nommbre de place"
+          placeholder="Entrez un nombre de place"
           type="number"
       />
 

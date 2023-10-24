@@ -117,12 +117,14 @@ const checkFilterLearnersByTraining = async () => {
 }
 
 const requestValidated = option => {
-    const isValidated = option?.requests.find(request => {
-        return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
-    });
 
-    return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
-                  "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
+        const isValidated = option?.requests.find(request => {
+            return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
+        });
+
+        return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
+            "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
+
 
 }
 

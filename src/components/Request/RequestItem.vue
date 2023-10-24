@@ -21,7 +21,7 @@ const requestStore = useRequestStore();
 const authStore = useAuthStore();
 
 const toLate = () => {
-  return cancelAction.value = dayjs(props.request.timeslot.starts_at).diff(dayjs(), 'day') < 7;
+  return cancelAction.value = dayjs() > dayjs(props.request.timeslot.ends_at);
 }
 
 const teacherAnswer = ref(null);
