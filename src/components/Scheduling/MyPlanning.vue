@@ -29,12 +29,6 @@ const fetchTimeslots = async () => {
 
       return hasTeacherId && isApprovedOrNotHandled
     })
-    /** teacherTimeslots = teacherStore.teacher?.timeslots.filter(
-        timeslot => timeslot.requests.filter(
-            request => request.teacher_id === authStore.authenticatedUser.id
-                && (request.is_approved_by_teacher === true || request.is_approved_by_teacher === null)
-        )
-    ) **/
   }
 
   if (showTrainingsToFollow.value && !!authStore.authenticatedUser?.learner) {
