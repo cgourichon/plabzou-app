@@ -166,6 +166,8 @@ onMounted(async () => {
   await roomStore.fetchRooms()
   await trainingStore.fetchTrainings()
 })
+
+const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
 </script>
 
 <template>
@@ -253,7 +255,7 @@ onMounted(async () => {
                   :disabled="!isAdministrativeEmployee"
                   :options="roomStore.rooms"
                   :show-no-results="true"
-                  label="name"
+                  :custom-label="nameWithCapacity"
                   placeholder="Sélectionner une salle"
                   track-by="id"
               >
