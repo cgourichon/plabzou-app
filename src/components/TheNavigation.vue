@@ -56,6 +56,12 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
+      <RouterLink to="/gestion/lieux">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/lieux')" icon="interface-grid">
+          Lieux
+        </nord-nav-item>
+      </RouterLink>
+
       <RouterLink to="/gestion/formations">
         <nord-nav-item :active="$route.path.startsWith('/gestion/formations')" icon="interface-grid">
           Formations
