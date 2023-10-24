@@ -36,6 +36,12 @@ import ErrorView from "@/views/ErrorView.vue";
 import PlaceListView from "@/views/Management/Place/PlaceListView.vue";
 import PlaceCreateView from "@/views/Management/Place/PlaceCreateView.vue";
 import PlaceEditView from "@/views/Management/Place/PlaceEditView.vue";
+import BuildingListView from "@/views/Management/Building/BuildingListView.vue";
+import BuildingCreateView from "@/views/Management/Building/BuildingCreateView.vue";
+import BuildingEditView from "@/views/Management/Building/BuildingEditView.vue";
+import RoomListView from "@/views/Management/Room/RoomListView.vue";
+import RoomCreateView from "@/views/Management/Room/RoomCreateView.vue";
+import RoomEditView from "@/views/Management/Room/RoomEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -171,6 +177,54 @@ const router = createRouter({
             path: '/gestion/lieux/:id/modifier',
             name: 'places-edit',
             component: PlaceEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments',
+            name: 'buildings-list',
+            component: BuildingListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments/ajouter',
+            name: 'buildings-create',
+            component: BuildingCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments/:id/modifier',
+            name: 'buildings-edit',
+            component: BuildingEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles',
+            name: 'rooms-list',
+            component: RoomListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles/ajouter',
+            name: 'rooms-create',
+            component: RoomCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles/:id/modifier',
+            name: 'rooms-edit',
+            component: RoomEditView,
             beforeEnter: (to, from, next) => {
                 !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
             }

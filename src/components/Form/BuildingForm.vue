@@ -1,66 +1,65 @@
 <script setup>
 import {useApplicationStore} from "@/stores/application.store";
-import {useCityStore} from "@/stores/city.store";
+import {useBuildingStore} from "@/stores/building.store";
 import {usePlaceStore} from "@/stores/place.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
 
 const props = defineProps({
-  place: {
+  building: {
     type: Object,
     default: null,
   }
 })
 
-const cityStore = useCityStore()
+const buildingStore = useBuildingStore()
 const placeStore = usePlaceStore()
 const applicationStore = useApplicationStore()
 
-const selectedCity = ref(null)
+const selectedPlace = ref(null)
 
 const form = computed(() => {
-  selectedCity.value = props.place?.city ?? ''
+  selectedPlace.value = props.building?.place ?? ''
 
   return {
-    name: props.place?.name ?? '',
-    street_address: props.place?.street_address ?? '',
-    city_id: props.place?.city_id ?? ''
+    name: props.building?.name ?? '',
+    place_id: props.building?.place_id ?? ''
   }
 })
 
 const store = async () => {
-  form.value.city_id = selectedCity.value.id
+  form.value.place_id = selectedPlace.value.id
 
   applicationStore.clearErrors()
-  await placeStore.createPlace(form.value)
+  await buildingStore.createBuilding(form.value)
   await redirect()
 }
 
 const update = async () => {
-  form.value.city_id = selectedCity.value.id
+  form.value.place_id = selectedPlace.value.id
 
   applicationStore.clearErrors()
-  await placeStore.updatePlace(props.place.id, form.value)
+  await buildingStore.updateBuilding(props.building.id, form.value)
   await redirect()
 }
 
 const destroy = async () => {
   applicationStore.clearErrors()
-  await placeStore.deletePlace(props.place.id)
+  await buildingStore.deleteBuilding(props.building.id)
   await redirect()
 }
 
 const redirect = async () => {
-  if (!applicationStore.hasErrors) await router.push({name: 'places-list'})
+  if (!applicationStore.hasErrors) await router.push({name: 'buildings-list'})
 }
 
 onMounted(async () => {
-  await cityStore.fetchCities()
+  await placeStore.fetchPlaces()
 })
 </script>
 
 <template>
-  <form @submit.prevent="!!place ? update() : store()">
+  <form @submit.prevent="!!building ? update() : store()">
     <nord-stack>
       <nord-input
           v-model="form.name"
@@ -71,36 +70,27 @@ onMounted(async () => {
           type="text"
       />
 
-      <nord-input
-          v-model="form.street_address"
-          :error="applicationStore.errors?.street_address"
-          expand
-          label="Adresse"
-          placeholder="Entrez une adresse"
-          type="text"
-      />
-
       <div class="n-stack n-gap-s">
-        <label class="n-label">Ville</label>
+        <label class="n-label">Lieu</label>
         <multi-select
-            v-model="selectedCity"
-            :options="cityStore.cities"
+            v-model="selectedPlace"
+            :options="placeStore.places"
             :show-no-results="true"
             label="name"
             placeholder="Sélectionner une ville"
             track-by="id"
         >
-          <template #noResult>Pas de villes correspondantes</template>
-          <template #noOptions>Pas de villes trouvées</template>
+          <template #noResult>Pas de lieux correspondants</template>
+          <template #noOptions>Pas de lieux trouvés</template>
         </multi-select>
       </div>
 
       <nord-stack direction="horizontal">
         <nord-button expand type="submit" variant="primary">
-          {{ !!place ? 'Modifier' : 'Ajouter' }}
+          {{ !!building ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!place" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!building" expand type="button" variant="dashed" @click="destroy">
           Supprimer
         </nord-button>
       </nord-stack>
