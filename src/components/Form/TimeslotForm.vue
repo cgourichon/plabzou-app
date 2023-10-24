@@ -116,6 +116,14 @@ const checkFilterLearnersByTraining = async () => {
   await fetchDependencies()
 }
 
+/*
+const teacherLabel = option => {
+    return `${option}]`
+}*/
+const requestValidated = option => {
+    return true;
+}
+
 const fetchDependencies = async () => {
   teacherStore.resetTeachers()
   learnerStore.resetLearners()
@@ -308,7 +316,8 @@ onMounted(async () => {
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
               >
-                <template #noResult>Pas de formateurs correspondants</template>
+                  <template slot="option" slot-scope="props"><span v-if="requestValidated">{{props}}</span></template>
+                  <template #noResult>Pas de formateurs correspondants</template>
                 <template #noOptions>Aucun formateurs trouvés</template>
               </multi-select>
               <div
