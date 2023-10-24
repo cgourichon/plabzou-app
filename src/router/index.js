@@ -10,6 +10,9 @@ import UserEditView from "@/views/Management/User/UserEditView.vue";
 import CategoryListView from "@/views/Management/Category/CategoryListView.vue";
 import CategoryCreateView from "@/views/Management/Category/CategoryCreateView.vue";
 import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
+import CityListView from "@/views/Management/City/CityListView.vue";
+import CityCreateView from "@/views/Management/City/CityCreateView.vue";
+import CityEditView from "@/views/Management/City/CityEditView.vue";
 import TrainingListView from "@/views/Management/Training/TrainingListView.vue";
 import TrainingCreateView from "@/views/Management/Training/TrainingCreateView.vue";
 import TrainingEditView from "@/views/Management/Training/TrainingEditView.vue";
@@ -117,6 +120,30 @@ const router = createRouter({
             path: '/gestion/categories/:id/modifier',
             name: 'categories-edit',
             component: CategoryEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes',
+            name: 'cities-list',
+            component: CityListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes/ajouter',
+            name: 'cities-create',
+            component: CityCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes/:id/modifier',
+            name: 'cities-edit',
+            component: CityEditView,
             beforeEnter: (to, from, next) => {
                 !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
             }
