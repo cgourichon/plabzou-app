@@ -54,7 +54,7 @@ watch(() => isValidatedTeacher.value, () => {
     </div>
   </div>
   <div v-else>
-    <p>Le créneau est dans moins de {{ numberOfDays }} jours, il est trop tard pour modifier votre réponse.</p>
+    <p>Désolée, il est trop tard pour modifier votre réponse.</p>
     <p class="n-margin-bs-m">Vous pouvez contacter le service planning en cliquant <span
         class="n-font-size-l n-font-weight-strong"><RouterLink to="messagerie">ici</RouterLink></span></p>
   </div>
