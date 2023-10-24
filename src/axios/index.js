@@ -4,7 +4,7 @@ import {useApplicationStore} from "@/stores/application.store";
 import router from "@/router";
 
 const axiosClient = axios.create({
-    baseURL: 'https://plabzou-api.test/api'
+    baseURL: 'http://plabzou-api.test/api'
 })
 
 axiosClient.interceptors.request.use(config => {
