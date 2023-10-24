@@ -266,7 +266,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.name !== 'login' && !isAuthenticated) {
         next({name: 'login'})
     } else {
-        if (isAuthenticated && authStore.authenticatedUser === null) {
+        if (isAuthenticated) {
             await authStore.fetchAuthenticatedUser()
         }
 

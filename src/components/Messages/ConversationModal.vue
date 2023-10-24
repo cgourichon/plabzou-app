@@ -15,13 +15,10 @@ const closeModal = () => {
   applicationStore.clearErrors();
 }
 
-const teacherStore = useTeacherStore();
 const conversationStore = useConversationStore();
 const applicationStore = useApplicationStore()
 
-const getTeachers = () => {
-  if (teacherStore.teachers.length === 0) teacherStore.fetchTeachers();
-}
+const teacherStore = useTeacherStore();
 
 const selectedTeacher = ref(null);
 
@@ -33,7 +30,6 @@ const createConversation = () => {
       })
 }
 
-getTeachers();
 </script>
 
 <template>

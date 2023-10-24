@@ -3,9 +3,22 @@ import DataTable from "@/components/Table/DataTable.vue";
 import {useRequestStore} from "@/stores/request.store";
 import {getDatetimeShortFormat} from "@/utils/dayjs";
 import EditActionCondition from "@/components/Table/Action/EditActionCondition.vue";
+import {ref, watch} from "vue";
 
 const requestStore = useRequestStore();
 requestStore.fetchRequests();
+
+const requests = ref([]);
+
+const filterRequests = () => {
+     requests.value = requestStore.requests.filter(request => request.timeslot?.deleted_at === null);
+}
+
+filterRequests();
+
+watch(() => requestStore.requests, () => {
+    filterRequests();
+});
 
 const booleanResponse = value => {
   let icon;
@@ -100,7 +113,7 @@ const columns = [
       </RouterLink>
     </div>
 
-    <DataTable :columns="columns" :data="requestStore.requests"/>
+    <DataTable :columns="columns" :data="requests"/>
   </nord-card>
 </template>
 
