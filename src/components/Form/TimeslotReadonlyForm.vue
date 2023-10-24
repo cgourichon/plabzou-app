@@ -7,81 +7,98 @@ defineProps({
     required: true,
   },
 })
+
+const filterTeachers = (teachers, timeslotId) => {
+  return teachers.filter(teacher => {
+    const hasTeacherId = teacher.requests.some(request => request.timeslot_id === timeslotId && request.is_approved_by_teacher === true)
+
+    return hasTeacherId
+  })
+}
 </script>
 
 <template>
   <nord-stack>
     <nord-stack direction="horizontal">
       <nord-stack direction="vertical">
-        <dl class="n-dl">
-          <dt class="n-dt">Début</dt>
-          <dd class="n-dd">{{ getFrenchDateTimeWithoutTimeZone(timeslot.starts_at) }}</dd>
+        <nord-stack direction="horizontal">
+          <nord-stack gap="s">
+            <div class="n-label">Début</div>
+            <div class="n-input">{{ getFrenchDateTimeWithoutTimeZone(timeslot.starts_at) }}</div>
+          </nord-stack>
 
-          <dt class="n-dt">Fin</dt>
-          <dd class="n-dd">{{ getFrenchDateTimeWithoutTimeZone(timeslot.ends_at) }}</dd>
-        </dl>
+          <nord-stack gap="s">
+            <div class="n-label">Fin</div>
+            <div class="n-input">{{ getFrenchDateTimeWithoutTimeZone(timeslot.ends_at) }}</div>
+          </nord-stack>
+        </nord-stack>
 
-        <dl class="n-dl">
-          <dt class="n-dt">Formation</dt>
-          <dd class="n-dd">{{ timeslot.training.name }}</dd>
+        <nord-stack>
+          <nord-stack gap="s">
+            <div class="n-label">Formation</div>
+            <div class="n-input">
+              {{ timeslot.training.name }}
+            </div>
+          </nord-stack>
 
-          <dt class="n-dt">Promotions</dt>
-          <dd class="n-dd">
-            <template v-if="timeslot.promotions.length > 0">
-              <ul>
-                <li v-for="promotion in timeslot.promotions" :key="promotion.id">
-                  {{ promotion.name }}
-                </li>
-              </ul>
-            </template>
-            <template v-else>
-              Aucune promotion
-            </template>
-          </dd>
+          <template v-if="timeslot.promotions.length > 0">
+            <nord-stack gap="s">
+              <div class="n-label">Promotions</div>
+              <div v-for="promotion in timeslot.promotions" :key="promotion.id" class="n-input">
+                {{ promotion.name }}
+              </div>
+            </nord-stack>
+          </template>
 
-          <dt class="n-dt">Salle</dt>
-          <dd class="n-dd">{{ timeslot.room?.name ?? 'Aucune salle' }}</dd>
+          <template v-if="timeslot.room">
+            <nord-stack gap="s">
+              <div class="n-label">Salle</div>
+              <div class="n-input">
+                {{ timeslot.room?.name ?? 'Aucune salle' }}
+              </div>
+            </nord-stack>
 
-          <dt class="n-dt">Bâtiment</dt>
-          <dd class="n-dd">{{ timeslot.room?.building?.name ?? 'Aucun bâtiment' }}</dd>
+            <nord-stack gap="s">
+              <div class="n-label">Bâtiment</div>
+              <div class="n-input">
+                {{ timeslot.room?.building?.name ?? 'Aucun bâtiment' }}
+              </div>
+            </nord-stack>
 
-          <dt class="n-dt">Adresse</dt>
-          <dd class="n-dd">{{ timeslot.room?.building?.place?.full_address ?? 'Aucune adresse' }}</dd>
-        </dl>
+            <nord-stack gap="s">
+              <div class="n-label">Adresse</div>
+              <div class="n-input">
+                {{ timeslot.room?.building?.place?.full_address ?? 'Aucune adresse' }}
+              </div>
+            </nord-stack>
+          </template>
+        </nord-stack>
       </nord-stack>
 
       <nord-divider/>
 
       <nord-stack direction="vertical">
-        <dl class="n-dl">
-          <dt class="n-dt">Formateurs</dt>
-          <dd class="n-dd">
-            <template v-if="timeslot.teachers.length > 0">
-              <ul>
-                <li v-for="teacher in timeslot.teachers" :key="teacher.id">
-                  {{ teacher.full_name }}
-                </li>
-              </ul>
-            </template>
-            <template v-else>
-              Aucun formateur
-            </template>
-          </dd>
+        <template v-if="timeslot.teachers.length > 0">
+          <nord-stack gap="s">
+            <div class="n-label">Formateur(s)</div>
+            <div class="n-grid-2">
+              <div v-for="teacher in filterTeachers(timeslot.teachers, timeslot.id)" :key="teacher.id" class="n-input">
+                {{ teacher.full_name }}
+              </div>
+            </div>
+          </nord-stack>
+        </template>
 
-          <dt class="n-dt">Apprenants</dt>
-          <dd class="n-dd">
-            <template v-if="timeslot.learners.length > 0">
-              <ul>
-                <li v-for="learner in timeslot.learners" :key="learner.id">
-                  {{ learner.full_name }}
-                </li>
-              </ul>
-            </template>
-            <template v-else>
-              Aucun apprenant
-            </template>
-          </dd>
-        </dl>
+        <template v-if="timeslot.learners.length > 0">
+          <nord-stack gap="s">
+            <div class="n-label">Apprenant(s)</div>
+            <div class="n-grid-2">
+              <div v-for="learner in timeslot.learners" :key="learner.id" class="n-input">
+                {{ learner.full_name }}
+              </div>
+            </div>
+          </nord-stack>
+        </template>
       </nord-stack>
     </nord-stack>
   </nord-stack>
