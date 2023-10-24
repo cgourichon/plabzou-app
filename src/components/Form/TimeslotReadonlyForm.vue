@@ -7,6 +7,14 @@ defineProps({
     required: true,
   },
 })
+
+const filterTeachers = (teachers, timeslotId) => {
+  return teachers.filter(teacher => {
+    const hasTeacherId = teacher.requests.some(request => request.timeslot_id === timeslotId && request.is_approved_by_teacher === true)
+
+    return hasTeacherId
+  })
+}
 </script>
 
 <template>
@@ -74,7 +82,7 @@ defineProps({
           <nord-stack gap="s">
             <div class="n-label">Formateur(s)</div>
             <div class="n-grid-2">
-              <div v-for="teacher in timeslot.teachers" :key="teacher.id" class="n-input">
+              <div v-for="teacher in filterTeachers(timeslot.teachers, timeslot.id)" :key="teacher.id" class="n-input">
                 {{ teacher.full_name }}
               </div>
             </div>
