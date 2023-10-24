@@ -6,7 +6,7 @@ import {useLearnerStore} from "@/stores/learner.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import {usePromotionStore} from "@/stores/promotion.store";
 import router from "@/router";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 import {useAuthStore} from "@/stores/auth.store";
@@ -116,6 +116,22 @@ const checkFilterLearnersByTraining = async () => {
   await fetchDependencies()
 }
 
+const requestValidated = option => {
+    const isValidated = option?.requests.find(request => {
+        return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
+    });
+
+    return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
+                  "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
+
+}
+
+const hasApprovedRequest = ref(false);
+const checkApprovedRequest = () => {
+    hasApprovedRequest.value = props.timeslot?.requests.some(request => request.is_approved_by_teacher && request.is_approved_by_admin);
+    return hasApprovedRequest.value
+}
+
 const fetchDependencies = async () => {
   teacherStore.resetTeachers()
   learnerStore.resetLearners()
@@ -162,10 +178,16 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   }
 }, {deep: true})
 
-onMounted(async () => {
-  await roomStore.fetchRooms()
-  await trainingStore.fetchTrainings()
+onMounted(() => {
+  roomStore.fetchRooms()
+  trainingStore.fetchTrainings()
 })
+
+onBeforeUpdate(() => {
+    checkApprovedRequest();
+});
+
+const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
 </script>
 
 <template>
@@ -253,7 +275,7 @@ onMounted(async () => {
                   :disabled="!isAdministrativeEmployee"
                   :options="roomStore.rooms"
                   :show-no-results="true"
-                  label="name"
+                  :custom-label="nameWithCapacity"
                   placeholder="Sélectionner une salle"
                   track-by="id"
               >
@@ -304,11 +326,22 @@ onMounted(async () => {
                   :options="teacherStore.teachers"
                   :select-label="null"
                   :show-no-results="true"
-                  label="full_name"
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
+                  label="full_name"
+                  @select="test"
               >
-                <template #noResult>Pas de formateurs correspondants</template>
+                  <template #tag="{option, remove}">
+                          <span id="tag" class="multiselect__tag">
+                              <span :class="requestValidated(option)">{{option.full_name}}</span>
+                              <i tabindex="1"
+                                 id="tag-icon"
+                                 class="multiselect__tag-icon"
+                                 @click.prevent @mousedown.prevent.stop="remove(option, $event)"
+                              ></i>
+                          </span>
+                  </template>
+                  <template #noResult>Pas de formateurs correspondants</template>
                 <template #noOptions>Aucun formateurs trouvés</template>
               </multi-select>
               <div
@@ -321,7 +354,7 @@ onMounted(async () => {
             </div>
 
             <div class="n-stack n-gap-s">
-              <label class="n-label">Apprenants</label>
+              <label class="n-label ">Apprenants</label>
               <multi-select
                   v-model="selectedLearners"
                   :allow-empty="true"
@@ -359,6 +392,7 @@ onMounted(async () => {
               </div>
             </div>
 
+              <template v-if="hasApprovedRequest">
             <nord-checkbox
                 v-model="form.is_validated"
                 :disabled="!isAdministrativeEmployee"
@@ -366,6 +400,7 @@ onMounted(async () => {
                 label="Créneau validé"
                 type="checkbox"
             />
+              </template>
           </template>
         </nord-stack>
       </nord-stack>
@@ -388,5 +423,11 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+#tag {
 
+}
+
+#tag-icon {
+    color: #000000;
+}
 </style>
