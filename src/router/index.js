@@ -10,6 +10,9 @@ import UserEditView from "@/views/Management/User/UserEditView.vue";
 import CategoryListView from "@/views/Management/Category/CategoryListView.vue";
 import CategoryCreateView from "@/views/Management/Category/CategoryCreateView.vue";
 import CategoryEditView from "@/views/Management/Category/CategoryEditView.vue";
+import CityListView from "@/views/Management/City/CityListView.vue";
+import CityCreateView from "@/views/Management/City/CityCreateView.vue";
+import CityEditView from "@/views/Management/City/CityEditView.vue";
 import TrainingListView from "@/views/Management/Training/TrainingListView.vue";
 import TrainingCreateView from "@/views/Management/Training/TrainingCreateView.vue";
 import TrainingEditView from "@/views/Management/Training/TrainingEditView.vue";
@@ -30,6 +33,15 @@ import RequestsView from "@/views/Communication/RequestsView.vue";
 import PromotionScheduleView from "@/views/Scheduling/AdministrativeScheduleView.vue";
 import ImportView from "@/views/Management/Import/ImportView.vue";
 import ErrorView from "@/views/ErrorView.vue";
+import PlaceListView from "@/views/Management/Place/PlaceListView.vue";
+import PlaceCreateView from "@/views/Management/Place/PlaceCreateView.vue";
+import PlaceEditView from "@/views/Management/Place/PlaceEditView.vue";
+import BuildingListView from "@/views/Management/Building/BuildingListView.vue";
+import BuildingCreateView from "@/views/Management/Building/BuildingCreateView.vue";
+import BuildingEditView from "@/views/Management/Building/BuildingEditView.vue";
+import RoomListView from "@/views/Management/Room/RoomListView.vue";
+import RoomCreateView from "@/views/Management/Room/RoomCreateView.vue";
+import RoomEditView from "@/views/Management/Room/RoomEditView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -117,6 +129,102 @@ const router = createRouter({
             path: '/gestion/categories/:id/modifier',
             name: 'categories-edit',
             component: CategoryEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes',
+            name: 'cities-list',
+            component: CityListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes/ajouter',
+            name: 'cities-create',
+            component: CityCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/villes/:id/modifier',
+            name: 'cities-edit',
+            component: CityEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux',
+            name: 'places-list',
+            component: PlaceListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux/ajouter',
+            name: 'places-create',
+            component: PlaceCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/lieux/:id/modifier',
+            name: 'places-edit',
+            component: PlaceEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments',
+            name: 'buildings-list',
+            component: BuildingListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments/ajouter',
+            name: 'buildings-create',
+            component: BuildingCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/batiments/:id/modifier',
+            name: 'buildings-edit',
+            component: BuildingEditView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles',
+            name: 'rooms-list',
+            component: RoomListView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles/ajouter',
+            name: 'rooms-create',
+            component: RoomCreateView,
+            beforeEnter: (to, from, next) => {
+                !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
+            }
+        },
+        {
+            path: '/gestion/salles/:id/modifier',
+            name: 'rooms-edit',
+            component: RoomEditView,
             beforeEnter: (to, from, next) => {
                 !!useAuthStore().authenticatedUser?.administrative_employee ? next() : next({name: 'error'})
             }

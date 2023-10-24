@@ -38,9 +38,11 @@ const handleEventClick = (event) => {
 }
 
 const handleDateClick = (event) => {
-  state.selectedEvent = {
-    start: event.date,
-    end: new Date(event.date.getTime() + 30 * 60000),
+  if (authStore.authenticatedUser?.administrative_employee) {
+    state.selectedEvent = {
+      start: event.date,
+      end: new Date(event.date.getTime() + 30 * 60000),
+    }
   }
 }
 
@@ -59,11 +61,11 @@ const calendarOptions = computed(() => ({
   ],
   initialView: props.view || 'timeGridWeek',
   locale: frLocale,
-  editable: true,
-  eventStartEditable: true,
-  eventResizableFromStart: true,
-  eventDurationEditable: true,
-  selectable: true,
+  editable: authStore.authenticatedUser?.administrative_employee,
+  eventStartEditable: authStore.authenticatedUser?.administrative_employee,
+  eventResizableFromStart: authStore.authenticatedUser?.administrative_employee,
+  eventDurationEditable: authStore.authenticatedUser?.administrative_employee,
+  selectable: authStore.authenticatedUser?.administrative_employee,
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
