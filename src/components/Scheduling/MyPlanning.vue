@@ -21,7 +21,20 @@ const fetchTimeslots = async () => {
   if (!!authStore.authenticatedUser?.teacher) {
     isTeacher.value = true
     await teacherStore.fetchTeacher(authStore.authenticatedUser.id)
-    teacherTimeslots = teacherStore.teacher?.timeslots
+    teacherTimeslots = teacherStore.teacher?.timeslots.filter(timeslot => {
+      if (!timeslot.requests) return false
+
+      const hasTeacherId = timeslot.requests.some(request => request.teacher_id === authStore.authenticatedUser.id)
+      const isApprovedOrNotHandled = timeslot.requests.every(request => request.is_approved_by_teacher === true || request.is_approved_by_teacher === null)
+
+      return hasTeacherId && isApprovedOrNotHandled
+    })
+    /** teacherTimeslots = teacherStore.teacher?.timeslots.filter(
+        timeslot => timeslot.requests.filter(
+            request => request.teacher_id === authStore.authenticatedUser.id
+                && (request.is_approved_by_teacher === true || request.is_approved_by_teacher === null)
+        )
+    ) **/
   }
 
   if (showTrainingsToFollow.value && !!authStore.authenticatedUser?.learner) {
