@@ -221,7 +221,7 @@ watch(() => props.request, async () => {
         </nord-button>
 
         <nord-button v-if="request" expand type="button" variant="dashed" @click="destroy">
-          Annuler la demande
+          Supprimer
         </nord-button>
       </nord-stack>
 
