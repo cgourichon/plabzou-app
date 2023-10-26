@@ -5,7 +5,7 @@ import {useCategoryStore} from "@/stores/category.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
 import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-// TODO : intégration des formateurs
+// TODO : intÃ©gration des formateurs
 
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
@@ -26,6 +26,9 @@ const applicationStore = useApplicationStore()
 const selectedCategories = ref(null)
 const selectedCourses = ref(null)
 const selectedTeachers = ref(null)
+const durationHours = ref(null)
+const durationMinutes = ref(null)
+const areDurationSet = ref(null)
 const destroyModalOpened = ref(false)
 
 const form = computed(() => {
@@ -78,10 +81,23 @@ const openCloseDestroyModal = () => {
   destroyModalOpened.value = !destroyModalOpened.value
 }
 
-onMounted(async () => {
-  await categoryStore.fetchCategories()
-  await courseStore.fetchCourses()
-  await teacherStore.fetchTeachers()
+onBeforeUpdate(() => {
+  if (props.training?.duration && !areDurationSet.value) {
+    durationHours.value = props.training?.duration ? Math.floor(props.training.duration / 60) : 0
+    durationMinutes.value = props.training?.duration ? props.training.duration - durationHours.value * 60 : 0
+    areDurationSet.value = true
+  }
+
+  if (durationMinutes.value >= 60) {
+    durationHours.value += Math.floor(durationMinutes.value / 60)
+    durationMinutes.value = durationMinutes.value%60
+  }
+})
+
+onMounted( () => {
+  categoryStore.fetchCategories()
+  courseStore.fetchCourses()
+  teacherStore.fetchTeachers()
 })
 </script>
 
@@ -97,7 +113,7 @@ onMounted(async () => {
           type="text"
       />
 
-      <label class="n-label">Durée</label>
+      <label class="n-label">DurÃ©e</label>
       <section class="n-grid">
         <nord-stack direction="horizontal" gap="s" align-items="center">
           <input
@@ -130,7 +146,7 @@ onMounted(async () => {
         {{ applicationStore.errors?.duration }}
       </div>
 
-      <label class="n-label">Catégories</label>
+      <label class="n-label">CatÃ©gories</label>
       <multi-select
           v-model="selectedCategories"
           :allow-empty="true"
@@ -142,11 +158,11 @@ onMounted(async () => {
           :select-label="null"
           :show-no-results="true"
           label="name"
-          placeholder="Associer cette formation a des catégories"
+          placeholder="Associer cette formation a des catÃ©gories"
           track-by="id"
       >
-        <template #noResult>Aucune catégorie correspondante</template>
-        <template #noOptions>Pas de catégories...</template>
+        <template #noResult>Aucune catÃ©gorie correspondante</template>
+        <template #noOptions>Pas de catÃ©gories...</template>
       </multi-select>
 
       <label class="n-label">Cursus</label>
@@ -161,14 +177,14 @@ onMounted(async () => {
           :select-label="null"
           :show-no-results="true"
           label="name"
-          placeholder="Associer des cursus à cette formation"
+          placeholder="Associer des cursus Ã  cette formation"
           track-by="id"
       >
         <template #noResult>Aucun cursus correspondant</template>
         <template #noOptions>Pas de cursus...</template>
       </multi-select>
 
-      <label class="n-label">Formateurs habilité</label>
+      <label class="n-label">Formateurs habilitÃ©</label>
       <multi-select
           v-model="selectedTeachers"
           :allow-empty="true"
@@ -180,7 +196,7 @@ onMounted(async () => {
           :select-label="null"
           :show-no-results="true"
           label="full_name"
-          placeholder="Associer des formateurs à cette formation"
+          placeholder="Associer des formateurs Ã  cette formation"
           track-by="user_id"
       >
         <template #noResult>Aucun formateur correspondant</template>
@@ -192,7 +208,7 @@ onMounted(async () => {
           {{ !!training ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="openCloseDestroyModal">
+        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="destroyModalOpened">
           Supprimer
         </nord-button>
       </nord-stack>
