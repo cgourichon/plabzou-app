@@ -180,6 +180,15 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   }
 }, {deep: true})
 
+/*
+const handleEndsDate =() => {
+    ends.value = starts.value;
+    form.value.starts_at = starts.value;
+    form.value.ends_at = ends.value;
+}*/
+const starts = ref(null);
+const ends = ref(null);
+
 onMounted(() => {
   roomStore.fetchRooms()
   trainingStore.fetchTrainings()
@@ -188,6 +197,16 @@ onMounted(() => {
 onBeforeUpdate(() => {
     checkApprovedRequest();
 });
+
+
+
+/*
+watch(() => props.timeslot, () => {
+    ends.value = props.timeslot.ends_at;
+    starts.value = props.timeslot.starts_at;
+    //form.value.starts_at = props.timeslot?.starts_at;
+    //form.value.ends_at = props.timeslot?.ends_at;
+})*/
 
 const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
 </script>
@@ -198,6 +217,7 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
       <nord-stack direction="horizontal">
         <nord-stack direction="vertical">
           <nord-stack direction="horizontal">
+
             <nord-input
                 v-model="form.starts_at"
                 :error="applicationStore.errors?.starts_at"
@@ -331,7 +351,6 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
                   label="full_name"
-                  @select="test"
               >
                   <template #tag="{option, remove}">
                           <span id="tag" class="multiselect__tag">
