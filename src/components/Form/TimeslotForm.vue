@@ -51,52 +51,62 @@ const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 const timeslotLoaded = ref(false)
 const filterLearnersByTraining = ref(true)
+const startsDate = ref(null);
+const endsDate = ref(null);
+const isValidated = ref(null)
+
+const form = {
+    training : '',
+    room : '',
+    learners : '',
+    teachers : '',
+    promotions : '',
+    starts_at : '',
+    ends_at : '',
+    is_validated : ''
+};
+
 
 const isAdministrativeEmployee = computed(() => !!authStore.authenticatedUser?.administrative_employee)
 
-const form = computed(() => {
-  selectedTraining.value = props.timeslot?.training ?? ''
-  selectedRoom.value = props.timeslot?.room ?? ''
-  selectedLearners.value = props.timeslot?.learners ?? []
-  selectedTeachers.value = props.timeslot?.teachers ?? []
-  selectedPromotions.value = props.timeslot?.promotions ?? []
+const initValues = () => {
+    selectedTraining.value = props.timeslot?.training ?? ''
+    selectedRoom.value = props.timeslot?.room ?? ''
+    selectedLearners.value = props.timeslot?.learners ?? []
+    selectedTeachers.value = props.timeslot?.teachers ?? []
+    selectedPromotions.value = props.timeslot?.promotions ?? []
+    isValidated.value = props.timeslot?.is_validated ?? ''
 
-  const startsAt = props.newStartsAt ?? props.timeslot?.starts_at
-  const endsAt = props.newEndsAt ?? props.timeslot?.ends_at
+    const startsAt = props.newStartsAt ?? props.timeslot?.starts_at
+    const endsAt = props.newEndsAt ?? props.timeslot?.ends_at
 
-  return {
-    training: '',
-    room: '',
-    starts_at: startsAt ? getDateTimeWithoutTimeZone(startsAt) : '',
-    ends_at: endsAt ? getDateTimeWithoutTimeZone(endsAt) : '',
-    is_validated: props.timeslot?.is_validated ?? '',
-    learners: [],
-    teachers: [],
-    promotions: [],
-  }
-})
+    startsDate.value = startsAt ? getDateTimeWithoutTimeZone(startsAt) : '';
+    endsDate.value = endsAt ? getDateTimeWithoutTimeZone(endsAt) : '';
+}
+
 
 const setMultiselectValuesToForm = () => {
-  form.value.training = selectedTraining.value.id
-  form.value.room = selectedRoom.value?.id
-  form.value.learners = selectedLearners.value
-  form.value.teachers = selectedTeachers.value
-  form.value.promotions = selectedPromotions.value
+    form.training = selectedTraining.value.id
+    form.room = selectedRoom.value?.id
+    form.learners = selectedLearners.value
+    form.teachers = selectedTeachers.value
+    form.promotions = selectedPromotions.value
+    form.starts_at = startsDate.value
+    form.ends_at = endsDate.value
+    form.is_validated = isValidated.value
 }
 
 const store = async () => {
   setMultiselectValuesToForm()
-
   applicationStore.clearErrors()
-  await timeslotStore.createTimeslot(form.value)
+  await timeslotStore.createTimeslot(form)
   await redirect()
 }
 
 const update = async () => {
   setMultiselectValuesToForm()
-
   applicationStore.clearErrors()
-  await timeslotStore.updateTimeslot(props.timeslot.id, form.value)
+  await timeslotStore.updateTimeslot(props.timeslot.id, form)
   await redirect()
 }
 
@@ -180,14 +190,12 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   }
 }, {deep: true})
 
-/*
+
 const handleEndsDate =() => {
-    ends.value = starts.value;
-    form.value.starts_at = starts.value;
-    form.value.ends_at = ends.value;
-}*/
-const starts = ref(null);
-const ends = ref(null);
+    endsDate.value = startsDate.value;
+    //form.value.starts_at = startsDate.value;
+    //form.value.ends_at = endsDate.value;
+}
 
 onMounted(() => {
   roomStore.fetchRooms()
@@ -198,15 +206,11 @@ onBeforeUpdate(() => {
     checkApprovedRequest();
 });
 
-
-
-/*
 watch(() => props.timeslot, () => {
-    ends.value = props.timeslot.ends_at;
-    starts.value = props.timeslot.starts_at;
-    //form.value.starts_at = props.timeslot?.starts_at;
-    //form.value.ends_at = props.timeslot?.ends_at;
-})*/
+    initValues();
+})
+
+initValues();
 
 const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
 </script>
@@ -219,16 +223,17 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
           <nord-stack direction="horizontal">
 
             <nord-input
-                v-model="form.starts_at"
+                v-model="startsDate"
                 :error="applicationStore.errors?.starts_at"
                 :readonly="!isAdministrativeEmployee"
                 expand
+                @change="handleEndsDate"
                 label="Date de début"
                 type="datetime-local"
             />
 
             <nord-input
-                v-model="form.ends_at"
+                v-model="endsDate"
                 :error="applicationStore.errors?.ends_at"
                 :readonly="!isAdministrativeEmployee"
                 expand
@@ -415,7 +420,7 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
 
               <template v-if="hasApprovedRequest">
             <nord-checkbox
-                v-model="form.is_validated"
+                v-model="isValidated"
                 :disabled="!isAdministrativeEmployee"
                 :error="applicationStore.errors?.is_validated"
                 label="Créneau validé"
