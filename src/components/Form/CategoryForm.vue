@@ -2,7 +2,8 @@
 import {useApplicationStore} from "@/stores/application.store";
 import {useCategoryStore} from "@/stores/category.store";
 import router from "@/router";
-import {computed} from "vue";
+import {computed, ref} from "vue";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   category: {
@@ -13,6 +14,8 @@ const props = defineProps({
 
 const categoryStore = useCategoryStore()
 const applicationStore = useApplicationStore()
+
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   return {
@@ -41,6 +44,10 @@ const destroy = async () => {
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'categories-list'})
 }
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
+}
 </script>
 
 <template>
@@ -60,12 +67,14 @@ const redirect = async () => {
           {{ !!category ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!category" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!category" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>

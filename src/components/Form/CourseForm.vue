@@ -4,6 +4,7 @@ import {computed, onMounted, ref} from "vue";
 import {useApplicationStore} from "@/stores/application.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useTrainingStore} from "@/stores/training.store";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const courseStore = useCourseStore()
 const trainingStore = useTrainingStore()
@@ -17,6 +18,7 @@ const props = defineProps({
 })
 
 const selectedTrainings = ref(null)
+const destroyModalOpened = ref(false)
 
 onMounted(async () => {
   await trainingStore.fetchTrainings()
@@ -55,6 +57,10 @@ const destroy = async () => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'courses-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 </script>
 
@@ -100,12 +106,14 @@ const redirect = async () => {
           {{ !!course ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!course" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!course" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>

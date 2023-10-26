@@ -7,6 +7,7 @@ import {useCourseStore} from "@/stores/course.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useCityStore} from "@/stores/city.store";
 import {getDateWithoutTimeZone} from "@/utils/dayjs";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   promotion: {
@@ -24,6 +25,7 @@ const applicationStore = useApplicationStore()
 const selectedCourse = ref(null)
 const selectedCity = ref(null)
 const selectedLearners = ref(null)
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   selectedCourse.value = props.promotion?.course ?? ''
@@ -68,6 +70,10 @@ const destroy = async () => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'promotions-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 onMounted(async () => {
@@ -182,10 +188,12 @@ onMounted(async () => {
           {{ !!promotion ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!promotion" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!promotion" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>

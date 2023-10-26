@@ -4,6 +4,7 @@ import {useBuildingStore} from "@/stores/building.store";
 import {usePlaceStore} from "@/stores/place.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   building: {
@@ -17,6 +18,7 @@ const placeStore = usePlaceStore()
 const applicationStore = useApplicationStore()
 
 const selectedPlace = ref(null)
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   selectedPlace.value = props.building?.place ?? ''
@@ -51,6 +53,10 @@ const destroy = async () => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'buildings-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 onMounted(async () => {
@@ -90,12 +96,14 @@ onMounted(async () => {
           {{ !!building ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!building" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!building" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>

@@ -10,6 +10,7 @@ import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 import {useAuthStore} from "@/stores/auth.store";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   timeslot: {
@@ -51,6 +52,7 @@ const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 const timeslotLoaded = ref(false)
 const filterLearnersByTraining = ref(true)
+const destroyModalOpened = ref(false)
 
 const isAdministrativeEmployee = computed(() => !!authStore.authenticatedUser?.administrative_employee)
 
@@ -117,21 +119,18 @@ const checkFilterLearnersByTraining = async () => {
 }
 
 const requestValidated = option => {
+  const isValidated = option?.requests.find(request => {
+    return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
+  });
 
-        const isValidated = option?.requests.find(request => {
-            return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
-        });
-
-        return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
-            "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
-
-
+  return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
+      "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
 }
 
 const hasApprovedRequest = ref(false);
 const checkApprovedRequest = () => {
-    hasApprovedRequest.value = props.timeslot?.requests.some(request => request.is_approved_by_teacher && request.is_approved_by_admin);
-    return hasApprovedRequest.value
+  hasApprovedRequest.value = props.timeslot?.requests.some(request => request.is_approved_by_teacher && request.is_approved_by_admin);
+  return hasApprovedRequest.value
 }
 
 const fetchDependencies = async () => {
@@ -146,6 +145,10 @@ const fetchDependencies = async () => {
         : await learnerStore.fetchLearners()
     await promotionStore.fetchPromotions({training: selectedTraining.value.id})
   }
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 watch(() => selectedTraining.value, async () => {
@@ -186,7 +189,7 @@ onMounted(() => {
 })
 
 onBeforeUpdate(() => {
-    checkApprovedRequest();
+  checkApprovedRequest();
 });
 
 const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
@@ -274,10 +277,10 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
               <label class="n-label">Salle</label>
               <multi-select
                   v-model="selectedRoom"
+                  :custom-label="nameWithCapacity"
                   :disabled="!isAdministrativeEmployee"
                   :options="roomStore.rooms"
                   :show-no-results="true"
-                  :custom-label="nameWithCapacity"
                   placeholder="Sélectionner une salle"
                   track-by="id"
               >
@@ -328,22 +331,22 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
                   :options="teacherStore.teachers"
                   :select-label="null"
                   :show-no-results="true"
+                  label="full_name"
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
-                  label="full_name"
                   @select="test"
               >
-                  <template #tag="{option, remove}">
+                <template #tag="{option, remove}">
                           <span id="tag" class="multiselect__tag">
-                              <span :class="requestValidated(option)">{{option.full_name}}</span>
-                              <i tabindex="1"
-                                 id="tag-icon"
+                              <span :class="requestValidated(option)">{{ option.full_name }}</span>
+                              <i id="tag-icon"
                                  class="multiselect__tag-icon"
+                                 tabindex="1"
                                  @click.prevent @mousedown.prevent.stop="remove(option, $event)"
                               ></i>
                           </span>
-                  </template>
-                  <template #noResult>Pas de formateurs correspondants</template>
+                </template>
+                <template #noResult>Pas de formateurs correspondants</template>
                 <template #noOptions>Aucun formateurs trouvés</template>
               </multi-select>
               <div
@@ -394,15 +397,15 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
               </div>
             </div>
 
-              <template v-if="hasApprovedRequest">
-            <nord-checkbox
-                v-model="form.is_validated"
-                :disabled="!isAdministrativeEmployee"
-                :error="applicationStore.errors?.is_validated"
-                label="Créneau validé"
-                type="checkbox"
-            />
-              </template>
+            <template v-if="hasApprovedRequest">
+              <nord-checkbox
+                  v-model="form.is_validated"
+                  :disabled="!isAdministrativeEmployee"
+                  :error="applicationStore.errors?.is_validated"
+                  label="Créneau validé"
+                  type="checkbox"
+              />
+            </template>
           </template>
         </nord-stack>
       </nord-stack>
@@ -415,21 +418,19 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
             {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
           </nord-button>
 
-          <nord-button v-if="!!timeslot" expand type="button" variant="dashed" @click="destroy">
+          <nord-button v-if="!!timeslot" expand type="button" variant="dashed" @click="openCloseDestroyModal">
             Supprimer
           </nord-button>
         </nord-stack>
       </template>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>
-#tag {
-
-}
-
 #tag-icon {
-    color: #000000;
+  color: #000000;
 }
 </style>

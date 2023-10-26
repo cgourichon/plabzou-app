@@ -8,6 +8,7 @@ import {useRequestStore} from "@/stores/request.store";
 import router from "@/router";
 import {getFrenchDateTimeWithoutTimeZone} from "@/utils/dayjs";
 import {useTeacherStore} from "@/stores/teacher.store";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   request: {
@@ -30,6 +31,7 @@ const isValidatedTeacher = ref('null')
 const comment = ref(null)
 const disabledTeachers = ref(true)
 const createdDate = ref(null);
+const destroyModalOpened = ref(false)
 
 
 const changeTeachers = async () => {
@@ -106,6 +108,10 @@ onMounted(() => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'requests-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 watch(() => props.request, async () => {
@@ -220,13 +226,15 @@ watch(() => props.request, async () => {
           {{ request ? 'Modifier' : 'Créer' }}
         </nord-button>
 
-        <nord-button v-if="request" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="request" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
 
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>
