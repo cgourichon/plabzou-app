@@ -23,13 +23,18 @@ const props = defineProps({
 const emit = defineEmits(['changeValue'])
 
 const isValidatedTeacher = ref(null);
+const comment = ref(null);
 
 onMounted(() => {
   isValidatedTeacher.value = props.isApproved ? 'true' : props.isApproved === false ? 'false' : 'null';
 })
 
 watch(() => isValidatedTeacher.value, () => {
-  emit('changeValue', isValidatedTeacher.value);
+  emit('changeValue', {isValidatedTeacher : isValidatedTeacher.value, comment : comment.value});
+})
+
+watch(() => comment.value, () => {
+    emit('changeValue', {isValidatedTeacher : isValidatedTeacher.value, comment : comment.value});
 })
 
 </script>
@@ -46,6 +51,9 @@ watch(() => isValidatedTeacher.value, () => {
         <TheRadioInput v-model="isValidatedTeacher"
                        :item="{label: '<nord-icon class=\'n-color-text-error n-margin-ie-xs\' name=\'interface-close-small\'></nord-icon> Refusée', value: 'false'}"/>
       </nord-stack>
+        <div class="n-margin-bs-l">
+                <nord-textarea v-model="comment" label="Votre commentaire :" placeholder="Ecrivez un commentaire à transmettre au service (optionnel)" resize="auto" expand></nord-textarea>
+        </div>
     </fieldset>
     <div v-else>
       <p>Le créneau a déjà été validé par le service planning.</p>

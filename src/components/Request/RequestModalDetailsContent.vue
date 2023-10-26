@@ -10,6 +10,7 @@ const props = defineProps({
 })
 
 const isOnline = computed(() => props.request.timeslot.room_id ? 'En présentiel' : 'A distance');
+const comment = computed(() => props.request.comment);
 
 const getIcon = value => {
   if (value === null) return '<nord-icon class=\'n-color-text-weaker\' name=\'interface-time\'></nord-icon>'
@@ -42,6 +43,10 @@ const getIcon = value => {
       <p class="n-margin-be-s"><span class="n-font-weight-strong">Date de la demande</span> : <span
           class="n-input">{{ getDatetimeShortFormatWithoutTime(request.created_at) }}</span></p>
     </div>
+      <div>
+          <nord-textarea v-model="comment" label="Commentaire :" resize="auto" disabled expand>
+          </nord-textarea>
+      </div>
     <div class="n-grid-2">
       <div class="n-stack n-stack-horizontal n-gap-none">
                 <span class="n-stack n-font-weight-strong n-margin-ie-s">
