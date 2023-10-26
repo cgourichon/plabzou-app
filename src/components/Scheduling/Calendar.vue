@@ -37,11 +37,11 @@ const handleEventClick = (event) => {
   state.selectedEvent = event.event
 }
 
-const handleDateClick = (event) => {
+const handleDateClick = (startDate, endDate) => {
   if (authStore.authenticatedUser?.administrative_employee) {
     state.selectedEvent = {
-      start: event.date,
-      end: new Date(event.date.getTime() + 30 * 60000),
+      start: startDate,
+      end: endDate ?? new Date(startDate?.getTime() + 30 * 60000),
     }
   }
 }
@@ -100,7 +100,8 @@ const calendarOptions = computed(() => ({
   eventClick: (info) => handleEventClick(info),
   eventDrop: (info) => handleEventClick(info),
   eventResize: (info) => handleEventClick(info),
-  dateClick: (info) => handleDateClick(info),
+  dateClick: (info) => handleDateClick(info?.date),
+  select: (info) => handleDateClick(info?.start, info?.end),
 }))
 </script>
 
