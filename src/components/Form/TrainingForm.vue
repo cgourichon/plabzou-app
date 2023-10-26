@@ -5,7 +5,7 @@ import {useCategoryStore} from "@/stores/category.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onMounted, ref} from "vue";
+import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
 
 const props = defineProps({
   training: {
@@ -25,6 +25,9 @@ const applicationStore = useApplicationStore()
 const selectedCategories = ref(null)
 const selectedCourses = ref(null)
 const selectedTeachers = ref(null)
+const durationHours = ref(null)
+const durationMinutes = ref(null)
+const areDurationSet = ref(null)
 
 const form = computed(() => {
   selectedCategories.value = props.training?.categories ?? []
@@ -44,6 +47,7 @@ const store = async () => {
   form.value.categories = selectedCategories.value
   form.value.courses = selectedCourses.value
   form.value.teachers = selectedTeachers.value
+  form.value.duration = durationHours.value * 60 + durationMinutes.value
 
   applicationStore.clearErrors()
   await trainingStore.createTraining(form.value)
@@ -54,6 +58,7 @@ const update = async () => {
   form.value.categories = selectedCategories.value
   form.value.courses = selectedCourses.value
   form.value.teachers = selectedTeachers.value
+  form.value.duration = durationHours.value * 60 + durationMinutes.value
 
   applicationStore.clearErrors()
   await trainingStore.updateTraining(props.training.id, form.value)
@@ -70,10 +75,23 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'trainings-list'})
 }
 
-onMounted(async () => {
-  await categoryStore.fetchCategories()
-  await courseStore.fetchCourses()
-  await teacherStore.fetchTeachers()
+onBeforeUpdate(() => {
+  if (props.training?.duration && !areDurationSet.value) {
+    durationHours.value = props.training?.duration ? Math.floor(props.training.duration / 60) : 0
+    durationMinutes.value = props.training?.duration ? props.training.duration - durationHours.value * 60 : 0
+    areDurationSet.value = true
+  }
+
+  if (durationMinutes.value >= 60) {
+    durationHours.value += Math.floor(durationMinutes.value / 60)
+    durationMinutes.value = durationMinutes.value%60
+  }
+})
+
+onMounted( () => {
+  categoryStore.fetchCategories()
+  courseStore.fetchCourses()
+  teacherStore.fetchTeachers()
 })
 </script>
 
@@ -89,14 +107,38 @@ onMounted(async () => {
           type="text"
       />
 
-      <nord-input
-          v-model="form.duration"
-          :error="applicationStore.errors?.duration"
-          expand
-          label="Durée"
-          placeholder="Entrez un nombre de minute"
-          type="number"
-      />
+      <label class="n-label">Durée</label>
+      <section class="n-grid">
+        <nord-stack direction="horizontal" gap="s" align-items="center">
+          <input
+              v-model="durationHours"
+              placeholder="0"
+              min="0"
+              type="number"
+              class="n-input duration-input"
+          />
+          <label>Heure(s)</label>
+        </nord-stack>
+        <nord-stack direction="horizontal" gap="s" align-items="center">
+          <input
+              v-model="durationMinutes"
+              placeholder="0"
+              min="0"
+              type="number"
+              @input="logminutes"
+              class="n-input duration-input"
+          />
+          <label>Minute(s)</label>
+        </nord-stack>
+      </section>
+
+      <div
+          v-if="applicationStore.errors?.duration"
+          class="n-error"
+          role="alert"
+      >
+        {{ applicationStore.errors?.duration }}
+      </div>
 
       <label class="n-label">Catégories</label>
       <multi-select
@@ -167,3 +209,9 @@ onMounted(async () => {
     </nord-stack>
   </form>
 </template>
+
+<style scoped>
+.duration-input {
+  max-width: 100px;
+}
+</style>

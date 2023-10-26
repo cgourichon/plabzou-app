@@ -48,39 +48,9 @@ onBeforeUpdate(() => {
     </nord-nav-group>
 
     <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Gestion">
-      <RouterLink to="/gestion/utilisateurs">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
-          Utilisateurs
-        </nord-nav-item>
-      </RouterLink>
-
       <RouterLink to="/gestion/categories">
         <nord-nav-item :active="$route.path.startsWith('/gestion/categories')" icon="interface-grid">
           Catégories
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/villes">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/villes')" icon="interface-grid">
-          Villes
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/lieux">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/lieux')" icon="interface-grid">
-          Lieux
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/batiments">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
-          Bâtiments
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/salles">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/salles')" icon="interface-grid">
-          Salles
         </nord-nav-item>
       </RouterLink>
 
@@ -114,13 +84,50 @@ onBeforeUpdate(() => {
         </nord-nav-item>
       </RouterLink>
 
+      <nord-nav-item :active="$route.path.startsWith('/gestion/salles')" icon="generic-company">
+        Localisation
+
+        <nord-nav-group slot="subnav">
+          <RouterLink to="/gestion/batiments">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
+              Salles
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/batiments">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
+              Bâtiments
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/lieux">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/lieux')" icon="interface-grid">
+              Lieux
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/villes">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/villes')" icon="interface-grid">
+              Villes
+            </nord-nav-item>
+          </RouterLink>
+        </nord-nav-group>
+      </nord-nav-item>
+    </nord-nav-group>
+
+    <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Panel d'administration">
+      <RouterLink to="/gestion/utilisateurs">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
+          Utilisateurs
+        </nord-nav-item>
+      </RouterLink>
+
       <RouterLink to="/gestion/imports">
         <nord-nav-item :active="$route.path.startsWith('/gestion/imports')" icon="interface-upload">
           Imports
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
-
 
     <nord-nav-group
         v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
@@ -133,7 +140,7 @@ onBeforeUpdate(() => {
       </RouterLink>
       <RouterLink v-if="!!authenticatedUser?.teacher" to="/mes-demandes">
         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
-            <nord-stack direction="horizontal" justify-content="space-between">
+            <nord-stack direction="horizontal" justify-content="space-between" :class="$route.path === '/mes-demandes' ? 'n-color-text-on-accent' : ''">
                 Demandes
                 <nord-badge v-if="pendingRequestsNumber > 0" variant="highlight">{{pendingRequestsNumber}}</nord-badge>
             </nord-stack>
@@ -175,5 +182,4 @@ onBeforeUpdate(() => {
   </nord-navigation>
 </template>
 <style scoped>
-
 </style>
