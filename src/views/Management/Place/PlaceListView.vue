@@ -28,7 +28,7 @@ const columns = [
   {
     field: "city",
     headerName: "Ville",
-    valueFormatter: ({value}) => `${value.name} (${value.postcode})`
+    valueFormatter: ({value}) => `${value.postcode} - ${value.name}`
   },
   {
     field: "actions",

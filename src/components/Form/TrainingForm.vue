@@ -46,6 +46,7 @@ const store = async () => {
   form.value.categories = selectedCategories.value
   form.value.courses = selectedCourses.value
   form.value.teachers = selectedTeachers.value
+  form.value.duration = durationHours.value * 60 + durationMinutes.value
 
   applicationStore.clearErrors()
   await trainingStore.createTraining(form.value)
@@ -56,6 +57,7 @@ const update = async () => {
   form.value.categories = selectedCategories.value
   form.value.courses = selectedCourses.value
   form.value.teachers = selectedTeachers.value
+  form.value.duration = durationHours.value * 60 + durationMinutes.value
 
   applicationStore.clearErrors()
   await trainingStore.updateTraining(props.training.id, form.value)
@@ -95,14 +97,38 @@ onMounted(async () => {
           type="text"
       />
 
-      <nord-input
-          v-model="form.duration"
-          :error="applicationStore.errors?.duration"
-          expand
-          label="Durée"
-          placeholder="Entrez un nombre de minute"
-          type="number"
-      />
+      <label class="n-label">Durée</label>
+      <section class="n-grid">
+        <nord-stack direction="horizontal" gap="s" align-items="center">
+          <input
+              v-model="durationHours"
+              placeholder="0"
+              min="0"
+              type="number"
+              class="n-input duration-input"
+          />
+          <label>Heure(s)</label>
+        </nord-stack>
+        <nord-stack direction="horizontal" gap="s" align-items="center">
+          <input
+              v-model="durationMinutes"
+              placeholder="0"
+              min="0"
+              type="number"
+              @input="logminutes"
+              class="n-input duration-input"
+          />
+          <label>Minute(s)</label>
+        </nord-stack>
+      </section>
+
+      <div
+          v-if="applicationStore.errors?.duration"
+          class="n-error"
+          role="alert"
+      >
+        {{ applicationStore.errors?.duration }}
+      </div>
 
       <label class="n-label">Catégories</label>
       <multi-select
@@ -175,3 +201,9 @@ onMounted(async () => {
 
   <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
+
+<style scoped>
+.duration-input {
+  max-width: 100px;
+}
+</style>

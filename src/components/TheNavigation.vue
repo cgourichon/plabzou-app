@@ -2,17 +2,25 @@
 import pbzLogoLarge from '@/assets/images/pbz-logo-large.png'
 import {RouterLink} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
-import {computed} from "vue";
+import {computed, onBeforeUpdate, ref} from "vue";
 import router from "@/router";
 
 const authStore = useAuthStore()
 
-const authenticatedUser = computed(() => authStore.authenticatedUser)
+const authenticatedUser = computed(() => authStore.authenticatedUser);
+const pendingRequestsNumber = ref(null);
+const getPendingRequests = () => {
+    pendingRequestsNumber.value = authStore.authenticatedUser?.teacher?.requests.filter(request => request.is_approved_by_teacher === null).length;
+}
 
 const logout = async () => {
   await authStore.logout()
   await router.push('/connexion')
 }
+
+onBeforeUpdate(() => {
+    getPendingRequests();
+})
 </script>
 
 <template>
@@ -40,39 +48,9 @@ const logout = async () => {
     </nord-nav-group>
 
     <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Gestion">
-      <RouterLink to="/gestion/utilisateurs">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
-          Utilisateurs
-        </nord-nav-item>
-      </RouterLink>
-
       <RouterLink to="/gestion/categories">
         <nord-nav-item :active="$route.path.startsWith('/gestion/categories')" icon="interface-grid">
           Catégories
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/villes">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/villes')" icon="interface-grid">
-          Villes
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/lieux">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/lieux')" icon="interface-grid">
-          Lieux
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/batiments">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
-          Bâtiments
-        </nord-nav-item>
-      </RouterLink>
-
-      <RouterLink to="/gestion/salles">
-        <nord-nav-item :active="$route.path.startsWith('/gestion/salles')" icon="interface-grid">
-          Salles
         </nord-nav-item>
       </RouterLink>
 
@@ -106,13 +84,50 @@ const logout = async () => {
         </nord-nav-item>
       </RouterLink>
 
+      <nord-nav-item :active="$route.path.startsWith('/gestion/salles')" icon="generic-company">
+        Localisation
+
+        <nord-nav-group slot="subnav">
+          <RouterLink to="/gestion/batiments">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
+              Salles
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/batiments">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/batiments')" icon="interface-grid">
+              Bâtiments
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/lieux">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/lieux')" icon="interface-grid">
+              Lieux
+            </nord-nav-item>
+          </RouterLink>
+
+          <RouterLink to="/gestion/villes">
+            <nord-nav-item :active="$route.path.startsWith('/gestion/villes')" icon="interface-grid">
+              Villes
+            </nord-nav-item>
+          </RouterLink>
+        </nord-nav-group>
+      </nord-nav-item>
+    </nord-nav-group>
+
+    <nord-nav-group v-if="!!authenticatedUser?.administrative_employee" heading="Panel d'administration">
+      <RouterLink to="/gestion/utilisateurs">
+        <nord-nav-item :active="$route.path.startsWith('/gestion/utilisateurs')" icon="user-multiple">
+          Utilisateurs
+        </nord-nav-item>
+      </RouterLink>
+
       <RouterLink to="/gestion/imports">
         <nord-nav-item :active="$route.path.startsWith('/gestion/imports')" icon="interface-upload">
           Imports
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
-
 
     <nord-nav-group
         v-if="authStore.authenticatedUser?.teacher || authStore.authenticatedUser?.administrative_employee"
@@ -125,7 +140,10 @@ const logout = async () => {
       </RouterLink>
       <RouterLink v-if="!!authenticatedUser?.teacher" to="/mes-demandes">
         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
-          Demandes
+            <nord-stack direction="horizontal" justify-content="space-between" :class="$route.path === '/mes-demandes' ? 'n-color-text-on-accent' : ''">
+                Demandes
+                <nord-badge v-if="pendingRequestsNumber > 0" variant="highlight">{{pendingRequestsNumber}}</nord-badge>
+            </nord-stack>
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
@@ -163,3 +181,5 @@ const logout = async () => {
     </nord-dropdown>
   </nord-navigation>
 </template>
+<style scoped>
+</style>

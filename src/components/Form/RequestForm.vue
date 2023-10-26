@@ -28,7 +28,8 @@ const selectedTimeslot = ref(null)
 const selectedTeacher = ref(null)
 const isValidatedAdmin = ref('null')
 const isValidatedTeacher = ref('null')
-const comment = ref(null)
+const receiveComment = ref(null)
+const sendComment = ref(null)
 const disabledTeachers = ref(true)
 const createdDate = ref(null);
 const destroyModalOpened = ref(false)
@@ -44,7 +45,7 @@ const assignData = () => {
   return {
     timeslot_id: selectedTimeslot.value?.id,
     teacher_id: selectedTeacher.value?.user_id,
-    comment: comment.value,
+    comment: sendComment.value,
     is_approved_by_admin: getBooleanStatus(isValidatedAdmin.value),
     is_approved_by_teacher: props.request ? getBooleanStatus(isValidatedTeacher.value) : null,
     administrative_employee_id: props.request ? props.request.administrative_employee_id : authStore.authenticatedUser?.id
@@ -93,7 +94,7 @@ const initValues = async () => {
   selectedTeacher.value = teachers.value.find(teacher => teacher.user_id === props.request.teacher_id);
   isValidatedAdmin.value = props.request.is_approved_by_admin ? 'true' : props.request.is_approved_by_admin === false ? 'false' : 'null';
   isValidatedTeacher.value = props.request.is_approved_by_teacher ? 'true' : props.request.is_approved_by_teacher === false ? 'false' : 'null';
-  comment.value = props.request.comment
+  receiveComment.value = props.request.comment
   createdDate.value = getFrenchDateTimeWithoutTimeZone(props.request.created_at);
   disabledTeachers.value = true;
 }
@@ -185,16 +186,28 @@ watch(() => props.request, async () => {
         </nord-input>
       </div>
 
-      <nord-textarea v-model="comment"
-                     :error="applicationStore.errors?.message"
+      <nord-textarea v-model="receiveComment"
+                     :error="applicationStore.errors?.request.comment"
                      character-counter
                      expand
-                     label="Commentaire sur la demande"
+                     disabled
+                     label="Commentaire reçu"
                      maxlength="255"
                      placeholder="Ecrivez votre message ici (optionnel)"
                      resize="auto"
                      style="--n-textarea-block-size: 50px">
       </nord-textarea>
+
+        <nord-textarea v-model="sendComment"
+                       :error="applicationStore.errors?.request.comment"
+                       character-counter
+                       expand
+                       label="Commentaire sur la demande"
+                       maxlength="255"
+                       placeholder="Ecrivez votre message ici (optionnel)"
+                       resize="auto"
+                       style="--n-textarea-block-size: 50px">
+        </nord-textarea>
 
       <nord-stack direction="horizontal" justify-content="">
         <fieldset>

@@ -63,6 +63,8 @@ const openCloseDestroyModal = () => {
 onMounted(async () => {
   await cityStore.fetchCities()
 })
+
+const nameWithPostcode = ({name, postcode}) => `${postcode} - ${name}`
 </script>
 
 <template>
@@ -92,7 +94,7 @@ onMounted(async () => {
             v-model="selectedCity"
             :options="cityStore.cities"
             :show-no-results="true"
-            label="name"
+            :customLabel="nameWithPostcode"
             placeholder="Sélectionner une ville"
             track-by="id"
         >
