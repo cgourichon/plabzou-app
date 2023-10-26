@@ -2,17 +2,25 @@
 import pbzLogoLarge from '@/assets/images/pbz-logo-large.png'
 import {RouterLink} from "vue-router";
 import {useAuthStore} from "@/stores/auth.store";
-import {computed} from "vue";
+import {computed, onBeforeUpdate, ref} from "vue";
 import router from "@/router";
 
 const authStore = useAuthStore()
 
-const authenticatedUser = computed(() => authStore.authenticatedUser)
+const authenticatedUser = computed(() => authStore.authenticatedUser);
+const pendingRequestsNumber = ref(null);
+const getPendingRequests = () => {
+    pendingRequestsNumber.value = authStore.authenticatedUser?.teacher?.requests.filter(request => request.is_approved_by_teacher === null).length;
+}
 
 const logout = async () => {
   await authStore.logout()
   await router.push('/connexion')
 }
+
+onBeforeUpdate(() => {
+    getPendingRequests();
+})
 </script>
 
 <template>
@@ -125,7 +133,10 @@ const logout = async () => {
       </RouterLink>
       <RouterLink v-if="!!authenticatedUser?.teacher" to="/mes-demandes">
         <nord-nav-item :active="$route.path === '/mes-demandes'" icon="interface-help">
-          Demandes
+            <nord-stack direction="horizontal" justify-content="space-between">
+                Demandes
+                <nord-badge v-if="pendingRequestsNumber > 0" variant="highlight">{{pendingRequestsNumber}}</nord-badge>
+            </nord-stack>
         </nord-nav-item>
       </RouterLink>
     </nord-nav-group>
@@ -163,3 +174,6 @@ const logout = async () => {
     </nord-dropdown>
   </nord-navigation>
 </template>
+<style scoped>
+
+</style>
