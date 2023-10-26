@@ -75,6 +75,8 @@ onMounted(async () => {
   await cityStore.fetchCities()
   await learnerStore.fetchLearners()
 })
+
+const nameWithPostcode = ({name, postcode}) => `${postcode} - ${name}`
 </script>
 
 <template>
@@ -134,7 +136,7 @@ onMounted(async () => {
             v-model="selectedCity"
             :options="cityStore.cities"
             :show-no-results="true"
-            label="name"
+            :custom-label="nameWithPostcode"
             placeholder="Choisir une ville"
             track-by="id"
         >
