@@ -5,7 +5,7 @@ import {useCategoryStore} from "@/stores/category.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUpdate, onMounted, ref} from "vue";
 import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-// TODO : intÃ©gration des formateurs
+// TODO : intégration des formateurs
 
 const trainingStore = useTrainingStore()
 const categoryStore = useCategoryStore()
@@ -113,7 +113,7 @@ onMounted( () => {
           type="text"
       />
 
-      <label class="n-label">DurÃ©e</label>
+      <label class="n-label">Durée</label>
       <section class="n-grid">
         <nord-stack direction="horizontal" gap="s" align-items="center">
           <input
@@ -131,7 +131,6 @@ onMounted( () => {
               placeholder="0"
               min="0"
               type="number"
-              @input="logminutes"
               class="n-input duration-input"
           />
           <label>Minute(s)</label>
@@ -146,7 +145,7 @@ onMounted( () => {
         {{ applicationStore.errors?.duration }}
       </div>
 
-      <label class="n-label">CatÃ©gories</label>
+      <label class="n-label">Catégories</label>
       <multi-select
           v-model="selectedCategories"
           :allow-empty="true"
@@ -158,11 +157,11 @@ onMounted( () => {
           :select-label="null"
           :show-no-results="true"
           label="name"
-          placeholder="Associer cette formation a des catÃ©gories"
+          placeholder="Associer cette formation a des catégories"
           track-by="id"
       >
-        <template #noResult>Aucune catÃ©gorie correspondante</template>
-        <template #noOptions>Pas de catÃ©gories...</template>
+        <template #noResult>Aucune catégorie correspondante</template>
+        <template #noOptions>Pas de catégories...</template>
       </multi-select>
 
       <label class="n-label">Cursus</label>
@@ -184,7 +183,7 @@ onMounted( () => {
         <template #noOptions>Pas de cursus...</template>
       </multi-select>
 
-      <label class="n-label">Formateurs habilitÃ©</label>
+      <label class="n-label">Formateurs habilité</label>
       <multi-select
           v-model="selectedTeachers"
           :allow-empty="true"
