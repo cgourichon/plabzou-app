@@ -4,6 +4,7 @@ import {useCityStore} from "@/stores/city.store";
 import {usePlaceStore} from "@/stores/place.store";
 import router from "@/router";
 import {computed, onMounted, ref} from "vue";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   place: {
@@ -17,6 +18,7 @@ const placeStore = usePlaceStore()
 const applicationStore = useApplicationStore()
 
 const selectedCity = ref(null)
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   selectedCity.value = props.place?.city ?? ''
@@ -52,6 +54,10 @@ const destroy = async () => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'places-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 onMounted(async () => {
@@ -108,6 +114,8 @@ const nameWithPostcode = ({name, postcode}) => `${postcode} - ${name}`
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>

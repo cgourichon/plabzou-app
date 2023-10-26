@@ -1,6 +1,6 @@
 <script setup>
 import {getDatetimeShortFormatWithoutTime,} from "@/utils/dayjs";
-import TheModal from "@/components/TheModal.vue";
+import TheModal from "@/components/Messages/ConversationModal.vue";
 import {ref} from "vue";
 import RequestCardContent from "@/components/Request/RequestCardContent.vue";
 import dayjs from "dayjs";

@@ -5,7 +5,8 @@ import {useCategoryStore} from "@/stores/category.store";
 import {useCourseStore} from "@/stores/course.store";
 import {useTeacherStore} from "@/stores/teacher.store";
 import router from "@/router";
-import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUpdate, onMounted, ref} from "vue";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   training: {
@@ -28,6 +29,7 @@ const selectedTeachers = ref(null)
 const durationHours = ref(null)
 const durationMinutes = ref(null)
 const areDurationSet = ref(null)
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   selectedCategories.value = props.training?.categories ?? []
@@ -73,6 +75,10 @@ const destroy = async () => {
 
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'trainings-list'})
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 onBeforeUpdate(() => {
@@ -125,7 +131,6 @@ onMounted( () => {
               placeholder="0"
               min="0"
               type="number"
-              @input="logminutes"
               class="n-input duration-input"
           />
           <label>Minute(s)</label>
@@ -171,7 +176,7 @@ onMounted( () => {
           :select-label="null"
           :show-no-results="true"
           label="name"
-          placeholder="Associer des cursus à cette formation"
+          placeholder="Associer des cursus Ã  cette formation"
           track-by="id"
       >
         <template #noResult>Aucun cursus correspondant</template>
@@ -190,7 +195,7 @@ onMounted( () => {
           :select-label="null"
           :show-no-results="true"
           label="full_name"
-          placeholder="Associer des formateurs à cette formation"
+          placeholder="Associer des formateurs Ã  cette formation"
           track-by="user_id"
       >
         <template #noResult>Aucun formateur correspondant</template>
@@ -202,12 +207,14 @@ onMounted( () => {
           {{ !!training ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!training" expand type="button" variant="dashed" @click="destroyModalOpened">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>
