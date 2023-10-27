@@ -1,6 +1,6 @@
 <script setup>
 import {getDatetimeShortFormatWithoutTime,} from "@/utils/dayjs";
-import TheModal from "@/components/TheModal.vue";
+import TheModal from "@/components/Messages/ConversationModal.vue";
 import {ref} from "vue";
 import RequestCardContent from "@/components/Request/RequestCardContent.vue";
 import dayjs from "dayjs";
@@ -27,6 +27,7 @@ const toLate = () => {
 const teacherAnswer = ref(null);
 
 const handleValue = value => {
+    console.log(value);
   teacherAnswer.value = value;
 };
 
@@ -37,7 +38,7 @@ const getBooleanStatus = value => {
 }
 
 const sendResponse = async () => {
-  await requestStore.updateRequest(props.request.id, {is_approved_by_teacher: getBooleanStatus(teacherAnswer.value)});
+  await requestStore.updateRequest(props.request.id, {is_approved_by_teacher: getBooleanStatus(teacherAnswer.value.isValidatedTeacher), comment: teacherAnswer.value.comment});
   await authStore.fetchAuthenticatedUser();
 }
 

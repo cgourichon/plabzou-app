@@ -7,6 +7,7 @@ import {useCourseStore} from "@/stores/course.store";
 import {useLearnerStore} from "@/stores/learner.store";
 import {useCityStore} from "@/stores/city.store";
 import {getDateWithoutTimeZone} from "@/utils/dayjs";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   promotion: {
@@ -24,6 +25,7 @@ const applicationStore = useApplicationStore()
 const selectedCourse = ref(null)
 const selectedCity = ref(null)
 const selectedLearners = ref(null)
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   selectedCourse.value = props.promotion?.course ?? ''
@@ -70,11 +72,17 @@ const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'promotions-list'})
 }
 
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
+}
+
 onMounted(async () => {
   await courseStore.fetchCourses()
   await cityStore.fetchCities()
   await learnerStore.fetchLearners()
 })
+
+const nameWithPostcode = ({name, postcode}) => `${postcode} - ${name}`
 </script>
 
 <template>
@@ -134,7 +142,7 @@ onMounted(async () => {
             v-model="selectedCity"
             :options="cityStore.cities"
             :show-no-results="true"
-            label="name"
+            :custom-label="nameWithPostcode"
             placeholder="Choisir une ville"
             track-by="id"
         >
@@ -182,10 +190,12 @@ onMounted(async () => {
           {{ !!promotion ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!promotion" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!promotion" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>

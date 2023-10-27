@@ -10,6 +10,7 @@ import {computed, onBeforeUpdate, onMounted, ref, watch} from "vue";
 import {useTrainingStore} from "@/stores/training.store";
 import {getDateTimeWithoutTimeZone} from "@/utils/dayjs";
 import {useAuthStore} from "@/stores/auth.store";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   timeslot: {
@@ -51,52 +52,63 @@ const selectedLearners = ref(null)
 const selectedTeachers = ref(null)
 const timeslotLoaded = ref(false)
 const filterLearnersByTraining = ref(true)
+const destroyModalOpened = ref(false)
+const startsDate = ref(null);
+const endsDate = ref(null);
+const isValidated = ref(null)
+
+const form = {
+    training : '',
+    room : '',
+    learners : '',
+    teachers : '',
+    promotions : '',
+    starts_at : '',
+    ends_at : '',
+    is_validated : ''
+};
+
 
 const isAdministrativeEmployee = computed(() => !!authStore.authenticatedUser?.administrative_employee)
 
-const form = computed(() => {
-  selectedTraining.value = props.timeslot?.training ?? ''
-  selectedRoom.value = props.timeslot?.room ?? ''
-  selectedLearners.value = props.timeslot?.learners ?? []
-  selectedTeachers.value = props.timeslot?.teachers ?? []
-  selectedPromotions.value = props.timeslot?.promotions ?? []
+const initValues = () => {
+    selectedTraining.value = props.timeslot?.training ?? ''
+    selectedRoom.value = props.timeslot?.room ?? ''
+    selectedLearners.value = props.timeslot?.learners ?? []
+    selectedTeachers.value = props.timeslot?.teachers ?? []
+    selectedPromotions.value = props.timeslot?.promotions ?? []
+    isValidated.value = props.timeslot?.is_validated ?? ''
 
-  const startsAt = props.newStartsAt ?? props.timeslot?.starts_at
-  const endsAt = props.newEndsAt ?? props.timeslot?.ends_at
+    const startsAt = props.newStartsAt ?? props.timeslot?.starts_at
+    const endsAt = props.newEndsAt ?? props.timeslot?.ends_at
 
-  return {
-    training: '',
-    room: '',
-    starts_at: startsAt ? getDateTimeWithoutTimeZone(startsAt) : '',
-    ends_at: endsAt ? getDateTimeWithoutTimeZone(endsAt) : '',
-    is_validated: props.timeslot?.is_validated ?? '',
-    learners: [],
-    teachers: [],
-    promotions: [],
-  }
-})
+    startsDate.value = startsAt ? getDateTimeWithoutTimeZone(startsAt) : '';
+    endsDate.value = endsAt ? getDateTimeWithoutTimeZone(endsAt) : '';
+}
+
 
 const setMultiselectValuesToForm = () => {
-  form.value.training = selectedTraining.value.id
-  form.value.room = selectedRoom.value?.id
-  form.value.learners = selectedLearners.value
-  form.value.teachers = selectedTeachers.value
-  form.value.promotions = selectedPromotions.value
+    form.training = selectedTraining.value.id
+    form.room = selectedRoom.value?.id
+    form.learners = selectedLearners.value
+    form.teachers = selectedTeachers.value
+    form.promotions = selectedPromotions.value
+    form.starts_at = startsDate.value
+    form.ends_at = endsDate.value
+    form.is_validated = isValidated.value
 }
 
 const store = async () => {
   setMultiselectValuesToForm()
-
   applicationStore.clearErrors()
-  await timeslotStore.createTimeslot(form.value)
+  await timeslotStore.createTimeslot(form)
   await redirect()
 }
 
 const update = async () => {
   setMultiselectValuesToForm()
-
   applicationStore.clearErrors()
-  await timeslotStore.updateTimeslot(props.timeslot.id, form.value)
+  await timeslotStore.updateTimeslot(props.timeslot.id, form)
   await redirect()
 }
 
@@ -117,21 +129,18 @@ const checkFilterLearnersByTraining = async () => {
 }
 
 const requestValidated = option => {
+  const isValidated = option?.requests.find(request => {
+    return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
+  });
 
-        const isValidated = option?.requests.find(request => {
-            return request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher && request.is_approved_by_admin
-        });
-
-        return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
-            "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
-
-
+  return isValidated ? "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-success" : option?.requests.find(request => request.timeslot_id === props.timeslot?.id && request.is_approved_by_teacher === false) ?
+      "n-color-status-neutral n-border-radius n-padding-i-xs n-color-text-error" : "";
 }
 
 const hasApprovedRequest = ref(false);
 const checkApprovedRequest = () => {
-    hasApprovedRequest.value = props.timeslot?.requests.some(request => request.is_approved_by_teacher && request.is_approved_by_admin);
-    return hasApprovedRequest.value
+  hasApprovedRequest.value = props.timeslot?.requests.some(request => request.is_approved_by_teacher && request.is_approved_by_admin);
+  return hasApprovedRequest.value
 }
 
 const fetchDependencies = async () => {
@@ -146,6 +155,10 @@ const fetchDependencies = async () => {
         : await learnerStore.fetchLearners()
     await promotionStore.fetchPromotions({training: selectedTraining.value.id})
   }
+}
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
 }
 
 watch(() => selectedTraining.value, async () => {
@@ -180,14 +193,27 @@ watch(() => selectedPromotions.value, async (newPromotion, oldPromotion) => {
   }
 }, {deep: true})
 
+
+const handleEndsDate =() => {
+    endsDate.value = startsDate.value;
+    //form.value.starts_at = startsDate.value;
+    //form.value.ends_at = endsDate.value;
+}
+
 onMounted(() => {
   roomStore.fetchRooms()
   trainingStore.fetchTrainings()
 })
 
 onBeforeUpdate(() => {
-    checkApprovedRequest();
+  checkApprovedRequest();
 });
+
+watch(() => props.timeslot, () => {
+    initValues();
+})
+
+initValues();
 
 const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} place(s)`
 </script>
@@ -198,17 +224,19 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
       <nord-stack direction="horizontal">
         <nord-stack direction="vertical">
           <nord-stack direction="horizontal">
+
             <nord-input
-                v-model="form.starts_at"
+                v-model="startsDate"
                 :error="applicationStore.errors?.starts_at"
                 :readonly="!isAdministrativeEmployee"
                 expand
+                @change="handleEndsDate"
                 label="Date de début"
                 type="datetime-local"
             />
 
             <nord-input
-                v-model="form.ends_at"
+                v-model="endsDate"
                 :error="applicationStore.errors?.ends_at"
                 :readonly="!isAdministrativeEmployee"
                 expand
@@ -274,10 +302,10 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
               <label class="n-label">Salle</label>
               <multi-select
                   v-model="selectedRoom"
+                  :custom-label="nameWithCapacity"
                   :disabled="!isAdministrativeEmployee"
                   :options="roomStore.rooms"
                   :show-no-results="true"
-                  :custom-label="nameWithCapacity"
                   placeholder="Sélectionner une salle"
                   track-by="id"
               >
@@ -328,22 +356,21 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
                   :options="teacherStore.teachers"
                   :select-label="null"
                   :show-no-results="true"
+                  label="full_name"
                   placeholder="Ajouter des formateurs"
                   track-by="user_id"
-                  label="full_name"
-                  @select="test"
               >
-                  <template #tag="{option, remove}">
+                <template #tag="{option, remove}">
                           <span id="tag" class="multiselect__tag">
-                              <span :class="requestValidated(option)">{{option.full_name}}</span>
-                              <i tabindex="1"
-                                 id="tag-icon"
+                              <span :class="requestValidated(option)">{{ option.full_name }}</span>
+                              <i id="tag-icon"
                                  class="multiselect__tag-icon"
+                                 tabindex="1"
                                  @click.prevent @mousedown.prevent.stop="remove(option, $event)"
                               ></i>
                           </span>
-                  </template>
-                  <template #noResult>Pas de formateurs correspondants</template>
+                </template>
+                <template #noResult>Pas de formateurs correspondants</template>
                 <template #noOptions>Aucun formateurs trouvés</template>
               </multi-select>
               <div
@@ -396,7 +423,7 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
 
               <template v-if="hasApprovedRequest">
             <nord-checkbox
-                v-model="form.is_validated"
+                v-model="isValidated"
                 :disabled="!isAdministrativeEmployee"
                 :error="applicationStore.errors?.is_validated"
                 label="Créneau validé"
@@ -415,21 +442,19 @@ const nameWithCapacity = ({name, seats_number}) => `${name} : ${seats_number} pl
             {{ !!timeslot ? 'Modifier' : 'Ajouter' }}
           </nord-button>
 
-          <nord-button v-if="!!timeslot" expand type="button" variant="dashed" @click="destroy">
+          <nord-button v-if="!!timeslot" expand type="button" variant="dashed" @click="openCloseDestroyModal">
             Supprimer
           </nord-button>
         </nord-stack>
       </template>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>
-#tag {
-
-}
-
 #tag-icon {
-    color: #000000;
+  color: #000000;
 }
 </style>

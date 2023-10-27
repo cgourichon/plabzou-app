@@ -2,7 +2,8 @@
 import {useApplicationStore} from "@/stores/application.store";
 import {useCityStore} from "@/stores/city.store";
 import router from "@/router";
-import {computed} from "vue";
+import {computed, ref} from "vue";
+import TheDestroyModal from "@/components/TheDestroyModal.vue";
 
 const props = defineProps({
   city: {
@@ -13,6 +14,8 @@ const props = defineProps({
 
 const cityStore = useCityStore()
 const applicationStore = useApplicationStore()
+
+const destroyModalOpened = ref(false)
 
 const form = computed(() => {
   return {
@@ -42,6 +45,10 @@ const destroy = async () => {
 const redirect = async () => {
   if (!applicationStore.hasErrors) await router.push({name: 'cities-list'})
 }
+
+const openCloseDestroyModal = () => {
+  destroyModalOpened.value = !destroyModalOpened.value
+}
 </script>
 
 <template>
@@ -70,12 +77,14 @@ const redirect = async () => {
           {{ !!city ? 'Modifier' : 'Ajouter' }}
         </nord-button>
 
-        <nord-button v-if="!!city" expand type="button" variant="dashed" @click="destroy">
+        <nord-button v-if="!!city" expand type="button" variant="dashed" @click="openCloseDestroyModal">
           Supprimer
         </nord-button>
       </nord-stack>
     </nord-stack>
   </form>
+
+  <TheDestroyModal :open="destroyModalOpened" @close="openCloseDestroyModal" @destroy="destroy"/>
 </template>
 
 <style scoped>
